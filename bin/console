@@ -1,0 +1,52 @@
+#!/usr/bin/env php
+<?php
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
+
+require __DIR__ .DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+$console = new Application('example_runner','1.0.0');
+
+$console->register('run')
+    ->setDefinition(array(
+        new InputArgument('example_file', InputArgument::REQUIRED, 'Example File Name'),
+    ))
+    ->setDescription('Runs an example file')
+    ->setHelp(<<<EOF
+The <info>%command.name%</info> command displays the example at file.
+EOF
+    )
+    ->setCode(function (InputInterface $input, OutputInterface $output) {
+        
+        $exampleFile = $input->getArgument('example_file');
+        
+        if (!is_file(__DIR__ . DIRECTORY_SEPARATOR. $exampleFile)) {
+            $output->writeln(sprintf('<error>Example File "%s" does not exist.</error>', $exampleFile));
+            return 1;
+        }
+
+        $output->writeln('<info>Loading File</info>');
+        $output->writeln('');
+        
+        
+        $iterator = require __DIR__ . DIRECTORY_SEPARATOR. $exampleFile; 
+        
+        if(!$iterator instanceof \Iterator) {
+            $output->writeln(sprintf('<error>Example File "%s" must return and iterator.</error>', $exampleFile));
+            return 1;
+        }
+        
+        foreach($iterator as $dte) {
+            $output->writeln($dte->format('Y-m-d'));
+        }
+        
+        $output->writeln('');
+        $output->writeln('<info>Finished Running file</info>');
+        
+    });
+
+
+$console->run();
