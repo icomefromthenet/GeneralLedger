@@ -5,12 +5,12 @@ use DBALGateway\Query\AbstractQuery;
 use DBALGateway\Query\QueryInterface;
 
 /**
-  *  Query Builder for Queries to AccountingEvent Domain
+  *  Query Builder for Queries to AccountingEventStore
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class AccountingEventQuery extends AbstractQuery implements QueryInterface
+class EventStoreQuery extends AbstractQuery implements QueryInterface
 {
     
     

@@ -17,7 +17,10 @@
     "require" : {
         "icomefromthenet/dbal-gateway" : "dev-master",
         "icomefromthenet/quicktag"     : "dev-master",
-        "ruler/ruler"                  : "0.2.0"
+        "pimple/pimple"                : "1.0.* ",
+        "psr/log"                      : "1.0.*",
+        "bluem/tree"                   : "dev-master"
+        
     },
     "autoload": {
         "psr-0": {

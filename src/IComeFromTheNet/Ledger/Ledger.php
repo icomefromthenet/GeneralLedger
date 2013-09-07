@@ -10,17 +10,7 @@ namespace IComeFromTheNet\Ledger;
 class Ledger
 {
     
-    public function receiveAccountingEvent()
-    {
-        
-    }
-    
-    
-    public function findAccount($name,$user)
-    {
-        
-        
-    }
+   
     
     
 }

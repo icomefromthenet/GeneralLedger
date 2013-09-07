@@ -11,10 +11,17 @@ class LedgerTransaction
 {
     protected $transactionID;
     
-    protected $transactionDate;
+    protected $dateNoticed;
     
+    protected $dateOccured;
     
+    protected $vouchRef;
     
+    protected $movement;
+    
+    protected $reasonDescription;
+    
+    protected $transactionType;
     
 }
 /* End of Class */

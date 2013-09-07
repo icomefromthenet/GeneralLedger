@@ -11,40 +11,37 @@ require __DIR__ .DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR . 'vendor' . DIR
 $console = new Application('example_runner','1.0.0');
 
 $console->register('run')
-    ->setDefinition(array(
-        new InputArgument('example_file', InputArgument::REQUIRED, 'Example File Name'),
-    ))
-    ->setDescription('Runs an example file')
+    ->setDefinition(array())
+    ->setDescription('Runs code inside')
     ->setHelp(<<<EOF
 The <info>%command.name%</info> command displays the example at file.
 EOF
     )
     ->setCode(function (InputInterface $input, OutputInterface $output) {
         
-        $exampleFile = $input->getArgument('example_file');
+        $collection = new \Doctrine\Common\Collections\ArrayCollection();
         
-        if (!is_file(__DIR__ . DIRECTORY_SEPARATOR. $exampleFile)) {
-            $output->writeln(sprintf('<error>Example File "%s" does not exist.</error>', $exampleFile));
-            return 1;
-        }
-
-        $output->writeln('<info>Loading File</info>');
-        $output->writeln('');
+        $collection->set(10,'an a value');
+        $collection->set(1,'an x value');
+        $collection->set(6,'an g value');
+        $collection->set(7,'an b value');
         
-        
-        $iterator = require __DIR__ . DIRECTORY_SEPARATOR. $exampleFile; 
-        
-        if(!$iterator instanceof \Iterator) {
-            $output->writeln(sprintf('<error>Example File "%s" must return and iterator.</error>', $exampleFile));
-            return 1;
+        foreach($collection as $key => $order)
+        {
+            $output->writeLn($key);
         }
         
-        foreach($iterator as $dte) {
-            $output->writeln($dte->format('Y-m-d'));
-        }
+        $output->writeLn('');
+        $output->writeLn('');
         
-        $output->writeln('');
-        $output->writeln('<info>Finished Running file</info>');
+        $elements = $collection->toArray();
+        
+        asort($elements);
+        
+        foreach($collection as $key => $order)
+        {
+            $output->writeLn($key);
+        }
         
     });
 

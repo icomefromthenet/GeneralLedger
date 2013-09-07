@@ -11,7 +11,6 @@ use DateTime;
   */
 class AccountingEvent
 {
-    
     /*
      * @var integer the store ID
      */
@@ -29,7 +28,8 @@ class AccountingEvent
      */
     protected $dateNoticed;
     
-    // meta details
+    // ---------------------------------------------------------------------
+    # meta details
     
     /*
      * @var used in rules processing could be a rule, name, a generic description
@@ -49,40 +49,176 @@ class AccountingEvent
     protected $amount;
     
     
-    // Event Processing Info
+
+    /**
+     *  Class Constructor
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function __construct(DateTime $dateOccured,
+                                Datetime $dateNoticed,
+                                $eventType,
+                                $memorandum,
+                                $amount)
+    {
+        $this->setOccuredDate($dateOccured);
+        $this->setNoticedDate($dateNoticed);
+        $this->setEventType($eventType);
+        $this->setMemorandum($memorandum);
+        $this->setAmount($amount);
+        
+    }
     
-    /*
-     * @var DateTime Processed date 
-     */
-    protected $dateProcessed;
     
-    /*
-     * @var boolean True if event has been processed and added to GL
-     */
-    protected $isProcessed;
+    // -------------------------------------------------------------------------
+    # Protected Setters, Since Events can not be changed once committed, these
+    # setters exist to hold validation logic and used in the constructor
+    
+    protected function setOccuredDate(DateTime $occured)
+    {
+        $this->dateOccured = $occrued;
+    }
+    
+    protected function setNoticedDate(DateTime $noticed)
+    {
+        $this->dateNoticed = $noticed;
+    }
+    
+    protected function setMemorandum($data)
+    {
+        $this->memorandum = $data;
+    }
+    
+    protected function setEventType($type)
+    {
+        if(empty($type)) {
+            throw new LedgerException('eventType must not be empty');
+        }
+        
+        $this->eventType = $type;
+    }
+    
+    protected function setAmount($amt)
+    {
+        if(!is_numeric($amt)) {
+            throw new LedgerException('Amount must be numeric');
+        }
+        $this->amount = $amt;
+    }
+    
+     /**
+     *  Set the events storage id
+     *
+     *  @access public
+     *  @return void
+     *  @param integer $id
+     *
+    */
+    public function setEventId($id)
+    {
+        if(!is_init($id) || (integer) $id < 0) {
+            throw new LedgerException('Event ID must be an integer > 0');
+        }
+        
+        $this->eventID = $id;
+    }
     
     
     
+    // -------------------------------------------------------------------------
+    # Accessors
     
-    // Reversal Properties
-    /*
-     * @var boolean has this event been reversed with another event
-     */
-    protected $hasBeenReversed;
+    /**
+     *  Fetch the events storage id
+     *
+     *  @access public
+     *  @return integer the events storage id
+     *
+    */
+    public function getEventId()
+    {
+        return $this->eventID;
+    }
     
-    /*
-     * @var integer the Store ID of the reversal Event
-     */
-    protected $reversalID;
+   
+    /**
+     *  Fetch the date the event occured on
+     *
+     *  @access public
+     *  @return DateTime
+     *
+    */
+    public function getOccuredDate()
+    {
+        return $this->dateOccured;
+    }
     
-    // Adjustent details
+    /**
+     *  Fetch the date the event was noticed (processed)
+     *
+     *  @access public
+     *  @return DateTime
+     *
+    */   
+    public function getNoticedDate()
+    {
+        return $this->dateNoticed;        
+    }
     
-    /*
-     * @var boolean is this event an adjustemnt
-     */
-    protected $isAdjustment;
+    /**
+     *  Fetch the event type descriptor
+     *
+     *  @access public
+     *  @return string the eventType name
+     *
+    */
+    public function getEventType()
+    {
+        return $this->eventType;
+    }
     
-    protected $adjustedEventID;
+    /**
+     *  Fetch the amount the event
+     *
+     *  @access public
+     *  @return double
+     *
+    */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+    
+    /**
+     *  Fetch the memorandum data
+     *
+     *  @access public
+     *  @return mixed
+     *
+    */
+    public function getMemorandum()
+    {
+        return $this->memorandum;
+    }
+    
+    
+    # ------------------------------------------------------------------
+    
+    
+    /**
+     *  Has this entity been stored, or is it only in memeory
+     *  if it has been assigned and eventID must be stored.
+     *
+     *  @access public
+     *  @return boolean true if stored
+     *
+    */
+    public function stored()
+    {
+        return ($this->eventID !== null) ? true : false;
+    }
     
 }
 /* End of File */
