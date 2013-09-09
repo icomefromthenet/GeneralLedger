@@ -1,0 +1,1138 @@
+<?xml version="1.0"?>
+
+<!--
+ Opening Schema Tag
+ 
+ Set a default locale en all nodes will inherit this locale, but it can be overriden in child nodes
+
+-->
+<schema name="sakila" locale="en">
+ 
+ <!--
+ First Writers target is the mysql platform and will output using the SQL formatter and produce
+ text files with SQL insert statements, The singleFileMode as been enabled, this will stop
+ the writer from splitting the output into seperate files.
+ 
+ Second Writers target is the mysql plaform and will output into phpunit xml fixtures.
+ -->
+ <writer platform="mysql" format="sql" singleFileMode="true" />
+ <writer platform="mysql" format="phpunit" />
+ 
+ 
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  City Table
+  
+  Using the City Type which provides a list of Large Cities from geonames database,
+  you can limit countries which the cities are accessed from, using the ISO 2  digit code 
+  link : https://github.com/icomefromthenet/Faker/blob/master/docs/types/city.md
+  
+  Using our First Foreign Key below, to country table we can generate as many cities and have a valid reference to
+  a country.
+  
+  The table order is automatic when using the `crc` option (circular reference check and reorder). If your not using this
+  option, make sure tables are in best order so that foreign key tables are AFTER tables with none.
+  really recommend using the generate option in these cases.
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="city" generate="100">
+  <column name="city_id" type="smallint">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  <column name="country_id" type="smallint">
+   <foreign-key name="city.country" foreignColumn="country_id" foreignTable ="country" />
+  </column>
+  <column name="city" type="string">
+   <datatype name="city">
+     <option name="countries" value="AU,GB" />
+   </datatype>
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="today" />
+    <option name="modify" value="+10 minutes" />
+   </datatype>
+  </column>
+  
+  <!--
+  Example of Foreign Key Circular Reference 
+  
+   <column name="fk_id" type="smallint">
+     <foreign-key name="city.address" foreignColumn="address_id" foreignTable="address" />
+   </column> -->
+  
+ </table>
+ 
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Actor Table
+  
+  Using the People Type which provides a list of english names
+  the format property allows you to specify which part of the name
+  should be used {fname},{lname},{inital}
+  link : https://github.com/icomefromthenet/Faker/blob/master/docs/types/people.md
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="actor" generate="100">
+  <column name="actor_id" type="smallint">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  <column name="first_name" type="string">
+   <datatype name="people">
+    <option name="format" value="{fname}" />
+   </datatype>
+  </column>
+  <column name="last_name" type="string">
+   <datatype name="people">
+    <option name="format" value="{lname}" />
+   </datatype>
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+     <option name="start" value="today" />
+     <option name="modify" value="+1 day" />
+     <option name="max" value="today +10 weeks" />
+   </datatype>
+  </column>
+ </table>
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Country Table
+  
+  Using the Country Type which provides a list of ISO Countries,
+  you can limit which countries are listed see link below on how.
+  link : https://github.com/icomefromthenet/Faker/blob/master/docs/types/country.md
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="country" generate="10">
+  <column name="country_id" type="smallint">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  <column name="country" type="string">
+   <datatype name="country">
+   </datatype>
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 hour" />
+   </datatype>
+   
+  </column>  
+
+  <!--
+  The Following would cause a Circular Reference Error when the extra compiler check is enabled.
+  
+  <column name="city_id" type="integer">
+    <foreign-key name="city.country" foreignColumn="country_id" foreignTable="city" />
+  </column> 
+  -->
+  
+  <!--
+  The Following would cause a Circular Reference Error when the extra compiler check is enabled.
+
+  <column name="city_id" type="smallint">
+   <foreign-key name="country.address" foreignColumn="address_id" foreignTable="address" />
+  </column>
+    -->
+  
+ </table>
+ 
+ 
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Address Table
+  
+  Using a GeneratorSeed, This remove the random nature of the generated data.
+  Running this script again will produce the same results for this table.
+  If you add column between generations, that will change the script.
+  You can seed a column and a type to make sure adding columns won't change the result.
+  
+  If your using Faker to make phpunit fixtures, it helpful to know that the 10 row always have same address string.
+  
+  
+  In you own types to keep this deterministic property, use the provide random generator not
+  php global random.
+  
+  For php distributions that include Soushin Security patch ( they all did php version < 5.4), then need
+  to use the `mersenne` not the default. That Path prevents seeding of built in php number generators, I supplied one.
+  
+  Using First Foreign Keys, remmember to always put primary tables above the children.
+  If the primary tables don't generate first we have nothing to use in the children.
+  
+  Also using the numeric type for postcodes, and using random selector to support different formats (Australian codes)
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="address" generate="100" generatorSeed="100" randomGenerator="mersenne">
+  
+  <!--
+   Auto Incrementing Integer
+   
+   -->
+  <column name="address_id" type="smallint">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  
+  <!--
+   Foreign Key with City Table
+   
+   -->
+  <column name="city_id" type="smallint">
+   <foreign-key name="address.city" foreignColumn="city_id" foreignTable="city" />
+  </column>
+  
+  <!-- 
+   Example Address [number] [street name] [street_type] (50 Characters)
+   
+  -->
+  <column name="address" type="string">
+
+   <!-- [number] Max 15 characters -->
+   <datatype name="alphanumeric">
+    <option name="format"    value="ccccc" />
+    <option name="repeatMin" value="1" />
+    <option name="repeatMax" value="3" />
+   </datatype>
+   
+   <!-- [ ] -->
+   <datatype name="constant_string">
+     <option name="value" value=" " />
+   </datatype>
+   
+   <!--[street_name ] Max 15 characters-->
+   <datatype name="alphanumeric">
+    <option name="format" value="ccccc" />
+    <option name="repeatMin" value="1" />
+    <option name="repeatMax" value="3" />
+   </datatype>
+   
+   <!-- [ ] -->
+   <datatype name="constant_string">
+     <option name="value" value=" " />
+     
+   </datatype>
+   
+   <!-- [street_type] Max 15 characters-->
+   <datatype name="alphanumeric">
+    <option name="format" value="ccccc" />
+    <option name="repeatMin" value="1" />
+    <option name="repeatMax" value="3" />
+   </datatype>
+  
+  </column>
+  
+  <!--
+   Example Address2 50 characters
+   
+  -->
+  <column name="address2" type="string">
+   <datatype name="alphanumeric">
+    <option name="format" value="ccccc" />
+    <option name="repeatMin" value="1"/>
+    <option name="repeatMax" value="12" />
+   </datatype>
+  </column>
+  
+  <!--
+   State [nsw|qld|wa|vic|act|tas|sa|nt]
+  
+  -->
+  <column name="district" type="string">
+    <!-- Pick one constant at random -->
+   <random>
+    <datatype name="constant_string">
+     <option name="value" value="nsw" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="qld" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="wa" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="vic" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="act" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="tas" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="sa" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="nt" />
+    </datatype>
+   </random>
+  </column>
+
+  <!--
+    Each there are a couple of fixed formats for Australian postcodes
+    the random element will pick on of the formats at random for each generator pass,
+    since the selector uses the buildin number generator the select will be deterministic.
+    
+    Up to 10 characters
+    
+  -->
+  <column name="postal_code" type="string">
+    <random>
+      <!-- NSW Codes --> 
+      <datatype name="numeric">
+          <option name="format" value="2XXX" />
+      </datatype>
+      <!-- QLD Codes --> 
+      <datatype name="numeric">
+          <option name="format" value="4XXX" />
+      </datatype>
+      <!-- VIC /TAS Codes --> 
+      <datatype name="numeric">
+          <option name="format" value="3XXX" />
+      </datatype>
+      <!-- WA Codes --> 
+      <datatype name="numeric">
+          <option name="format" value="6XXX" />
+      </datatype>
+      <!-- SA Codes --> 
+      <datatype name="numeric">
+          <option name="format" value="7XXX" />
+      </datatype>
+      <!-- Other --> 
+      <datatype name="numeric">
+          <option name="format" value="0XXX" />
+      </datatype>
+    </random>
+  </column>
+  
+  <!-- Phone number up to 20 characters
+    Where using the alphanumeric because it will produce a string value (column is a string not number), if
+    we used numeric it would cast the value into string have unexpected results.
+  
+  -->
+  <column name="phone" type="string">
+   <datatype name="alphanumeric">
+    <option name="format" value="(xx) xxxx - xxxx" />
+   </datatype>
+  </column>
+  
+  <!-- Date -->
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 hour" />
+    <option name="max" value="+10 weeks" />
+   </datatype>
+  </column>
+  
+ </table>
+ 
+ 
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Category Table
+  
+  When categorising for example move genres you should ask yourself does this need a semantic meaning?
+  To a database word like 'short' is the same as string of text 'torohs' , if your testing a client side
+  search box, random text would be a hindrence.
+  
+  I have shown below how to combine the alternate selector with constant datatype. But be aware below
+  I have 29 movie categories and have also set generate to 29. If generate was set to 100, it would repeat
+  category names.
+  
+  If you had many many categoires, I recommend that your write your own type and pull data from another source.
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="category" generate="29">
+  
+  <column name="category_id" type="integer">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  
+  <column name="name" type="string">
+     <alternate step="1">
+      <datatype name="constant_string"><option name="value" value="short" /></datatype>
+      <datatype name="constant_string"><option name="value" value="drama" /></datatype>
+      <datatype name="constant_string"><option name="value" value="comedy" /></datatype>
+      <datatype name="constant_string"><option name="value" value="documentary" /></datatype>
+      <datatype name="constant_string"><option name="value" value="adult" /></datatype>
+      <datatype name="constant_string"><option name="value" value="romance" /></datatype>
+      <datatype name="constant_string"><option name="value" value="action" /></datatype>
+      <datatype name="constant_string"><option name="value" value="animation" /></datatype>
+      <datatype name="constant_string"><option name="value" value="thriller" /></datatype>
+      <datatype name="constant_string"><option name="value" value="family" /></datatype>
+      <datatype name="constant_string"><option name="value" value="crime" /></datatype>
+      <datatype name="constant_string"><option name="value" value="music" /></datatype>
+      <datatype name="constant_string"><option name="value" value="adventure" /></datatype>
+      <datatype name="constant_string"><option name="value" value="horror" /></datatype>
+      <datatype name="constant_string"><option name="value" value="fantasy" /></datatype>
+      <datatype name="constant_string"><option name="value" value="mystery" /></datatype>
+      <datatype name="constant_string"><option name="value" value="sci-fi" /></datatype>
+      <datatype name="constant_string"><option name="value" value="biography" /></datatype>
+      <datatype name="constant_string"><option name="value" value="sport" /></datatype>
+      <datatype name="constant_string"><option name="value" value="musical" /></datatype>
+      <datatype name="constant_string"><option name="value" value="western" /></datatype>
+      <datatype name="constant_string"><option name="value" value="history" /></datatype>
+      <datatype name="constant_string"><option name="value" value="war" /></datatype>
+      <datatype name="constant_string"><option name="value" value="reality-tv" /></datatype>
+      <datatype name="constant_string"><option name="value" value="news" /></datatype>
+      <datatype name="constant_string"><option name="value" value="talk-show" /></datatype>
+      <datatype name="constant_string"><option name="value" value="game-show" /></datatype>
+      <datatype name="constant_string"><option name="value" value="film-noir" /></datatype>
+      <datatype name="constant_string"><option name="value" value="lifestyle" /></datatype>
+      <datatype name="constant_string"><option name="value" value="experimental" /></datatype>
+     </alternate>
+  </column>
+  
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 hour" />
+   </datatype>
+  </column>
+ </table>
+ 
+ 
+
+ 
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Customer Table
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="customer" generate="1000">
+  
+  <column name="customer_id" type="integer">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  
+  <column name="address_id" type="smallint">
+   <foreign-key name="customer.address" foreignColumn="address_id" foreignTable="address" />
+  </column>
+  
+  <column name="store_id" type="boolean">
+   <foreign-key name="customer.store" foreignColumn="store_id" foreignTable="store" />
+  </column>
+  
+  <column name="first_name" type="string">
+   <datatype name="people">
+    <option name="format" value="{lname}" />
+   </datatype>
+  </column>
+  
+  <column name="last_name" type="string">
+   <datatype name="people">
+    <option name="format" value="{fname}" />
+   </datatype>
+  </column>
+  
+  <column name="email" type="string">
+     <datatype name="email" >
+       <option name="format" value="{fname}{lname}@{alpha1}.{domain}" />
+       <option name="params" value='{"alpha1":"ccCCC"}'  />
+    </datatype>
+  </column>
+  
+  <!--
+  For active column I want a mix of extactly 10% disabled 90% enabled
+  by using the swap selector I can ensure the first 900 are enabled (true)
+  and the next 100 false. Given we generate 1000 (900 + 100). 
+  -->
+  <column name="active" type="boolean">
+   <swap>
+     <when at="900">
+      <datatype name="boolean">
+       <option name="value" value="true" />
+      </datatype>
+     </when>
+     <when at="100">
+        <datatype name="boolean">
+       <option name="value" value="false" />
+      </datatype>
+     </when>
+   </swap>
+  </column>
+  
+  <column name="create_date" type="datetime">
+   <datatype name="datetime">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 hour" />
+   </datatype>
+  </column>
+  
+  <column name="last_update" type="datetime">
+   <datatype name="datetime">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+  
+ </table>
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Film Table
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="film" generate="800">
+  
+  <column name="film_id" type="integer">
+   <datatype name="autoincrement">
+   </datatype>
+  </column>
+  
+  <column name="language_id" type="boolean">
+   <foreign-key name="file.language" foreignColumn="language_id" foreignTable="language"  />
+  </column>
+  
+  <!---
+  Edge Case: While this relationship is ok, better design would be to mark a language on the film_language join
+  table as an original language. 
+  
+  To select a value we have three options :
+   1. Use a another foreign-key to guarantee consistency.
+   2. Pull data from another source.
+   3. Use a number range (only works if its ok to assign fixed range).
+   
+   In this case I used a number range and pick selector, I have split the range into two 1-50 , 51-100. Using pick selector
+   the first range will occur more frequently than the later.
+  
+  -->
+  <column name="original_language_id" type="boolean">
+   <pick probability ="70">
+    <datatype name="range">
+     <option name="max" value="50" />
+     <option name="min" value="1" />
+     <option name="step" value="1" />
+    </datatype>
+    <datatype name="range">
+     <option name="max" value="100" />
+     <option name="min" value="51" />
+     <option name="step" value="1" />
+    </datatype>
+   </pick>
+  </column>
+  
+  <!--
+  Title Column
+  
+  varchar 255
+  -->
+  <column name="title" type="string">
+   <datatype name="alphanumeric">
+    <option name="format" value="ccc" />
+   </datatype>
+  </column>
+  
+  <!--
+  Description Column:
+  
+  With description columns , you need to ask yourself do you need semantic meaning?
+  
+  I don't and have used the `Text` type with random selector. This configuration will
+  pick at random 1,2 or 3 paragraph text block.
+  -->
+  <column name="description" type="text">
+   <random>
+    <datatype name="text">
+     <option name="paragraphs" value="1" />
+    </datatype>
+    <datatype name="text">
+     <option name="paragraphs" value="2" />
+    </datatype>
+    <datatype name="text">
+     <option name="paragraphs" value="3" />
+    </datatype>
+   </random>
+  </column>
+  
+  <!--
+  Release Year column:
+  
+  Using a random date, make sure that you set the start and max date to
+  create a range, the random number comes from the random generator so
+  it is deterministic.
+  
+  Movies have been around a while so I set the start to 1910 with max of now
+  since the column is date, it will not include any time values.
+  -->
+  <column name="release_year" type="date">
+   <datatype name="datetime">
+    <option name="random" value="true" />
+    <option name="start"  value="01-01-1910" />
+    <option name="max"    value="now" />
+   </datatype>
+  </column>
+  
+  <!--
+  Rental Duration column:
+  
+  Predefines rental periods 1-3 (according to schema)
+  -->
+  <column name="rental_duration" type="smallint">
+    <datatype name="range" max="3" min="1" step="1" />
+  </column>
+  
+  <!--
+  Rental Rate column:
+  
+  Using a numeric with random selector.
+  
+  I set the range to be 0cents - 99.99dollars.  Using the random tage and multiple numerics I have spread
+  the values generated over the whole range  
+  
+  -->
+  <column name="rental_rate" type="decimal">
+   <random>
+    <!-- 0 - 10 cents --> 
+    <datatype name="numeric">
+        <option name="format" value="0.0x" />
+    </datatype>
+
+    <!-- 10 - 99 cents -->
+    <datatype name="numeric">
+        <option name="format" value="0.Xx" />
+    </datatype>
+
+    <!-- 1.00 - 9.99 dollars -->
+    <datatype name="numeric">
+        <option name="format" value="X.xx" />
+    </datatype>
+    <!-- 10.00 dollars - 99.99 dollars -->
+    <datatype name="numeric">
+        <option name="format" value="Xx.xx" />
+    </datatype>
+    
+   </random>
+  </column>
+  
+  <!--
+  Length Column:
+  
+  Assume length is minutes, use a range with random step
+  and a min and max to constrain value
+  
+  -->
+  <column name="length" type="smallint">
+   <datatype name="range">
+        <option name="min" value="30" />
+        <option name="max" value="300" />
+        <option name="random" value="true" />
+   </datatype>
+  </column>
+  
+ 
+  <!--
+  Replacement Cost Column:
+  
+  Using random selector with numeric range set.
+  Values between 1.00 - 999.99.
+
+  (Decial 5,2)
+  -->
+  <column name="replacement_cost" type="decimal">
+   <random>
+    <!-- 1.00 - 9.99 dollars -->
+    <datatype name="numeric">
+        <option name="format" value="X.xx" />
+    </datatype>
+    
+    <!-- 10.00 dollars - 99.99 dollars -->
+    <datatype name="numeric">
+        <option name="format" value="Xx.xx" />
+    </datatype>
+
+    <!-- 100.00 - 999.99 dollars -->
+    <datatype name="numeric">
+        <option name="format" value="Xxx.xx" />
+    </datatype>
+   </random>
+  </column>
+  
+  
+  <!--
+  Raiting Column
+  
+  Using a random with constant string to pick between raitings. 
+  -->
+  <column name="rating" type="string">
+   <random>
+    <datatype name="constant_string">
+     <option name="value" value="G" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="PG" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="M" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="MA" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="R" />
+    </datatype>
+    <datatype name="constant_string">
+     <option name="value" value="X" />
+    </datatype>
+   </random>
+  </column>
+  
+  <!--
+   Special Features Column:
+   
+   There are no other tables to define special features, just use the text type
+   to include description of special features
+  
+  -->
+  <column name="special_features" type="string">
+   <datatype name="text">
+    <option name="paragraphs" value="1" />
+   </datatype>
+  </column>
+  
+  <column name="last_update" type="datetime">
+   <datatype name="datetime">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Film Actor (Join Table)
+ 
+  On join tables as below, please be aware you may end up with non unique columns when using a compsite primary key
+  and a large generate value.
+  
+  In this example if I have 100 film actors in the first primary table and 800 films in the second primary
+  table, If I generate 800 film_actor relationships I can guarantee a unique relation i.e each film
+  will have only one actor.
+ 
+  This not normal for a movie which have many actors, using foreign-key type there
+  can only a maxium 800 unique rows (foreign keys repeat values when exhausted) with row 801 equal to row 1.
+  
+  It's better to use the `range type` (has upper bound) with a window function applied.
+  
+  In this example using range with film id column, configuring with max range of 1 - 800 (800 films).
+  on the 801 value the range will reset back to 1 + window function.
+  
+  On FIRST iteration.
+  Actor_id Film_id
+  1         1
+  2         2
+  3         3
+  
+  On SECOND iteration.
+  Actor_id Film_id
+  1         2
+  2         3
+  3         4
+  
+  With the applied window function the kyes remain unique.
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="film_actor" generate="1600">
+  <column name="actor_id" type="smallint">
+   <foreign-key name="filmActor.actor" foreignColumn="actor_id" foreignTable="actor" />
+  </column>
+  <column name="film_id" type="smallint">
+   <datatype name="range">
+    <option name="max"        value="800" />
+    <option name="min"        value="1" />
+    <option name="step"       value="1" />
+    <option name="windowStep" value="1" />
+   </datatype>
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="Today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+ Film Category (Join Table)  
+ 
+ On join tables as below, please be aware you may end up with non unique columns when using a compsite primary key
+ and a large generate value.
+  
+ In this example if I have 29 film categories in the first primary table and 800 films in the second primary
+ table, If I generate 800 film_category relationships I can guarantee a unique relation i.e each film
+ will have only one category.
+ 
+ If I wanted films to have 2 categories I would generate 1600 rows but need to use a range type with window for films
+ column to ensure unqiue combinations.
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="film_category" generate="800">
+  <column name="film_id" type="smallint">
+     <foreign-key name="filmCategory.film"  foreignColumn="film_id" foreignTable="film" />
+  </column>
+  <column name="category_id" type="boolean">
+   <foreign-key name="filmCategory.category" foreignColumn="category_id" foreignTable="category" />
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="Today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+ 
+
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+ Film Text  
+ 
+ This table has a one to one relationship with films and very important to only generate equal
+ number of rows in this child table as the parent. No automatic check and won't throw exception.
+ Only find the error when go to insert the values into database. 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="film_text" generate="800">
+  <column name="film_id" type="smallint">
+   <foreign-key name="filmText.file" foreignColumn="film_id" foreignTable="film" />
+  </column>
+  <column name="title" type="string">
+   <!--
+    Using the Repeat funcition of alphanumeric.
+    
+    The format contains 5 characters using repeatMin 2 and repeatMax 9
+    on any given iteration there be a minimum of 10 characters and max of 45 characters.
+    
+    Be careful of the max does not exceed the column size
+   
+   -->
+   <datatype name="alphanumeric">
+    <option name="format" value="ccccc" />
+    <option name="repeatMin" value="2" />
+    <option name="repeatMax" value="9" />
+   </datatype>
+  </column>
+  
+   <!--
+    Using the Text type to produce a block of filler text, since each block as different sizes
+    the maxium and minumum number of characters can not be assures, only use on columns with text type with no upperbound
+   -->
+  <column name="description" type="text">
+   <datatype name="text">
+    <option name="paragraphs" value="2" />
+    <option name="minlines"   value="3" />
+   </datatype>
+  </column>
+ </table>
+ 
+ 
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+ Inventory Table 
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="inventory" generate="1000">
+  <column name="inventory_id" type="integer">
+   <datatype name="autoincrement" />
+  </column>
+  <column name="store_id" type="boolean">
+   <foreign-key name="inventory.store" foreignColumn="store_id" foreignTable="store" />
+  </column>
+  <column name="film_id" type="smallint">
+   <foreign-key name="inventory.film" foreignColumn="film_id" foreignTable="film" />
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start"  value="Today" />
+    <option name="modify" value="+1 hour" />
+   </datatype>
+  </column>
+ </table>
+ 
+
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+ Language Table 
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="language" generate="10">
+  <column name="language_id" type="boolean">
+   <datatype name="autoincrement" />
+  </column>
+  <column name="name" type="string">
+   <datatype name="alphanumeric">
+    <option name="format" value="ccccc" />
+    <option name="repeatMin" value="1" />
+    <option name="repeatMax" value="3" />
+   </datatype>
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+    <option name="start" value="Today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+ Payment Table 
+ 
+ Payment table has a Many to One relation with rental, else no need to use payment_id
+ For now assume 800 payment for 1000 rentals. (200 outstanding).
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="payment" generate="800">
+  <column name="payment_id" type="smallint">
+   <datatype name="autoincrement" />
+  </column>
+  
+  <column name="rental_id" type="integer">
+   <foreign-key name="payment.rental" foreignColumn="rental_id" foreignTable="rental" />
+  </column>
+  <column name="customer_id" type="smallint">
+   <foreign-key name="payment.customer" foreignColumn="customer_id" foreignTable="customer" />
+  </column>
+  <column name="staff_id" type="boolean">
+   <foreign-key name="payment.staff" foreignColumn="staff_id" foreignTable="staff" />
+  </column>
+  
+  <!-- Decimal Number (5,2) -->
+  <column name="amount" type="decimal">
+   <datatype name="range">
+    <option name="max"    value="10000.00" />
+    <option name="min"    value="1.00" />
+    <option name="random" value="true" />
+    <option name="round"  value="2" />
+   </datatype>
+  </column>
+  
+  <column name="payment_date" type="datetime">
+   <datatype name="date">
+    <option name="start" value="Today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+  
+  <column name="last_update" type="datetime">
+  <datatype name="date">
+    <option name="start" value="Today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+ 
+  
+  
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Rental Table
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+  
+ <table name="rental" generate="1000">
+  <column name="rental_id" type="integer">
+   <datatype name="autoincrement" />
+  </column>
+  
+  <column name="staff_id" type="boolean">
+   <foreign-key name="rental.staff" foreignColumn="staff_id" foreignTable="staff" />
+  </column>
+  
+  <column name="inventory_id" type="integer">
+   <foreign-key name="rental.inventory" foreignColumn="inventory_id" foreignTable="inventory" />
+  </column>
+  
+  <column name="customer_id" type="smallint">
+   <foreign-key name="rental.customer" foreignColumn="inventory_id" foreignTable="inventory" />
+  </column>
+  
+  <column name="rental_date" type="datetime">
+   <datatype name="date">
+    <option name="start" value="Today - 12 Days" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+  
+  <!--
+   We want to return a video within 7 days of their borrowing.
+   
+   Would be nice to use a template column but doctrine column requires
+   that the value passed to it be an instance of DateTime type.
+   
+   We need to write our own custom type, make sure to include it after the
+   rental date column
+  -->
+  <column name="return_date" type="datetime">
+   <datatype name="rental.return" />
+  </column>
+  
+  
+  <column name="last_update" type="datetime">
+  <datatype name="date">
+    <option name="start" value="Today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+ 
+
+ 
+ <!--///////////////////////////////////////////////////////////////////////////////////////////////////
+  Staff Table
+ 
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="staff" generate="1000">
+ 
+  <column name="staff_id" type="boolean">
+   <datatype name="autoincrement">
+    <option name="start" value="0" />
+   </datatype>
+  </column>
+  
+  <column name="store_id" type="boolean">
+   <foreign-key name="staff.store" foreignColumn="store_id" foreignTable="store" />
+  </column>
+  
+  <column name="address_id" type="smallint">
+   <foreign-key name="staff.address" foreignColumn="address_id" foreignTable="address" />
+  </column>
+  
+  <column name="first_name" type="string">
+   <datatype name="people">
+    <option  name="format" value="{fname}" />
+   </datatype>
+  </column>
+  
+  <column name="last_name" type="string">
+   <datatype name="people">
+    <option  name="format" value="{lname}" />
+   </datatype>
+  </column>
+  
+  <column name="picture" type="blob">
+   <datatype name="alphanumeric">
+    <option  name="format" value="ccccc" />
+   </datatype>
+  </column>
+  
+  <column name="email" type="string">
+     <datatype name="email" >
+       <option name="format" value="{fname}{lname}@{alpha1}.{domain}" />
+       <option name="params" value='{"alpha1":"ccCCC"}'  />
+    </datatype>
+  </column>
+  
+  <!--
+  For active column I want a mix of extactly 10% disabled 90% enabled
+  by using the swap selector I can ensure the first 900 are enabled (true)
+  and the next 100 false. Given we generate 1000 (900 + 100). 
+  -->
+  <column name="active" type="boolean">
+   <swap>
+     <when at="900">
+      <datatype name="boolean">
+       <option name="value" value="true" />
+      </datatype>
+     </when>
+     <when at="100">
+        <datatype name="boolean">
+       <option name="value" value="false" />
+      </datatype>
+     </when>
+   </swap>
+  </column>
+  
+  <!--
+  It may seem like a good idea to use a foreign key to the email column. This would be known as a self reference
+  and have an error thrown.
+  
+  Use a template column instead in these situations. The template column has a file option which point to the template file.
+  
+  -->
+  <column name="username" type="string">
+    <datatype name="template">
+     <option name="file" value="staff.username.twig" />
+    </datatype>
+  </column>
+  
+  
+  <!--
+   Where using a custom type password. The extension type can be fond under extension/faker/type.
+    
+   Password have strong constrains you will need to map these into the custom type. Or you may have
+   a list of valid passwords to use.
+  -->
+  <column name="password" type="string">
+   <datatype name="password">
+    <option name="format" value="ccccc" />
+   </datatype>
+  </column>
+  
+  <column name="last_update" type="datetime">
+   <datatype name="datetime">
+    <option name="start"  value="today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+  
+  
+  <!--////////////////////////////////////////////////////////////////////////////////////////////////////////
+   Store Table
+  
+   Nothing new here, might want to take note of manager_staff_id column (commented out)
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+ 
+ <table name="store" generate="100">
+  <column name="store_id" type="integer">
+   <datatype name="autoincrement">
+    <option name="start" value="0" />
+   </datatype>
+  </column>
+  <!--
+  Avoid situations like this, for each store we want to assign a manager from staff roster (staff table)
+  but if we use a foreign key to staff table we create a circular reference as the staff table has a relation
+  back to store chicken and the egg.
+ 
+  Again how can you setup a store if there are no staff to assign, and how can you setup a staff record if there is no
+  store to assign them. If you make the relationship optional, it may work but should stick out as a code smell.
+   
+  Applying rules of normilization this relationship should be sent to a join table. If your unable to do this
+  do not use foreign key, use an autoincrement and set a max and start coincide with values generated from staff table. 
+  
+  <column name="manager_staff_id" type="integer">
+   <foreign-key name="store.manager.staff" foreignColumn="staff_id" foreignTable="staff" />
+  </column>
+  -->
+  <column name="address_id" type="smallint">
+   <foreign-key name="store.address" foreignColumn="address_id" foreignTable="address" />
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="datetime">
+    <option name="start" value="today" />
+    <option name="modify" value="+1 minute" />
+   </datatype>
+  </column>
+ </table>
+
+
+</schema>

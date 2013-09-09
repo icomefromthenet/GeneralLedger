@@ -98,7 +98,7 @@ class AccountGroup
      *  @param string $name the group name
      *
     */
-    public function setGroupName($name)
+    public function setName($name)
     {
         if(empty($name) || mb_strlen((string)$name) > self::GROUP_NAME_MAX_SIZE ) {
             throw new LedgerException(
@@ -117,7 +117,7 @@ class AccountGroup
      *  @return string the group name
      *
     */
-    public function getGroupName()
+    public function getName()
     {
         return $this->groupName;
     }
@@ -130,7 +130,7 @@ class AccountGroup
      *  @param string a short group description
      *
     */
-    public function setGroupDescription($description)
+    public function setDescription($description)
     {
         if(empty($description) || mb_strlen((string)$description) > self::GROUP_DESC_MAX_SIZE ) {
             throw new LedgerException(
@@ -149,7 +149,7 @@ class AccountGroup
      *  @return string the group description
      *
     */
-    public function getGroupDescription()
+    public function getDescription()
     {
         return $this->groupDescription;
     }
@@ -161,7 +161,7 @@ class AccountGroup
      *  @return DateTime
      *
     */
-    public function getGroupDateAdded()
+    public function getDateAdded()
     {
         return $this->dateAdded;
     }
@@ -173,7 +173,7 @@ class AccountGroup
      *  @return DateTime
      *
     */
-    public function getGroupDateRemoved()
+    public function getDateRemoved()
     {
         return $this->dateRemoved;
     }
@@ -185,7 +185,7 @@ class AccountGroup
      *  @return void
      *
     */
-    public function setGroupDateAdded(DateTime $added)
+    public function setDateAdded(DateTime $added)
     {
         $this->dateAdded = $added;
     }
@@ -197,7 +197,7 @@ class AccountGroup
      *  @return void
      *
     */
-    public function setGroupDateRemoved(DateTime $removed)
+    public function setDateRemoved(DateTime $removed)
     {
         $this->dateRemoved = $removed;
     }

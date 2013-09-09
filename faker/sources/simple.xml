@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schema name="ledger" randomGenerator="simple" generatorSeed="1000">
+ <writer platform="mysql" format="sql" singleFileMode="true" outEncoding="utf-8" />
+ 
+ <table name="actor" generate="10" randomGenerator="simple" generatorSeed="1000">
+  <column name="actor_id" type="integer" randomGenerator="simple" generatorSeed="1000">
+   <datatype name="autoincrement">
+     <option name="start" value="1" />
+     <option name="randomGenerator" value="simple" />
+     <option name="generatorSeed"   value="100" />
+   </datatype>
+  </column>
+  <column name="first_name" type="string">
+   <datatype name="people">
+    <option name="format" value="{fname}" />
+   </datatype>
+  </column>
+  <column name="last_name" type="string">
+   <datatype name="people">
+    <option name="format" value="{lname}" />
+   </datatype>
+  </column>
+  <column name="last_update" type="datetime">
+   <datatype name="date">
+     <option name="start" value="today" />
+     <option name="modify" value="+1 week" />
+     <option name="max" value="today +10 weeks" />
+   </datatype>
+  </column>
+ </table>
+ 
+ <table name="actor_homes" generate="100">
+  <column name="actor_id" type="integer">
+   <foreign-key name="actor_homes.actor_id" foreignTable="actor" foreignColumn="actor_id" >
+   </foreign-key>
+  </column>
+  <column name="unicode_test" type="string">
+    <datatype name="constant_string">
+      <option name="value" value="Weiß, Goldmann, Göbel, Weiss, Göthe, Goethe und Götz" />
+    </datatype>
+  </column>
+  
+ </table>
+ 
+</schema>

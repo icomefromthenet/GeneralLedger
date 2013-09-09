@@ -2,3 +2,7 @@ vendor
 composer.lock
 vagrant
 *.komodoproject
+database/config/*.php
+faker/dump/*.xml
+faker/dump/*.sql
+faker/config/*.php
