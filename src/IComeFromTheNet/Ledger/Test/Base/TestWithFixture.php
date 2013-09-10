@@ -1,12 +1,12 @@
 <?php
 namespace IComeFromTheNet\Ledger\Test\Base;
 
-use PDO;
-use PHPUnit_Extensions_Database_Operation_Composite;
-use PHPUnit_Extensions_Database_TestCase;
+use \PDO;
+use \PHPUnit_Extensions_Database_Operation_Composite;
+use \PHPUnit_Extensions_Database_TestCase;
 use IComeFromTheNet\Ledger\Test\Base\DBOperationSetEnv;
 
-class TestsWithFixture extends PHPUnit_Extensions_Database_TestCase
+class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
 {
     
     // ----------------------------------------------------------------------------
@@ -34,9 +34,9 @@ class TestsWithFixture extends PHPUnit_Extensions_Database_TestCase
     {
         if ($this->conn === null) {
             if (self::$pdo == null) {
-                self::$pdo = new PDO($GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWD'] );
+                self::$pdo = new PDO($GLOBALS['DEMO_DATABASE_DSN'], $GLOBALS['DEMO_DATABASE_USER'], $GLOBALS['DEMO_DATABASE_PASSWORD'] );
             }
-            $this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DB_DBNAME']);
+            $this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DEMO_DATABASE_SCHEMA']);
         }
 
         return $this->conn;
@@ -73,10 +73,11 @@ class TestsWithFixture extends PHPUnit_Extensions_Database_TestCase
             
             $connectionParams = array(
                 'dbname' => $GLOBALS['DB_DBNAME'],
-                'user' => $GLOBALS['DB_USER'],
-                'password' => $GLOBALS['DB_PASSWD'],
-                'host' => 'localhost',
-                'driver' => 'pdo_mysql',
+                'user' => $GLOBALS['DEMO_DATABASE_USER'],
+                'password' => $GLOBALS['DEMO_DATABASE_PASSWORD'],
+                'host' => $GLOBALS['DEMO_DATABASE_HOST'],
+                'driver' => $GLOBALS['DEMO_DATABASE_TYPE'],
+                'port'   => $GLOBALS['DEMO_DATABASE_PORT'],
             );
         
            self::$doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
