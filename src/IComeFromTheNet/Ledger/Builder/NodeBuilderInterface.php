@@ -28,7 +28,7 @@ interface NodeBuilderInterface
      *  @return BlueM\Tree\Node
      *
     */
-    public function getNode()
+    public function getNode();
     
 }
 /* End of Interface */

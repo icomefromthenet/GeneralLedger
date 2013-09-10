@@ -32,7 +32,7 @@ class AccountManagerService
      *  @return void
      *
     */
-    public function open(Account $account, DateTime $now)
+    public function open(Account $account)
     {
         
     }
@@ -44,7 +44,7 @@ class AccountManagerService
      *  @return void
      *
     */
-    public function close(Account $account, DateTime $now)
+    public function close(Account $account)
     {
         
     }
@@ -56,7 +56,7 @@ class AccountManagerService
      *  @return void
      *
     */
-    public function addToGroup(AccountGroup $group, Account $account)
+    public function addToGroup(AccountGroup $group)
     {
         
     }
@@ -68,19 +68,19 @@ class AccountManagerService
      *  @return void
      *
     */
-    public function removeFromGroup(AccountGroup $group, Account $account)
+    public function removeFromGroup(AccountGroup $group)
     {
         
     }
     
     
-    public function addGroup(AccountGroup $group, DateTime $now)
+    public function addGroup(AccountGroup $group)
     {
         
     }
     
     
-    public function closeGroup(AccountGroup $group, DateTime $now)
+    public function closeGroup(AccountGroup $group)
     {
         
     }

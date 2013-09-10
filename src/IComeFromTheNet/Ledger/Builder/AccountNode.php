@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\Ledger\Builder;
 
 use BlueM\Tree\Node;
-use IComeFromTheNet\Ledger\Entity\AccountGroup;
+use IComeFromTheNet\Ledger\Entity\Account;
 
 /**
   *  Node in the AccountTree
@@ -10,20 +10,18 @@ use IComeFromTheNet\Ledger\Entity\AccountGroup;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class AccountGroupNode extends Node implements NodeInterface
+class AccountNode extends Node implements NodeInterface
 {
     /*
      * @var IComeFromTheNet\Ledger\Entity\AccountGroup
      */
     protected $internal;
     
-    protected $visited = false;
-    
     /**
      *  Fetch the AccountGroup assigned     
      *
      *  @access public
-     *  @return AccountGroup if one is assigned
+     *  @return Account if one is assigned
      *
     */
     public function getInternal()
@@ -36,13 +34,14 @@ class AccountGroupNode extends Node implements NodeInterface
      *
      *  @access public
      *  @return void
-     *  @param AccountGroup $accountGroup
+     *  @param Account $account
      *
     */
-    public function setInternal(AccountGroup $accountGroup)
+    public function setInternal(Account $account)
     {
-        $this->internal = $accountGroup;
+        $this->internal = $account;
     }
+    
     
     
     /**
@@ -58,7 +57,7 @@ class AccountGroupNode extends Node implements NodeInterface
         
         foreach($children as $child) {
             
-            $child->getInternal()->setParentGroupID($id);
+            $child->getInternal()->setGroupId($id);
         }
         
     }
@@ -71,7 +70,7 @@ class AccountGroupNode extends Node implements NodeInterface
     */
     public function getGroupID()
     {
-        return $this->getInternal()->getGroupID();
+        return $this->getInternal()->getGroupId();
     }
     
 }

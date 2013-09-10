@@ -117,13 +117,20 @@ class AccountGroupInstaller extends UnitOfWork
      *  @param AccountManager $mgr
      *
     */
-    protected function recursiveSave(AccountGroupNode $node,AccountGroupNode $parentNode,AccountManager $mgr)
+    protected function recursiveSave(NodeInterface $node, NodeInterface $parentNode,AccountManagerService $mgr)
     {
-        # setup the relationship
-        $node->getInternal()->setParentGroupID($parentNode->getInternal()->getGroupID());
+        # assign parent node group database ID to the child
+        $node->assignGroupID($parentNode->getGroupID());
         
-        # add the group
-        $mgr->addGroup($node->getInternal(),$node->getInternal()->getGroupDateAdded());
+        
+        if($node instanceof AccountNode) {
+            # add the account
+            $mgr->open($node->getInternal());
+        } else {
+            # add the group
+            $mgr->addGroup($node->getInternal());    
+        }
+        
         
         if($node->hasChildren()) {
             foreach($node->getChildren() as $child) {
@@ -149,9 +156,9 @@ class AccountGroupInstaller extends UnitOfWork
             $this->eventDispatcher->dispatch(UnitEvents::EVENT_PROCESSING_START,new UnitWorkEvent($this));
             
             # create root group
-            $this->accountManager->addGroup($this->nodeTree->getInternal(),
-                                            $this->nodeTree->getInternal()->getGroupDateAdded()
-                                    );
+            $this->accountManager->addGroup($this->nodeTree->getInternal());
+            
+            
             
             # iterate over children call recursive save to gather descendants
             foreach($this->nodeTree->getChildren() as $child) {
@@ -161,14 +168,19 @@ class AccountGroupInstaller extends UnitOfWork
             $this->eventDispatcher->dispatch(UnitEvents::EVENT_PROCESSING_FINISH,new UnitWorkEvent($this));
             
             $this->commit();
-        }catch(LedgerException $e) {
+            
+        } catch(LedgerException $e) {
+            
             $this->eventDispatcher->dispatch(UnitEvents::EVENT_PROCESSING_ERROR,new UnitWorkEvent($this,$e));
             $this->rollback();
             throw $e;
-        }catch(\Exception $e) {
+        
+        } catch(\Exception $e) {
+        
             $this->eventDispatcher->dispatch(UnitEvents::EVENT_PROCESSING_ERROR,new UnitWorkEvent($this,$e));
             $this->rollback();
             throw new LedgerException($e->getMessage(),0,$e);
+        
         }
     }
     

@@ -113,7 +113,7 @@ class Account
     public function setDateOpened(DateTime $opened)
     {
         if($this->dateClosed instanceof DateTime) {
-            if($this->dateClosed < $opened) {
+            if($this->dateClosed <= $opened) {
                 throw new LedgerException('Date the account opened must be before the set closed date');
             }
         }
@@ -143,7 +143,7 @@ class Account
     public function setDateClosed(DateTime $closed)
     {
         if($this->dateOpened instanceof DateTime) {
-            if($this->dateOpened > $closed) {
+            if($this->dateOpened >= $closed) {
                 throw new LedgerException('Date the account closed must be after the set opening date');
             }
         }
@@ -173,8 +173,8 @@ class Account
     */
     public function setGroupId($id)
     {
-        if($id < 0) {
-            throw new LedgerException('The account group Id must be > 0');
+        if($id <= 0) {
+            throw new LedgerException('The account Group ID must be > 0');
         }
         
         $this->accountGroup = $id;

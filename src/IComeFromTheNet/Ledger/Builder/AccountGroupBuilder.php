@@ -2,6 +2,10 @@
 namespace IComeFromTheNet\Ledger\Builder;
 
 use DateTime;
+use IComeFromTheNet\Ledger\Builder\NodeBuilderInterface;
+use IComeFromTheNet\Ledger\Builder\AccountDefinition;
+use IComeFromTheNet\Ledger\Builder\AccountGroupNode;
+use IComeFromTheNet\Ledger\Entity\AccountGroup;
 
 /**
   *  Helps build Account Groups
@@ -14,7 +18,13 @@ class AccountGroupBuilder implements NodeBuilderInterface
     
     protected $now;
     
-    protected $def;
+    protected $parentNode;
+    
+    protected $accountGroupTreeNode;
+    
+    protected $groupName;
+    
+    protected $groupDescription;
     
     /**
      *  Class Constructor
@@ -23,24 +33,69 @@ class AccountGroupBuilder implements NodeBuilderInterface
      *  @return void
      *
     */
-    public function __construct(DateTime $now)
+    public function __construct(NodeBuilderInterface $parent,DateTime $now)
     {
-        $this->now = $now;
+        $this->now        = $now;
+        $this->parentNode = $parent;
     }
     
-    /**
-     *  Return a root node builder
+    
+     /**
+     *  Return an AccountGroup Builder
      *
      *  @access public
-     *  @return AccountGroupDefinition
+     *  @return AccountGroupBuilder
+     *  @param string $name the group anme
      *
     */
-    public function root()
+    public function groupName($name)
     {
-        $this->def = new AccountGroupDefinition($this,$this->now);
+        $this->groupName = $name;
         
-        return $this->def;
+        return $this;
     }
+    
+     /**
+     *  Return an AccountGroup Builder
+     *
+     *  @access public
+     *  @return AccountGroupBuilder
+     *  @param string $description the group description
+     *
+    */
+    public function groupDescription($description)
+    {
+        $this->groupDescription = $description;
+        
+        return $this;
+    }
+    
+    
+    /**
+     *  Return an AccountGroup Builder
+     *
+     *  @access public
+     *  @return AccountGroupBuilders
+     *
+    */
+    public function addGroup()
+    {
+        return new self($this,$this->now);
+    }
+    
+    
+    /**
+     *  Return an AccountDefinition builder
+     *
+     *  @access public
+     *  @return void AccountDefinition
+     *
+    */
+    public function addAccount()
+    {
+        return new AccountDefinition($this,$this->now);
+    }
+    
     
     /**
      *  Return empty node
@@ -51,19 +106,40 @@ class AccountGroupBuilder implements NodeBuilderInterface
     */
     public function getNode()
     {
-        return null;        
+        if($this->accountGroupTreeNode === null) {
+            # create new tree node and attach to parent
+            $this->accountGroupTreeNode = new AccountGroupNode(array('id' => uniqid()));
+        }
+        
+        return $this->accountGroupTreeNode;
     }
    
     /**
-     *  Return the tree root node
+     *  Return the parent NodeBuilder
      *
      *  @access public
-     *  @return AccountGroupNode
+     *  @return  NodeBuilderInterface
      *
     */
     public function end()
     {
-        return  $this->def->getNode();       
+        $group = new AccountGroup();
+        $closed = new DateTime();
+        $closed->setDate(3000,1,1);
+        $closed->setTime(0,0,0);
+        
+        $group->setName($this->groupName);
+        $group->setDescription($this->groupDescription);
+        $group->setDateAdded($this->now);
+        $group->setDateRemoved($closed);
+        
+        # attach the new accountGroup entity to the tree node
+        $this->getNode()->setInternal($group);
+        
+        # add new tree node to the parent node
+        $this->parentNode->getNode()->addChild($this->getNode());
+        
+        return  $this->parentNode;     
     }
     
 }
