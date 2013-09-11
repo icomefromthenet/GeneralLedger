@@ -18,7 +18,7 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
 class Account
 {
     
-    const MAX_ACCOUNT_NAME_SIZE = 50;
+    const MAX_ACCOUNT_NAME_SIZE = 150;
     
     
     protected $accountNumber;

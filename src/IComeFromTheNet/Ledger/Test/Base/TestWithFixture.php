@@ -72,7 +72,7 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
             $config = new \Doctrine\DBAL\Configuration();
             
             $connectionParams = array(
-                'dbname' => $GLOBALS['DB_DBNAME'],
+                'dbname' => $GLOBALS['DEMO_DATABASE_SCHEMA'],
                 'user' => $GLOBALS['DEMO_DATABASE_USER'],
                 'password' => $GLOBALS['DEMO_DATABASE_PASSWORD'],
                 'host' => $GLOBALS['DEMO_DATABASE_HOST'],

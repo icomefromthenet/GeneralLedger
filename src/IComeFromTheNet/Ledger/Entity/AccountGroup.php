@@ -18,9 +18,9 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   */
 class AccountGroup
 {
-    CONST GROUP_NAME_MAX_SIZE = 50;
+    CONST GROUP_NAME_MAX_SIZE = 150;
     
-    CONST GROUP_DESC_MAX_SIZE = 150;
+    CONST GROUP_DESC_MAX_SIZE = 500;
     
     protected $groupID;
     
@@ -87,7 +87,7 @@ class AccountGroup
     */
     public function setParentGroupID($parentGroupId)
     {
-        $this->parentGroupID = $parentGroupID;
+        $this->parentGroupID = $parentGroupId;
     }
     
     /**

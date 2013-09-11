@@ -26,7 +26,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $dateAdded   = new DateTime();
         $dateRemoved = new DateTime();
         $dateRemoved->modify('+ 1 day');
-        
+        $parentGroup = 1;
         
         $group = new AccountGroup();
         
@@ -35,13 +35,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $group->setDescription($groupDescription);
         $group->setDateAdded($dateAdded);
         $group->setDateRemoved($dateRemoved);
-        
+        $group->setParentGroupID($parentGroup);
         
         $this->assertEquals($groupID,$group->getGroupID());
         $this->assertEquals($groupName,$group->getName());
         $this->assertEquals($groupDescription,$group->getDescription());
         $this->assertEquals($dateAdded,$group->getDateAdded());
         $this->assertEquals($dateRemoved,$group->getDateRemoved());
+        $this->assertEquals($parentGroup,$group->getParentGroupID());
     }
     
     
@@ -75,7 +76,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
-     * @expectedExceptionMessage Group Name must be a string < 50 characters
+     * @expectedExceptionMessage Group Name must be a string < 150 characters
      * 
     */ 
     public function testErrorAccountGroupEmptyName()
@@ -87,7 +88,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
-     * @expectedExceptionMessage Group Name must be a string < 50 characters
+     * @expectedExceptionMessage Group Name must be a string < 150 characters
      * 
     */ 
     public function testErrorAccountGroupNameExceedsLimit()
@@ -100,7 +101,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
-     * @expectedExceptionMessage Group Description must be a string < 150 characters
+     * @expectedExceptionMessage Group Description must be a string < 500 characters
      * 
     */ 
     public function testErrorAccountGroupDescriptionEmpty()
@@ -112,7 +113,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
-     * @expectedExceptionMessage Group Description must be a string < 150 characters
+     * @expectedExceptionMessage Group Description must be a string < 500 characters
      * 
     */ 
     public function testErrorAccountGroupDescriptionExceedsLimit()
@@ -177,7 +178,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
-     * @expectedExceptionMessage Account Name must be a string < 50 characters
+     * @expectedExceptionMessage Account Name must be a string < 150 characters
      * 
     */ 
     public function testErrorAccountNameEmpty()
@@ -189,7 +190,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     
     /**
      * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
-     * @expectedExceptionMessage Account Name must be a string < 50 characters
+     * @expectedExceptionMessage Account Name must be a string < 150 characters
      * 
     */ 
     public function testErrorAccountNameExceedsSizeLimit()

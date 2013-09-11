@@ -5,6 +5,9 @@ use IComeFromTheNet\Ledger\Entity\Account;
 use IComeFromTheNet\Ledger\Entity\AccountGroup;
 use IComeFromTheNet\Ledger\DB\AccountGroupGateway;
 use IComeFromTheNet\Ledger\DB\AccountGateway;
+use IComeFromTheNet\Ledger\Exception\LedgerException;
+use DBALGateway\Exception as DBALException;
+
 
 /**
   *  Manages accounts and account groups
@@ -34,6 +37,27 @@ class AccountManagerService
     */
     public function open(Account $account)
     {
+        try {
+            $success = $this->accountGateway->insertQuery()
+             ->start()
+                ->addColumn('username','ausername')
+                ->addColumn('first_name','myfname')
+                ->addColumn('last_name','mylname')
+                ->addColumn('dte_created',new DateTime())
+                ->addColumn('dte_updated',DateTime())
+             ->end()
+           ->insert(); 
+
+            if($success) {
+                $id = $gateway->lastInsertId();
+            }
+
+            
+        } catch(DBALException $e)
+        {
+            throw new LedgerException($e->getMessage(),0,$e);
+        }
+        
         
     }
     
