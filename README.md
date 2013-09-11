@@ -1,5 +1,5 @@
-Ledger
-======
+GeneralLedger
+=============
 
-A General Ledger with Posting Rules.
+General Ledger for PHP
 
