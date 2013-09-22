@@ -52,18 +52,43 @@
  <!-- Accounts Table -->
  
  <table name="ledger_account" generate="100">
+  
   <column name="account_number" type="integer">
-   
    <datatype name="autoincrement">
     <option name="start" value="1" />
     <option name="increment" value="1" />
    </datatype>
   </column>
   
-  <column name="group_id" type="integer">
+  <column name="account_group_id" type="integer">
    <foreign-key name="ledger_account.group_id" foreignTable="ledger_account_group" foreignColumn="group_id">
    </foreign-key>
   </column>
+  
+  <column name="account_name" type="string">
+   <datatype name="regex">
+       <option name="format" value="[a-zA-Z]{5,50}" />
+   </datatype>
+  </column>  
+  
+  <column name="account_date_opened" type="datetime">
+   <datatype name="date">
+        <option name="start"  value="today" />
+        <option name="random" value="true" />
+        <option name="max"    value="today +3 weeks" />
+   </datatype>
+  </column>
+  
+  
+  <column name="account_date_closed" type="datetime">
+   <datatype name="date">
+        <option name="start"  value="today + 3 weeks" />
+        <option name="random" value="true" />
+        <option name="max"    value="today +10 weeks" />
+   </datatype>
+  </column>
+  
+  
  </table>
 
 </schema>

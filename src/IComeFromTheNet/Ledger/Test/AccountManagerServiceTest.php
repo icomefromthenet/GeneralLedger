@@ -25,6 +25,8 @@ class AccountManagerServiceTest extends TestWithFixture
     
     public function testExample()
     {
+        $api 
+        
         
     }
    

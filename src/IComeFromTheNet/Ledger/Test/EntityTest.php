@@ -93,7 +93,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     */ 
     public function testErrorAccountGroupNameExceedsLimit()
     {
-        $groupName  = str_repeat('a',100);
+        $groupName  = str_repeat('a',151);
         
         $group = new AccountGroup();
         $group->setName($groupName);
@@ -118,7 +118,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     */ 
     public function testErrorAccountGroupDescriptionExceedsLimit()
     {
-        $groupDescription = str_repeat('a',151);
+        $groupDescription = str_repeat('a',501);
         $group = new AccountGroup();
         $group->setDescription($groupDescription);
     }
@@ -196,7 +196,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testErrorAccountNameExceedsSizeLimit()
     {
         $account = new Account();
-        $accountName = str_repeat('a',51);
+        $accountName = str_repeat('a',151);
         $account->setAccountName($accountName);
     }
     

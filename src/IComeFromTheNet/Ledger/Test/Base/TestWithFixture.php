@@ -62,10 +62,10 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
     /**
     * Gets a db connection to the test database
     *
-    * @access public
+    * @access protected
     * @return \Doctrine\DBAL\Connection
     */
-    public function getDoctrineConnection()
+    protected function getDoctrineConnection()
     {
         if(self::$doctrineConnection === null) {
         

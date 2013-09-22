@@ -10,7 +10,7 @@ use IComeFromTheNet\Ledger\Entity\Account;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class AccountBuilder
+class AccountBuilder implements BuilderInterface
 {
     
     /**

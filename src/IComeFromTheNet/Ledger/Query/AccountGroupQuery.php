@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\Ledger\Query;
 
+use DateTime;
 use DBALGateway\Query\AbstractQuery;
 use DBALGateway\Query\QueryInterface;
 
@@ -51,7 +52,84 @@ class AccountGroupQuery extends AbstractQuery implements QueryInterface
         return $this;
     }
 
-     /**
+    /**
+     *  Filter to groups added BEFORE this date
+     *
+     *  @access public
+     *  @return AccountGroupQuery
+     *  @param DateTime $created
+     *
+    */
+    public function filterByDateCreatedBefore(DateTime $before)
+    {
+        $this->andWhere('group_date_added <= :group_date_added_before')
+             ->setParameter('group_date_added_before',
+                            $before,
+                            $this->getGateway()->getMetaData()->getColumn('group_date_added')->getType()
+                        );
+
+        return $this;
+    }
+    
+    /**
+     *  Filter to groups added AFTER this date
+     *
+     *  @access public
+     *  @return AccountGroupQuery
+     *  @param DateTime $created
+     *
+    */
+    public function filterByDateCreatedAfter(DateTime $after)
+    {
+        $this->andWhere('group_date_added >= :group_date_added_after')
+             ->setParameter('group_date_added_after',
+                            $after,
+                            $this->getGateway()->getMetaData()->getColumn('group_date_added')->getType()
+                        );
+
+        return $this;
+    }
+    
+    /**
+     *  Filter to groups removed BEFORE this date
+     *
+     *  @access public
+     *  @return AccountGroupQuery
+     *  @param DateTime $created
+     *
+    */
+    public function filterByDateRemovedBefore(DateTime $before)
+    {
+        $this->andWhere('group_date_removed <= :group_date_removed_before')
+             ->setParameter('group_date_removed_before',
+                            $before,
+                            $this->getGateway()->getMetaData()->getColumn('group_date_removed')->getType()
+                        );
+
+        return $this;
+    }
+    
+    /**
+     *  Filter to groups removed AFTER this date
+     *
+     *  @access public
+     *  @return AccountGroupQuery
+     *  @param DateTime $created
+     *
+    */
+    public function filterByDateRemovedAfter(DateTime $after)
+    {
+        $this->andWhere('group_date_removed >= :group_date_removed_after')
+             ->setParameter('group_date_removed_after',
+                            $after,
+                            $this->getGateway()->getMetaData()->getColumn('group_date_removed')->getType()
+                        );
+
+        return $this;
+    }
+    
+    
+    /**
      *  Filter to groups added on this date
      *
      *  @access public
@@ -105,7 +183,7 @@ class AccountGroupQuery extends AbstractQuery implements QueryInterface
                             $now,
                             $this->getGateway()->getMetaData()->getColumn('group_date_added')->getType()
                         );
-        $this->where('group_date_removed < :group_date_removed_current')
+        $this->andWhere('group_date_removed < :group_date_removed_current')
              ->setParameter('group_date_removed_current',
                             $now,
                             $this->getGateway()->getMetaData()->getColumn('group_date_removed')->getType());

@@ -26,6 +26,6 @@
         <testsuite name="default">
             <directory suffix="Test.php">src/IComeFromTheNet/Schedule/Test/</directory>
         </testsuite>
-  </testsuites>  
+    </testsuites>  
     
 </phpunit>

@@ -30,11 +30,11 @@ class init_schema implements EntityInterface
         $accountTable->addColumn("account_name","string",array('length' => 50));
         $accountTable->addColumn("account_date_opened", "date",array());
         $accountTable->addColumn("account_date_closed", "date",array());
-        $accountTable->addColumn("group_id", "integer", array("unsigned" => true));
+        $accountTable->addColumn("account_group_id", "integer", array("unsigned" => true));
         
         
         $accountTable->setPrimaryKey(array("account_number"));
-        $accountTable->addForeignKeyConstraint($accountGroupTable, array("group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
+        $accountTable->addForeignKeyConstraint($accountGroupTable, array("account_group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
 
         $queries = $schema->toSql($db->getDatabasePlatform()); // get queries to create this schema.
         

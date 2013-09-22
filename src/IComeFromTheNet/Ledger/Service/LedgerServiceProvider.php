@@ -17,6 +17,89 @@ class LedgerServiceProvider extends Pimple
 {
     
     
+    protected function setupMetaDefinitions()
+    {
+         $this['account_group_db_meta'] = $this->share(function($c) {
+            $table = new \DBALGateway\Metadata\Table('ledger_account_group');
+            $table->addColumn("group_id", "integer", array("unsigned" => true));
+            $table->addColumn("group_name", "string", array("length" => 50));
+            $table->addColumn("group_description", "string", array("length" => 150));
+            $table->addColumn("group_date_added", "date",array());
+            $table->addColumn("group_date_removed", "date",array());
+            $table->addColumn("parent_group_id", "integer", array("unsigned" => true,'notnull'=> false));
+            $table->setPrimaryKey(array("group_id"));
+            $table->addForeignKeyConstraint($table,  array("parent_group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
+        
+            return $table;
+        }); 
+            
+        $this['account_db_meta'] = $this->share(function($c){
+           
+            $accountTable = new \DBALGateway\Metadata\Table("ledger_account");
+            $accountTable->addColumn("account_number", "integer", array("unsigned" => true));
+            $accountTable->addColumn("account_name","string",array('length' => 50));
+            $accountTable->addColumn("account_date_opened", "date",array());
+            $accountTable->addColumn("account_date_closed", "date",array());
+            $accountTable->addColumn("account_group_id", "integer", array("unsigned" => true));
+            $accountTable->setPrimaryKey(array("account_number"));
+            $accountTable->addForeignKeyConstraint($this['account_group_db_meta'], array("account_group_id"), array("group_id"), array("onUpdate" => "CASCADE")); 
+            
+            return $accountTable;            
+        });
+          
+    }
+    
+    
+    protected function setupTableGateways()
+    {
+        $this['account_group_entity_builder'] = $this->share(function($c){
+            return new \IComeFromTheNet\Ledger\DB\AccountGroupBuilder();    
+        });
+        
+        
+        $this['account_entity_builder'] = $this->share(function($c){
+            return new \IComeFromTheNet\Ledger\DB\AccountBuilder();
+        });
+         
+         
+         $this['account_group_table_gateway'] = $this->share(function($c) {
+                return new \IComeFromTheNet\Ledger\DB\AccountGroupGateway('ledger_account_group',
+                                                                          $c->getDoctrineDBAL(),
+                                                                          $c->getEventDispatcher(),
+                                                                          $c['account_group_db_meta'],
+                                                                          null,
+                                                                          $c->getAccountGroupEntityBuilder()
+                                                                          );
+        });  
+        
+        
+        
+        $this['account_table_gateway'] = $this->share(function($c){
+           return new \IComeFromTheNet\Ledger\DB\AccountGateway ('ledger_account',
+                                                                $c->getDoctrineDBAL(),
+                                                                $c->getEventDispatcher(),
+                                                                $c['account_db_meta'],
+                                                                null,
+                                                                $c->getAccountEntityBuilder()
+                                                                );
+            
+        });
+        
+        
+    }
+    
+    
+    protected function setupServiceManagers()
+    {
+        
+        $this['service_managers_account'] = $this->share(function(LedgerServiceProvider $c){
+           return new \IComeFromTheNet\Ledger\Service\AccountManagerService($c->getEventDispatcher()) 
+            
+            
+        });
+        
+    }
+    
     /**
      *  Class Constructor
      *
@@ -40,45 +123,19 @@ class LedgerServiceProvider extends Pimple
         
         $this['now'] = $now;
         
-        
-        
-        
-        $this['account_group_entity_builder'] = $this->share(function($c){
-            return new \IComeFromTheNet\Ledger\DB\AccountGroupBuilder();    
-        });
-        
-
-        
-        $this['account_group_table_gateway'] = $this->share(function($c) {
-                return new \IComeFromTheNet\Ledger\DB\AccountGroupGateway('ledger_account_group',
-                                                                          $c->getDoctrineDBAL(),
-                                                                          $c->getEventDispatcher(),
-                                                                          $c->getAccountGroupDBMeta(),
-                                                                          null,
-                                                                          $c->getAccountGroupEntityBuilder()
-                                                                          );
-        });  
-        
-        
-        $this['account_group_db_meta'] = $this->share(function($c) {
-            $table = new \Doctrine\DBAL\Schema\Table('ledger_account_group');
-            $table->addColumn("group_id", "integer", array("unsigned" => true));
-            $table->addColumn("group_name", "string", array("length" => 50));
-            $table->addColumn("group_description", "string", array("length" => 150));
-            $table->addColumn("group_date_added", "date",array());
-            $table->addColumn("group_date_removed", "date",array());
-            $table->addColumn("parent_group_id", "integer", array("unsigned" => true,'notnull'=> false));
-            $table->setPrimaryKey(array("group_id"));
-            $table->addForeignKeyConstraint($table,  array("parent_group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
-        
-            return $table;
-        }); 
-            
-          
+        $this->setupMetaDefinitions();
+        $this->setupTableGateways();
+       
         
     }
     
+    //---------------------------------------------------------
+    # Service Managers
     
+    public function getAccountServiceManager()
+    {
+        
+    }
     
     
     //---------------------------------------------------------
@@ -90,63 +147,11 @@ class LedgerServiceProvider extends Pimple
         
     }
     
-    //---------------------------------------------------------
-    # Default Accounts
     
-    public function getDefaultAccountsInstall()
-    {
-        
-        
-    }
-    
-    
-    //---------------------------------------------------------
-    # Database Metadata 
-
-    public function getEventSourceDBMeta()
-    {
-        
-    }
-    
-    
-    public function getLedgerTransactionDBMeta()
-    {
-        
-        
-    }
-    
-    public function getAccountDBMeta()
-    {
-        
-    }
-    
-    /**
-     *  Return the metadata for Account Group Table
-     *
-     *  @access public
-     *  @return \Doctrine\DBAL\Schema\Table
-     *
-    */
-    public function getAccountGroupDBMeta()
-    {
-        return $this['account_group_db_meta'];
-    }
-    
-    public function getAccountEntryDBMeta()
-    {
-        
-        
-    }
-
     //---------------------------------------------------------
     # Database Gateways
 
     public function getEventSourceTableGateway()
-    {
-        
-    }
-    
-    public function getAccountTableGateway()
     {
         
     }
@@ -168,6 +173,18 @@ class LedgerServiceProvider extends Pimple
         return $this['account_group_table_gateway'];
     }
     
+     /**
+     *  Return the Table Gateway for Accounts
+     *
+     *  @access public
+     *  @return IComeFromTheNet\Ledger\DB\AccountGateway
+     *
+    */
+    public function getAccountTableGateway()
+    {
+        return $this['account_table_gateway'];
+    }
+    
     public function getAccountEnteriesTableGateway()
     {
         
@@ -184,6 +201,19 @@ class LedgerServiceProvider extends Pimple
     {
         return $this['account_group_entity_builder'];
     }
+    
+    /**
+     *  Return the Account Entity Builder
+     *
+     *  @access public
+     *  @return IComeFromTheNet\Ledger\DB\AccountBuilder
+     *
+    */
+    public function getAccountEntityBuilder()
+    {
+        return $this['account_entity_builder'];
+    }
+    
     
     //---------------------------------------------------------
     # Internal Dep
