@@ -24,7 +24,7 @@ class AccountBuilder implements BuilderInterface
     {
         $account = new Account();
         
-        $account->setGroupId($data['group_id']);
+        $account->setGroupId($data['account_group_id']);
         $account->setAccountNumber($data['account_number']);
         $account->setAccountName($data['account_name']);
         $account->setDateOpened($data['account_date_opened']);
@@ -48,7 +48,7 @@ class AccountBuilder implements BuilderInterface
                 'account_name'        => $entity->getAccountName(),
                 'account_date_opened' => $entity->getDateOpened(),
                 'account_date_closed' => $entity->getDateClosed(),
-                'group_id'            => $entity->getGroupId()
+                'account_group_id'    => $entity->getGroupId()
             );
     }
     

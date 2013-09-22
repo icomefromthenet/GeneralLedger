@@ -98,7 +98,7 @@ class EntityBuilderTest extends \PHPUnit_Framework_TestCase
                 'account_name'        => $accountName,
                 'account_date_opened' => $dateOpened,
                 'account_date_closed' => $dateClosed,
-                'group_id'            => $groupId
+                'account_group_id'    => $groupId
         );
         
         $entity = $builder->build($column);
@@ -129,7 +129,7 @@ class EntityBuilderTest extends \PHPUnit_Framework_TestCase
                 'account_name'        => $accountName,
                 'account_date_opened' => $dateOpened,
                 'account_date_closed' => $dateClosed,
-                'group_id'            => $groupId
+                'account_group_id'    => $groupId
         );
          
         $entity->setAccountNumber($accountNumber);

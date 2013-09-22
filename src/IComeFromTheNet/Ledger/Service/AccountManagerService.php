@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\Ledger\Service;
 
+use DateTime;
 use IComeFromTheNet\Ledger\Entity\Account;
 use IComeFromTheNet\Ledger\Entity\AccountGroup;
 use IComeFromTheNet\Ledger\DB\AccountGroupGateway;
@@ -34,17 +35,24 @@ class AccountManagerService
     protected $eventDispatcher;
     
     /**
+     * @var DateTime the not dte
+    */
+    protected $now;
+    
+    /**
      *  Class Constructor
      *
      *  @access public
      *  @return void
+     *  @param DateTime $now the now dte
      *  @param EventDispatcherInterface $event
      *  @param AccountGroupGateway $accountGroupGateway
      *  @param AccountGateway $accountGateway
      *
     */
-    public function __construct(EventDispatcherInterface $event, AccountGroupGateway $accountGroupGateway, AccountGateway $accountGateway)
+    public function __construct(DateTime $now, EventDispatcherInterface $event, AccountGroupGateway $accountGroupGateway, AccountGateway $accountGateway)
     {
+        $this->now                 = $now;     
         $this->accountGroupGateway = $accountGroupGateway;
         $this->accountGateway      = $accountGateway;
         $this->eventDispatcher     = $event;
@@ -77,9 +85,24 @@ class AccountManagerService
             # has there been issued an account number and name
             $accountName   = $account->getAccountName();
             $accountNumber = $account->getAccountNumber();
+            $accountGroup  = $account->getGroupId();
             
             if(empty($accountName) || empty($accountNumber)) {
                 throw new LedgerException('Account must have a unique account number and issued an account name');
+            }
+            
+            # check if the account exists already
+            if($this->findAccount($accountNumber) instanceof Account) {
+                throw new LedgerException(sprintf('Can not open account %s as it already exists',$accountName));
+            }
+            
+            # check if the account has a valid group
+            if(empty($accountGroup) === true) {
+                throw new LedgerException(sprintf('Can not open account %s as no group been set',$accountName));
+            }
+            
+            if(!$this->findGroup($accountGroup) instanceof AccountGroup) {
+                throw new LedgerException(sprintf('Can not open account %s as its group does not exist',$accountName));
             }
             
             $data = $this->accountGateway->getEntityBuilder()->demolish($account);
@@ -89,7 +112,7 @@ class AccountManagerService
                 $query->addColumn($column,$value);
             }
                 
-            $query->end()->insert(); 
+            return $query->end()->insert(); 
 
         } catch(DBALException $e) {
             throw new LedgerException($e->getMessage(),0,$e);
@@ -119,11 +142,11 @@ class AccountManagerService
             
             # check if the account exists
             if(!$currentAccount = $this->findAccount($accountNumber) instanceof Account) {
-                throw new LedgerException(sprintf('Can not close account %s as it does not exist',$accountNumber));
+                throw new LedgerException(sprintf('Can not close account %s as it does not exist',$account->getAccountName()));
             }
             
             # has the account been closed already ie no max date
-            if($currentAccount->getDateClosed()->format('Y-m-d') === '3000-01-01' ) {
+            if($currentAccount->getDateClosed() < $this->getNow()) {
                 throw new LedgerException('Can not close account %s as it has already been closed');
             }
             
@@ -294,6 +317,36 @@ class AccountManagerService
     public function searchGroups()
     {
         return $this->accountGroupGateway->selectQuery()->start();
+    }
+    
+  
+  
+    // ----------------------------------------------------------
+    # Properties
+    
+    /**
+     *  Get The now value
+     *
+     *  @access public
+     *  @return DateTime
+     *
+    */
+    public function getNow()
+    {
+        return $this->now;
+    }
+    
+    /**
+     *  Set the now time
+     *
+     *  @access public
+     *  @return void
+     *  @param DateTime $now
+     *
+    */
+    public function setNow(DateTime $now)
+    {
+        $this->now = $now;
     }
     
     

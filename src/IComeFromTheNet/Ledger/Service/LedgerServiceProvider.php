@@ -93,8 +93,10 @@ class LedgerServiceProvider extends Pimple
     {
         
         $this['service_managers_account'] = $this->share(function(LedgerServiceProvider $c){
-           return new \IComeFromTheNet\Ledger\Service\AccountManagerService($c->getEventDispatcher()) 
-            
+           return new \IComeFromTheNet\Ledger\Service\AccountManagerService($c['now'],
+                                                                            $c->getEventDispatcher(),
+                                                                            $c->getAccountGroupTableGateway(),
+                                                                            $c->getAccountTableGateway()); 
             
         });
         
@@ -125,6 +127,7 @@ class LedgerServiceProvider extends Pimple
         
         $this->setupMetaDefinitions();
         $this->setupTableGateways();
+        $this->setupServiceManagers();
        
         
     }
@@ -132,9 +135,17 @@ class LedgerServiceProvider extends Pimple
     //---------------------------------------------------------
     # Service Managers
     
+    /**
+     *  Return the Account Service Manager
+     *  Used to Manage Accounts and Account Groups
+     *
+     *  @access public
+     *  @return \IComeFromTheNet\Ledger\Service\AccountManagerService
+     *
+    */
     public function getAccountServiceManager()
     {
-        
+        return $this['service_managers_account'];
     }
     
     

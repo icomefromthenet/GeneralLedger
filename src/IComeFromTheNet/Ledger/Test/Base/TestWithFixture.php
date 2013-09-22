@@ -9,6 +9,7 @@ use IComeFromTheNet\Ledger\Test\Base\DBOperationSetEnv;
 class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
 {
     
+   
     // ----------------------------------------------------------------------------
     
     /**
