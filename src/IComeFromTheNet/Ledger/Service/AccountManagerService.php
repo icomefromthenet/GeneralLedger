@@ -147,7 +147,7 @@ class AccountManagerService
             
             # has the account been closed already ie no max date
             if($currentAccount->getDateClosed() < $this->getNow()) {
-                throw new LedgerException('Can not close account %s as it has already been closed');
+                throw new LedgerException(sprintf('Can not close account %s as it has already been closed',$account->getAccountName()));
             }
             
             

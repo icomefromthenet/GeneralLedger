@@ -232,22 +232,71 @@ class AccountManagerServiceTest extends TestWithContainer
     }
     
     
-    
+    /*
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Account must have a closed date
+     */
     public function testCloseAccountErrorNoCloseDate()
     {
         
+        $service = $this->getContainer()->getAccountServiceManager();
+         
+        $account = new Account();
+        $account->setAccountName('rootAccount');
+        $account->setAccountNumber(101);
+        $account->setDateOpened(new DateTime());
+        $account->setGroupId(1);
+        
+        $service->closeAccount($account);
     }
     
-    
+    /*
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Can not close account rootAccount as it does not exist
+     */
     public function testCloseAccountErrorAccountNotExist()
     {
+        $now    = new DateTime();
+        $opened = new DateTime();
+        $opened->modify('-3 weeks');
+        $closed = new DateTime();
         
+        $service = $this->getContainer()->getAccountServiceManager();
+        $service->setNow($now);
+         
+        $account = new Account();
+        $account->setAccountName('rootAccount');
+        $account->setAccountNumber(10100);
+        $account->setDateOpened($opened);
+        $account->setClosedDate($closed);
+        $account->setGroupId(1);
+        
+        $service->closeAccount($account);
     }
     
+    /*
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Can not close account rootAccount as it has already been closed
+     */
     public function testCloseAccountAlreadyClosed()
     {
         # set now to far future date    
+        $now    = new DateTime();
+        $opened = new DateTime();
+        $opened->modify('-3 weeks');
+        $closed = new DateTime();
         
+        $service = $this->getContainer()->getAccountServiceManager();
+        $service->setNow($now);
+         
+        $account = new Account();
+        $account->setAccountName('rootAccount');
+        $account->setAccountNumber(10100);
+        $account->setDateOpened($opened);
+        $account->setClosedDate($closed);
+        $account->setGroupId(1);
+        
+        $service->closeAccount($account);
     }
     
     

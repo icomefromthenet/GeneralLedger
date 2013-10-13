@@ -5,6 +5,7 @@ use DateTime;
 use DateInterval;
 use IComeFromTheNet\Ledger\Entity\AccountGroup;
 use IComeFromTheNet\Ledger\Entity\Account;
+use IComeFromTheNet\Ledger\Entity\StatementPeriod;
 
 
 /**
@@ -251,6 +252,76 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         
     }
     
+    
+    
+    
+    public function testStatementPeriod()
+    {
+        $enabled = false;
+        $descrption = 'a 120 day statement';
+        
+        $period = new StatementPeriod();
+        
+        # test default value
+        $this->assertTrue($period->getEnabled());
+        
+        # test enabled property
+        $period->setEnabled(false);
+        $this->assertFalse($period->getEnabled());
+        
+        # test description
+        $period->setDescription($descrption);
+        $this->assertEquals($descrption,$period->getDescription());
+    }
+    
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period enabled flag must be a boolean
+     * 
+    */ 
+    public function testStatementPeriodErrorEnabledNotBoolean()
+    {
+        $period = new StatementPeriod();
+        
+        $period->setEnabled('');
+    }
+    
+     /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period description must be a string
+     * 
+    */ 
+    public function testStatementPeriodErrorDescriptionNotString()
+    {
+        $period = new StatementPeriod();
+        $period->setDescription(1);
+        
+    }
+    
+    
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period description must be between 1 and 255 characters
+     * 
+    */ 
+    public function testStatementPeriodErrorDescriptionEmpty()
+    {
+        $period = new StatementPeriod();
+        $period->setDescription('');
+    }
+    
+     /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period description must be between 1 and 255 characters
+     * 
+    */ 
+    public function testStatementPeriodErrorDescriptionTooBig()
+    {
+        $period = new StatementPeriod();
+        $period->setDescription(str_repeat('a',256));
+    }
     
     
     

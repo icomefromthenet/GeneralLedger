@@ -14,7 +14,7 @@
     <php>
         <var name="DEMO_DATABASE_DSN" value="mysql:dbname=ledger;host=127.0.0.1"/>
         <var name="DEMO_DATABASE_USER" value="root"/>
-        <var name="DEMO_DATABASE_PASSWORD" value="password"/>
+        <var name="DEMO_DATABASE_PASSWORD" value="vagrant"/>
         <var name="DEMO_DATABASE_SCHEMA" value="ledger"/>
         <var name="DEMO_DATABASE_PORT" value="3306"/>
         <var name="DEMO_DATABASE_HOST" value="127.0.0.1"/>
@@ -24,7 +24,7 @@
     
     <testsuites>
         <testsuite name="default">
-            <directory suffix="Test.php">src/IComeFromTheNet/Schedule/Test/</directory>
+            <directory suffix="Test.php">src/IComeFromTheNet/Ledger/Test/</directory>
         </testsuite>
     </testsuites>  
     
