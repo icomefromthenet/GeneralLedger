@@ -23,6 +23,12 @@ class Statement
     
     protected $periodFinish;
     
+    protected $statementPeriodID;
+    
+    protected $userID;
+    
+    protected $orgUnitID;
+    
     /**
      *  Gets the statementID
      *
@@ -53,6 +59,97 @@ class Statement
         }
         
         $this->statementID = $id;
+    }
+    
+    /**
+     *  Gets the Statement Period ID
+     *
+     *  @access public
+     *  @return integer the statement period database id
+     *
+    */
+    public function getStatementPeriodID()
+    {
+        return $this->statementPeriodID;
+    }
+    
+    
+    /**
+     *  Set the statement period ID this used to determine the length
+     *  of time this statement run over, used to group statements 
+     *  
+     *
+     *  @access public
+     *  @return void
+     *  @param integer $id the database id of the StatementPeriod
+     *
+    */
+    public function setStatementPeriodID($id)
+    {
+        if(is_int($id) === false) {
+            throw new LedgerException('A Statement Period ID must be an integer');
+        }
+        
+        $this->statementPeriodID = $id;
+    }
+    
+    /**
+     *  Gets the Organisation ID
+     *  
+     *
+     *  @access public
+     *  @return integer the database id
+     *
+    */
+    public function getOrgUnitID()
+    {
+        return $this->orgUnitID;
+    }
+    
+    /**
+     *  Sets the Organisation ID which would limit to ledger enteries results for this unit
+     *
+     *  @access public
+     *  @return void
+     *  @param integer $id the database ID
+     *
+    */
+    public function setOrgUnitID($id)
+    {
+        if(is_int($id) === false) {
+            throw new LedgerException('A statement organisation id ID must be an integer');
+        }
+        
+        $this->orgUnitID = $id;
+    }
+    
+    /**
+     *  Gets the database id of the user
+     *
+     *  @access public
+     *  @return iteger the database id of the user
+     *
+    */
+    public function getUserId()
+    {
+        return $this->userID;
+    }
+    
+    /**
+     *  Sets the statement User Id which would limit to ledger enteries results for this user
+     *
+     *  @access public
+     *  @return void
+     *  @param integer $id the database ID
+     *
+    */
+    public function setUserID($id)
+    {
+        if(is_int($id) === false) {
+            throw new LedgerException('A statement user id must be an integer');
+        }
+        
+        $this->userID = $id;
     }
     
     /**
