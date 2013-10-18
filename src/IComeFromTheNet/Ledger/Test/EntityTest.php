@@ -259,8 +259,10 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     {
         $enabled = false;
         $descrption = 'a 120 day statement';
-        
+        $name ="a name";
         $period = new StatementPeriod();
+        $units = 30;
+        $id =1;
         
         # test default value
         $this->assertTrue($period->getEnabled());
@@ -272,6 +274,18 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         # test description
         $period->setDescription($descrption);
         $this->assertEquals($descrption,$period->getDescription());
+        
+        # test the name
+        $period->setName($name);
+        $this->assertEquals($name,$period->getName());
+        
+        # test the period
+        $period->setUnits($period);
+        $this->assertEquals($units,$period->getUnits());
+        
+        # test database id
+        $period->getStatementPeriodID($id);
+        $this->assertEquals($id,$period->getStatementPeriodID());
     }
     
     
@@ -323,6 +337,91 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $period->setDescription(str_repeat('a',256));
     }
     
+    
+     /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period name must be a string
+     * 
+    */ 
+    public function testStatementPeriodErrorNameNotString()
+    {
+        $period = new StatementPeriod();
+        $period->setName(1);
+        
+    }
+    
+    
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Statement Period name must be between 1 and 50 characters
+     * 
+    */ 
+    public function testStatementPeriodErrorNameEmpty()
+    {
+        $period = new StatementPeriod();
+        $period->setName('');
+    }
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period name must be between 1 and 50 characters
+     * 
+    */ 
+    public function testStatementPeriodErrorNameTooBig()
+    {
+        $period = new StatementPeriod();
+        $period->setName(str_repeat('a',51));
+    }
+    
+  
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period units must be an integer
+     * 
+    */ 
+    public function testStatementPeriodErrorUnitsNotInteger()
+    {
+        $period = new StatementPeriod();
+        $period->setUnits('');
+        
+    }
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period units must be an integer > 0
+     * 
+    */ 
+    public function testStatementPeriodErrorUnitsBadRange()
+    {
+        $period = new StatementPeriod();
+        $period->setUnits(0);
+        
+    }
+    
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period id must be an integer
+     * 
+    */ 
+    public function testStatementPeriodErrorIDNotInteger()
+    {
+        $period = new StatementPeriod();
+        $period->setStatementPeriodID('');
+        
+    }
+    
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage Statement Period id must be an integer > 0
+     * 
+    */ 
+    public function testStatementPeriodErrorIDBadRange()
+    {
+        $period = new StatementPeriod();
+        $period->setStatementPeriodID(0);
+    }
     
     
 }
