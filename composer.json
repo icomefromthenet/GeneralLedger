@@ -22,7 +22,8 @@
         "icomefromthenet/quicktag"     : "dev-master",
         "pimple/pimple"                : "1.0.* ",
         "psr/log"                      : "1.0.*",
-        "bluem/tree"                   : "dev-master"
+        "bluem/tree"                   : "dev-master",
+        "aura/marshal"                 : "1.0" 
         
     },
     "autoload": {
