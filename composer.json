@@ -22,13 +22,13 @@
         "icomefromthenet/quicktag"     : "dev-master",
         "pimple/pimple"                : "1.0.* ",
         "psr/log"                      : "1.0.*",
-        "bluem/tree"                   : "dev-master",
-        "aura/marshal"                 : "1.0" 
+        "bluem/tree"                   : "dev-master"
         
     },
     "autoload": {
         "psr-0": {
-            "IComeFromTheNet\\Ledger" : "src"
+            "IComeFromTheNet\\Ledger" : "src",
+            "Aura\\Marshal"           : "src"
         }
     }
 }

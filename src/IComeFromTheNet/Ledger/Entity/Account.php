@@ -3,9 +3,10 @@ namespace IComeFromTheNet\Ledger\Entity;
 
 use DateTime;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use Aura\Marshal\Entity\GenericEntity;
 
 /**
-  *  Represent A single account
+  *  Represents a single account
   *
   *  Each account can have one group 
   *
@@ -15,21 +16,18 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class Account
+class Account extends GenericEntity
 {
     
     const MAX_ACCOUNT_NAME_SIZE = 150;
     
     
-    protected $accountNumber;
+    const FIELDS_ACCOUNT_NUMBER = 'accountNumber';
+    const FIELDS_ACCOUNT_NAME   = 'accountName';
+    const FIELDS_DATE_OPENED    = 'dateOpened';
+    const FIELDS_DATE_CLOSED    = 'dateClosed';
+    const FIELDS_ACCOUNT_GROUP  = 'accountGroup';
     
-    protected $accountName;
-    
-    protected $dateOpened;
-    
-    protected $dateClosed;
-    
-    protected $accountGroup;
     
     /**
      *  Fetch the account number
@@ -40,7 +38,7 @@ class Account
     */
     public function getAccountNumber()
     {
-        return $this->accountNumber;
+        return $this->__get(self::FIELDS_ACCOUNT_NUMBER);
     }
     
     /**
@@ -57,7 +55,7 @@ class Account
             throw new LedgerException('Account number must be an integer > 0');
         }
         
-        $this->accountNumber = $number;
+        $this->__set(self::FIELDS_ACCOUNT_NUMBER, $number);
     }
     
     /**
@@ -69,7 +67,7 @@ class Account
     */
     public function getAccountName()
     {
-        return $this->accountName;
+        return $this->__get(self::FIELDS_ACCOUNT_NAME);
     }
     
     /**
@@ -88,7 +86,7 @@ class Account
                             );
         }
         
-        $this->accountName = $name;
+        $this->__set(self::FIELDS_ACCOUNT_NAME,$name);
     }
     
     /**
@@ -100,7 +98,7 @@ class Account
     */
     public function getDateOpened()
     {
-        return $this->dateOpened;
+        return $this->__get(self::FIELDS_DATE_OPENED);
     }
     
     /**
@@ -112,13 +110,15 @@ class Account
     */
     public function setDateOpened(DateTime $opened)
     {
-        if($this->dateClosed instanceof DateTime) {
-            if($this->dateClosed <= $opened) {
+        $closed = $this__get(self::FIELDS_DATE_CLOSED);
+        
+        if($closed instanceof DateTime) {
+            if($closed <= $opened) {
                 throw new LedgerException('Date the account opened must be before the set closed date');
             }
         }
         
-        $this->dateOpened = $opened;
+        $this->__set(self::FIELDS_DATE_OPENED,$opened);
     }
     
     /**
@@ -130,7 +130,7 @@ class Account
     */
     public function getDateClosed()
     {
-        return $this->dateClosed;
+        return $this->__get(self::FIELDS_DATE_CLOSED);
     }
     
     /**
@@ -142,13 +142,15 @@ class Account
     */
     public function setDateClosed(DateTime $closed)
     {
-        if($this->dateOpened instanceof DateTime) {
-            if($this->dateOpened >= $closed) {
+        $opened = $this->__get(self::FIELDS_DATE_OPENED);
+        
+        if($opened instanceof DateTime) {
+            if($opened >= $closed) {
                 throw new LedgerException('Date the account closed must be after the set opening date');
             }
         }
         
-        $this->dateClosed = $closed;
+        $this->__set(self::FIELDS_DATE_CLOSED,$closed);
     }
     
     /**
@@ -158,9 +160,9 @@ class Account
      *  @return integer | null
      *
     */
-    public function getGroupId()
+    public function getAccountGroup()
     {
-        return $this->accountGroup;
+        return $this->__get(self::FIELDS_ACCOUNT_GROUP);
     }
     
     /**
@@ -171,13 +173,13 @@ class Account
      *  @param integer $id the group id
      *
     */
-    public function setGroupId($id)
+    public function setAccountGroup($accountGroup)
     {
         if($id <= 0) {
             throw new LedgerException('The account Group ID must be > 0');
         }
         
-        $this->accountGroup = $id;
+        $this->__set(self::FIELDS_ACCOUNT_GROUP,$accountGroup);
     }
     
 }
