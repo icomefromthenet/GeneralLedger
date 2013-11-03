@@ -79,8 +79,8 @@ class CreditGroupBuilder implements NodeBuilderInterface
             $closed->setTime(0,0,0);
             
             $rootGroup = new AccountGroup();
-            $rootGroup->setName('Credit');
-            $rootGroup->setDescription('Credit Group');
+            $rootGroup->setGroupName('Credit');
+            $rootGroup->setGroupDescription('Credit Group');
             $rootGroup->setDateAdded($this->now);
             $rootGroup->setDateRemoved($closed);
             

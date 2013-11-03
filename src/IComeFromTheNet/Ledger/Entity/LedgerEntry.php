@@ -2,12 +2,14 @@
 namespace IComeFromTheNet\Ledger\Entity;
 
 /**
-  *  Represent an Account entry.
+  *  Represent an Ledger entry.
+  *
+  *  Each entry is bound to a ledger transaction
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class AccountEntry
+class LedgerEntry
 {
     
     // -----------------------------------------------
@@ -22,26 +24,9 @@ class AccountEntry
     protected $dateNoticed;    
     
     protected $dateOccured;
-    
-    
-    
-    // -----------------------------------------------
-    # extra descriptiors
-    
+
     /*
-     * @var integer Tag Reference
-     */
-    protected $tagID;
-    
-    /*
-     * @var string a name of a cost center
-     */
-    protected $costCenter;
-    
-    /*
-     * @var integer a user reference
-     */
-    protected $userID;
-    
+    *
+    * @public
 }
 /* End of Class */

@@ -3,6 +3,7 @@ namespace IComeFromTheNet\Ledger\Entity;
 
 use DateTime;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use Aura\Marshal\Entity\GenericEntity;
 
 /**
   *  Container for a group of accounts
@@ -16,27 +17,33 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class AccountGroup
+class AccountGroup extends GenericEntity
 {
     CONST GROUP_NAME_MAX_SIZE = 150;
-    
     CONST GROUP_DESC_MAX_SIZE = 500;
     
-    protected $groupID;
-    
-    protected $groupName;
-    
-    protected $groupDescription;
-    
-    protected $dateAdded;
-    
-    protected $dateRemoved;
-    
-    /*
-     * @var integer the parent group using Adjacency List Model
-     */
-    protected $parentGroupID;
+    const FIELD_GROUP_ID           = 'account_group_id';
+    const FIELD_GROUP_NAME         = 'group_name';
+    const FIELD_GROUP_DESCRIPTION  = 'group_description';
+    const FIELD_DATE_ADDED         = 'group_date_added';
+    const FIELD_DATE_REMOVED       = 'group_date_removed'; 
 
+    
+    
+    public function __construct(array $data = array())
+    {
+        parent::__construct($data);
+        
+        $this->__set(self::FIELD_GROUP_ID,null);
+        $this->__set(self::FIELD_GROUP_NAME,null);
+        $this->__set(self::FIELD_GROUP_DESCRIPTION,null);
+        $this->__set(self::FIELD_DATE_ADDED,null);
+        $this->__set(self::FIELD_DATE_REMOVED,null);
+    }
+    
+    
+    
+    
     /**
      *  Sets the group ID
      *
@@ -51,7 +58,7 @@ class AccountGroup
             throw new LedgerException(sprintf('AccountGroupID must be an integer > 0'));
         }
         
-        $this->groupID = $id;
+        $this->__set(self::FIELD_GROUP_ID,$id);
     }
 
     /**
@@ -63,31 +70,7 @@ class AccountGroup
     */    
     public function getGroupID()
     {
-        return $this->groupID;
-    }
-    
-     /**
-     *  Fetches parent group ID
-     *
-     *  @access public
-     *  @return integer | null the parent group id
-     *
-    */
-    public function getParentGroupID()
-    {
-        return $this->parentGroupID;
-    }
-    
-    /**
-     *  Sets parent group ID
-     *
-     *  @access public
-     *  @return void
-     *
-    */
-    public function setParentGroupID($parentGroupId)
-    {
-        $this->parentGroupID = $parentGroupId;
+        return $this->__get(self::FIELD_GROUP_ID);
     }
     
     /**
@@ -98,7 +81,7 @@ class AccountGroup
      *  @param string $name the group name
      *
     */
-    public function setName($name)
+    public function setGroupName($name)
     {
         if(empty($name) || mb_strlen((string)$name) > self::GROUP_NAME_MAX_SIZE ) {
             throw new LedgerException(
@@ -107,7 +90,7 @@ class AccountGroup
         }
         
         
-        $this->groupName = $name;
+        $this->__set(self::FIELD_GROUP_NAME,$name);
     }
     
     /**
@@ -117,9 +100,9 @@ class AccountGroup
      *  @return string the group name
      *
     */
-    public function getName()
+    public function getGroupName()
     {
-        return $this->groupName;
+        return $this->__get(self::FIELD_GROUP_NAME);
     }
     
     /**
@@ -130,7 +113,7 @@ class AccountGroup
      *  @param string a short group description
      *
     */
-    public function setDescription($description)
+    public function setGroupDescription($description)
     {
         if(empty($description) || mb_strlen((string)$description) > self::GROUP_DESC_MAX_SIZE ) {
             throw new LedgerException(
@@ -139,7 +122,7 @@ class AccountGroup
         }
         
         
-        $this->groupDescription = $description;
+        $this->__set(self::FIELD_GROUP_DESCRIPTION, $description);
     }
     
     /**
@@ -149,9 +132,9 @@ class AccountGroup
      *  @return string the group description
      *
     */
-    public function getDescription()
+    public function getGroupDescription()
     {
-        return $this->groupDescription;
+        return $this->__get(self::FIELD_GROUP_DESCRIPTION);
     }
     
     /**
@@ -163,7 +146,7 @@ class AccountGroup
     */
     public function getDateAdded()
     {
-        return $this->dateAdded;
+        return $this->__get(self::FIELD_DATE_ADDED);
     }
     
     /**
@@ -175,7 +158,7 @@ class AccountGroup
     */
     public function getDateRemoved()
     {
-        return $this->dateRemoved;
+        return $this->__get(self::FIELD_DATE_REMOVED);
     }
     
     /**
@@ -187,7 +170,15 @@ class AccountGroup
     */
     public function setDateAdded(DateTime $added)
     {
-        $this->dateAdded = $added;
+        $removed = $this->__get(self::FIELD_DATE_REMOVED);
+        
+        if($removed instanceof DateTime) {
+            if($removed <= $added) {
+                throw new LedgerException('Date the group added must be before the set removal date');
+            }
+        }
+        
+        $this->__set(self::FIELD_DATE_ADDED,$added);
     }
     
     /**
@@ -199,10 +190,44 @@ class AccountGroup
     */
     public function setDateRemoved(DateTime $removed)
     {
-        $this->dateRemoved = $removed;
+        $added = $this->__get(self::FIELD_DATE_ADDED);
+        
+        if($added instanceof DateTime) {
+            if($added >= $removed) {
+                throw new LedgerException('Date the group removed must be after the set added date');
+            }
+        }
+        
+        $this->__set(self::FIELD_DATE_REMOVED ,$removed);
     }
     
-   
+    
+    
+    /**
+     *  Gets the parent group
+     *
+     *  @access public
+     *  @return AccountGroup
+     *
+    */
+    public function getParentAccountGroup()
+    {
+        return $this->parentGroup;
+    }
+    
+    
+    /**
+     *  Sets the Parent Group of this Group
+     *
+     *  @access public
+     *  @return void
+     *  @param AccountGroup $parentGroup the parent group
+     *
+    */
+    public function setParentAccountGroup(AccountGroup $parentGroup)
+    {
+        $this->parentGroup = $parentGroup;
+    }
     
 }
 /* End of Class */

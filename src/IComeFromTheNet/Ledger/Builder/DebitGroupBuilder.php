@@ -79,8 +79,8 @@ class DebitGroupBuilder implements NodeBuilderInterface
             $closed->setTime(0,0,0);
             
             $rootGroup = new AccountGroup();
-            $rootGroup->setName('Debit');
-            $rootGroup->setDescription('Debit Group');
+            $rootGroup->setGroupName('Debit');
+            $rootGroup->setGroupDescription('Debit Group');
             $rootGroup->setDateAdded($this->now);
             $rootGroup->setDateRemoved($closed);
             

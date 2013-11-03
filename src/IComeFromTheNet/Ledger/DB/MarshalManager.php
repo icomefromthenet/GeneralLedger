@@ -5,6 +5,9 @@ use Aura\Marshal\Manager;
 use Aura\Marshal\Type\Builder as TypeBuilder;
 use Aura\Marshal\Relation\Builder as RelationBuilder;
 
+use IComeFromTheNet\Ledger\DB\AccountBuilder;
+use IComeFromTheNet\Ledger\DB\AccountGroupBuilder;
+
 /**
   *  Setup Aura Marshal
   *
@@ -15,10 +18,23 @@ class MarshalManager
 {
     
     
+    protected $accountBuilder;
     
-    public function __construct()
+    protected $accountGroupBuilder;
+    
+    /**
+     *  Class Constructor
+     *
+     *  @access public
+     *  @return void
+     *  @param AccountBuilder $accountBuilder
+     *  @param AccountGroupBuilder $accountGroupBuilder
+     *
+    */
+    public function __construct(AccountBuilder $accountBuilder, AccountGroupBuilder $accountGroupBuilder)
     {
-        
+        $this->accountBuilder 		= $accountBuilder;
+	$this->accountGroupBuilder 	= $accountGroupBuilder;
         
     }
     
@@ -47,8 +63,8 @@ class MarshalManager
     
     protected function configureTypes(Manager $manager)
     {
-        $manager->setType('accountGroups', array ('identity_field' => 'account_group_id'));
-	$manager->setType('accounts', array('identity_field'=>'account_number'));
+        $manager->setType('accountGroups', array ('identity_field' => 'account_group_id','entity_builder' => $this->accountBuilder));
+	$manager->setType('accounts', array('identity_field'=>'account_number','entity_builder' => $this->accountGroupBuilder));
 
 	$manager->setType('entryTags',array('identity_field' => 'tag_id'));
 	$manager->setType('ledgerTransactions',array('identity_field'=>'ledger_transaction_id'));
@@ -59,7 +75,7 @@ class MarshalManager
 	$manager->setType('statements',array('identity_field'=>'statement_id'));
 	$manager->setType('statementPeriods',array('identity_field'=>'period_id'));
 	$manager->setType('statementEntries',array('identity_field'=>'entry_id'));
-	$manager->setType('statementSchedules',array('identity_field'=>'schedule_id'));
+	$manager->setType('statementSchedules',array('identity_field'=>'statement_schedule_id'));
     }
     
     
@@ -85,7 +101,7 @@ class MarshalManager
 		'native_field' => 'account_group_id',
 		'foreign_field'=> 'account_group_id'
 	));
-	/*
+	
 	# relationship between accountGroup and its parentGroup
 	$manager->setRelation('accountGroups','parentGroup',array(
 		'relationship' => 'has_one',
@@ -94,7 +110,8 @@ class MarshalManager
 		'native_field' => 'parent_group_id',
 		'foreign_field'=> 'account_group_id'
 	));
-
+	
+	/*
 	# relationship between ledgerTransaction and the entries that make it up
 	$manager->setRelation('ledgerTransactions','ledgerEntries',array(
 		'relationship' => 'has_many',
@@ -162,16 +179,16 @@ class MarshalManager
 		'native_field'  => 'statement_id',
 		'foreign_field' => 'statement_id'
 	));
-    
+	*/
 	
 	# relationship between statement and the statementSchedule 
 	$manager->setRelation('statements','statementSchedule', array(
 		'relationship'  => 'belongs_to',
                 'foreign_type'  => 'statementSchedules',
                 'native_type'   => 'statements',
-		'native_field'  => 'schedule_id',
-		'foreign_field' => 'schedule_id'
-	)); */
+		'native_field'  => 'statement_schedule_id',
+		'foreign_field' => 'statement_schedule_id'
+	)); 
     }
     
     

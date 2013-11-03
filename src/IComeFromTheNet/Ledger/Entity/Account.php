@@ -3,7 +3,9 @@ namespace IComeFromTheNet\Ledger\Entity;
 
 use DateTime;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use IComeFromTheNet\Ledger\Entity\AccountGroup;
 use Aura\Marshal\Entity\GenericEntity;
+
 
 /**
   *  Represents a single account
@@ -26,7 +28,20 @@ class Account extends GenericEntity
     const FIELDS_ACCOUNT_NAME   = 'accountName';
     const FIELDS_DATE_OPENED    = 'dateOpened';
     const FIELDS_DATE_CLOSED    = 'dateClosed';
-    const FIELDS_ACCOUNT_GROUP  = 'accountGroup';
+    
+    
+    
+    
+    public function __construct(array $data = array())
+    {
+        parent::__construct($data);
+        
+        $this->__set(self::FIELDS_ACCOUNT_NUMBER,null);
+        $this->__set(self::FIELDS_ACCOUNT_NAME,null);
+        $this->__set(self::FIELDS_DATE_CLOSED,null);
+        $this->__set(self::FIELDS_DATE_OPENED,null);
+        
+    }
     
     
     /**
@@ -110,7 +125,7 @@ class Account extends GenericEntity
     */
     public function setDateOpened(DateTime $opened)
     {
-        $closed = $this__get(self::FIELDS_DATE_CLOSED);
+        $closed = $this->__get(self::FIELDS_DATE_CLOSED);
         
         if($closed instanceof DateTime) {
             if($closed <= $opened) {
@@ -162,7 +177,7 @@ class Account extends GenericEntity
     */
     public function getAccountGroup()
     {
-        return $this->__get(self::FIELDS_ACCOUNT_GROUP);
+        return $this->accountGroup;
     }
     
     /**
@@ -173,13 +188,9 @@ class Account extends GenericEntity
      *  @param integer $id the group id
      *
     */
-    public function setAccountGroup($accountGroup)
+    public function setAccountGroup(AccountGroup $accountGroup)
     {
-        if($id <= 0) {
-            throw new LedgerException('The account Group ID must be > 0');
-        }
-        
-        $this->__set(self::FIELDS_ACCOUNT_GROUP,$accountGroup);
+        $this->accountGroup = $accountGroup;
     }
     
 }

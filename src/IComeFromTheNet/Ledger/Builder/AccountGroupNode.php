@@ -55,11 +55,11 @@ class AccountGroupNode extends Node implements NodeInterface
     public function assignGroupID($id)
     {
         $children = $this->getChildren();
-        
-        foreach($children as $child) {
-            
-            $child->getInternal()->setParentGroupID($id);
-        }
+                
+        //foreach($children as $child) {
+        //    
+        //    $child->getInternal()->setParentGroupID($id);
+        //}
         
     }
     

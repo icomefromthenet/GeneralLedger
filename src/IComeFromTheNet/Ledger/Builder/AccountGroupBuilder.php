@@ -128,8 +128,8 @@ class AccountGroupBuilder implements NodeBuilderInterface
         $closed->setDate(3000,1,1);
         $closed->setTime(0,0,0);
         
-        $group->setName($this->groupName);
-        $group->setDescription($this->groupDescription);
+        $group->setGroupName($this->groupName);
+        $group->setGroupDescription($this->groupDescription);
         $group->setDateAdded($this->now);
         $group->setDateRemoved($closed);
         

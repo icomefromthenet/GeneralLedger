@@ -90,8 +90,8 @@ class RootGroupBuilder implements NodeBuilderInterface
         
         # create root AccountGroup 
         $rootGroup = new AccountGroup();
-        $rootGroup->setName('Root Group');
-        $rootGroup->setDescription('Top level group');
+        $rootGroup->setGroupName('Root Group');
+        $rootGroup->setGroupDescription('Top level group');
         $rootGroup->setDateAdded($this->now);
         $rootGroup->setDateRemoved($closed);
         

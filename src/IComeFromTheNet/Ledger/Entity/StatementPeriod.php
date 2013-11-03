@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\Ledger\Entity;
 
 use IComeFromTheNet\Ledger\Exception\LedgerException;
-
+use Aura\Marshal\Entity\GenericEntity;
 
 /**
   *  A period definition for a trial balance statement
@@ -14,17 +14,14 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class StatementPeriod
+class StatementPeriod extends GenericEntity
 {
-    protected $statementPeriodID;
-    
-    protected $units;
-    
-    protected $name;
-    
-    protected $description;
-    
-    protected $enabled;
+    const FIELD_STATEMENT_PERIOD_ID     = 'statement_period_id';
+    const FIELD_UNITS                   = 'period_units';
+    const FIELD_NAME                    = 'period_name';
+    const FIELD_DESCRIPTION             = 'period_description';
+    const FIELD_ENABLED_FROM            = 'period_enabled_from';
+    const FIELD_ENABLED_TO              = 'period_enabled_to';
     
     
     /**
@@ -36,7 +33,12 @@ class StatementPeriod
     */
     public function __construct()
     {
-            $this->enabled = true;
+            $this->__set(self::FIELD_DESCRIPTION,null);
+            $this->__set(self::FIELD_STATEMENT_PERIOD_ID,null);
+            $this->__set(self::FIELD_ENABLED_FROM,null);
+            $this->__set(self::FIELD_ENABLED_TO,null);
+            $this->__set(self::FIELD_NAME,null);
+            $this->__set(self::FIELD_UNITS,null);
     }
     
     
@@ -49,7 +51,7 @@ class StatementPeriod
     */
     public function getStatementPeriodID()
     {
-        return $this->statementPeriodID;
+        return $this->__get(self::FIELD_STATEMENT_PERIOD_ID);
     }
     
     /**
@@ -61,7 +63,7 @@ class StatementPeriod
     */
     public function setStatementPeriodID($id)
     {
-        if(is_init($id) === false) {
+        if(is_int($id) === false) {
             throw new LedgerException('Statement Period id must be an integer');
         }
         
@@ -69,7 +71,7 @@ class StatementPeriod
             throw new LedgerException('Statement Period id must be an integer > 0');
         }
         
-        $this->statementPeriodID = $id;
+        $this->__set(self::FIELD_STATEMENT_PERIOD_ID,$id);
     }
     
     /**
@@ -79,9 +81,9 @@ class StatementPeriod
      *  @return integer the number of days (units)
      *
     */
-    public function getUnits()
+    public function getPeriodUnits()
     {
-        return $this->units;
+        return $this->__get(self::FIELD_UNITS);
     }
     
     
@@ -92,9 +94,9 @@ class StatementPeriod
      *  @return $units
      *
     */
-    public function setUnits($units)
+    public function setPeriodUnits($units)
     {
-        if(is_init($units) === false) {
+        if(is_int($units) === false) {
             throw new LedgerException('Statement Period units must be an integer');
         }
         
@@ -102,7 +104,7 @@ class StatementPeriod
             throw new LedgerException('Statement Period units must be an integer > 0');
         }
         
-        $this->units = $units;
+        $this->__set(self::FIELD_UNITS , $units);
     }
     
     /**
@@ -112,9 +114,9 @@ class StatementPeriod
      *  @return string the name of this period 50 characters max
      *
     */
-    public function getName()
+    public function getPeriodName()
     {
-        return $this->name;
+        return $this->__get(self::FIELD_NAME);
     }
     
     /**
@@ -135,7 +137,7 @@ class StatementPeriod
             throw new LedgerException('Statement Period name must be between 1 and 50 characters');
         }
         
-        $this->name = $name;
+        $this->__set(self::FIELD_NAME,$name);
     }
     
     /**
@@ -171,37 +173,74 @@ class StatementPeriod
             throw new LedgerException('Statement Period description must be between 1 and 255 characters');
         }
         
-        $this->description = $description;
+        $this->__set(self::FIELD_DESCRIPTION,$description);
     }
     
     /**
      *  Fetch if this period is enabled for a trial balance     
      *
      *  @access public
-     *  @return boolean true if enabled 
+     *  @return DateTime the enabled from date
      *
     */
-    public function getEnabled()
+    public function getEnabledFrom()
     {
-        return $this->enabled;
+        return $this->__get(self::FIELD_ENABLED_FROM);
     }
     
     /**
-     *  Set if the period is enabled for trial balances
+     *  Set if the date the period is enabled for trial balances
      *
      *  @access public
      *  @return void
-     *  @param boolean $enabled
+     *  @param DateTime $enabled
      *
     */
-    public function setEnabled($enabled)
+    public function setEnabledFrom(DateTime $enabled)
     {
-        if(!is_bool($enabled)) {
-            throw new LedgerException('Statement Period enabled flag must be a boolean');
+         $closed = $this->__get(self::FIELD_ENABLED_TO);
+        
+        if($closed instanceof DateTime) {
+            if($closed <= $enabled) {
+                throw new LedgerException('The statement period min date from must be before the max date');
+            }
         }
         
+        $this->__set(self::FIELD_ENABLED_FROM,$enabled);
+    }
+    
+    /**
+     *   Gets the max date the period is available
+     *
+     *  @access public
+     *  @return DateTime
+     *
+    */
+    public function getEnabledTo()
+    {
+        return $this->__get(self::FIELD_ENABLED_TO);
+    }
+    
+    /**
+     *  Sets the max date the period is available
+     *
+     *  @access public
+     *  @return void
+     *  @param DateTime $to
+     *
+    */
+    public function setEnabledTo(DateTime $to)
+    {
+        $opened = $this->__get(self::FIELD_ENABLED_FROM);
         
-        $this->enabled = (boolean) $enabled;
+        if($opened instanceof DateTime) {
+            if($opened >= $to) {
+                throw new LedgerException('The statement period max date must be after the min date');
+            }
+        }
+        
+        $this->__set(self::FIELD_ENABLED_TO,$to);
+        
     }
     
 }
