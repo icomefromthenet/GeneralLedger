@@ -123,8 +123,6 @@ class LedgerServiceProvider extends Pimple
     public function boot(DateTime $now)
     {
         
-        $this['now'] = $now;
-        
         $this->setupMetaDefinitions();
         $this->setupTableGateways();
         $this->setupServiceManagers();
@@ -261,6 +259,65 @@ class LedgerServiceProvider extends Pimple
     {
         
         
+    }
+    
+    //-------------------------------------------------------
+    # Dates and Times
+    
+    /**
+     *  Gets the date the ledger considers now ie
+     *  the processing date
+     *
+     *  @access public
+     *  @return DateTime
+     *
+    */
+    public function getProcessingDate()
+    {
+        $this['processing_date'];
+    }
+    
+    /**
+     *  Sets the date the ledger considers now ie
+     *  the processing date
+     *
+     *  @access public
+     *  @return $this
+     *  @param DateTime $processing
+     *
+    */
+    public function setProcessingDate(DateTime $processing)
+    {
+        $this['processing_date'] = $processing;
+        
+        return $this;
+    }
+    
+    /**
+     *  Sets the date the ledger considers occuring date
+     *
+     *  @access public
+     *  @return DateTime
+     *
+    */
+    public function getOccuredDate()
+    {
+        return $this['occured_date'];
+    }
+    
+    /**
+     *  Gets the date the ledger considers the occuring date
+     *
+     *  @access public
+     *  @return $this
+     *  @param DateTime $occured
+     *
+    */
+    public function setOccuredDate(DateTime $occured)
+    {
+        $this['occured_date'] = $occured;
+        
+        return $this;
     }
     
     

@@ -23,5 +23,9 @@ class LedgerTransaction
     
     protected $transactionType;
     
+    protected $hasBeenAdjusted;
+    
+    protected $adjustmentID;
+    
 }
 /* End of Class */
