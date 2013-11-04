@@ -111,12 +111,14 @@ class LedgerRuntime implements IteratorAggregate
                                          );
         throw $e;
         
-     } catch(Exception $e) {
+     }catch(\Exception $e) {
+        
+        $e = new LedgerException($e);
         
         $this->eventDispatcher->dispatch(RuntimeEvents::EVENT_RUNTIME_LOAD_FAILED,
                                          new RuntimeEvent($ledger,$e)
                                          );
-        throw new LedgerException($e);
+        throw $e; 
      }
      
      return $this->data[$index];

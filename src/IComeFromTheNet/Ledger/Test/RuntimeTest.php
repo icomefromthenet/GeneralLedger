@@ -1,10 +1,12 @@
 <?php
 namespace IComeFromTheNet\Ledger\Test;
 
+use Exception;
 use DateTime;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use IComeFromTheNet\Ledger\LedgerRuntime;
+use IComeFromTheNet\Ledger\Exception\LedgerException;
 use IComeFromTheNet\Ledger\Test\Base\TestWithFixture;
 use IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent;
 use IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents;
@@ -21,7 +23,7 @@ class RuntimeTest extends TestWithFixture
     
     public function testNewInstance()
     {
-        $doctrine = self::getConnection();
+        $doctrine = $this->getDoctrineConnection();
         $logger   = $this->getMock('Psr\Log\LoggerInterface');
         $event    = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         
@@ -30,11 +32,11 @@ class RuntimeTest extends TestWithFixture
         
         $event->expects($this->at(0))
               ->method('dispatch')
-              ->with($this->equalTo(IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
+              ->with($this->equalTo(RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
         
         $event->expects($this->at(1))
               ->method('dispatch')
-              ->with($this->equalTo(IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents::EVENT_RUNTIME_AFTER_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
+              ->with($this->equalTo(RuntimeEvents::EVENT_RUNTIME_AFTER_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
               
         $runtime = new LedgerRuntime($event,$doctrine,$logger);
         $ledger  = $runtime->assemble($processingDate,$occuredDate);
@@ -44,16 +46,19 @@ class RuntimeTest extends TestWithFixture
         $this->assertSame($processingDate,$ledger->getProcessingDate());
         $this->assertSame($occuredDate,$ledger->getOccuredDate());
      
-     
-        return array($runtime,$ledger);   
+        return array($runtime,$ledger);  
     }
     
     /*
-     * @depends testNewInstane
+     * @depends testNewInstance
      * 
      */
-    public function testSameInstanceWhenOccuredDateSame(LedgerRuntime $runtime, LedgerServiceProvider $ledger)
+    public function testSameInstanceWhenOccuredDateSame()
     {
+        $result  = $this->testNewInstance();
+        $runtime = $result[0];
+        $ledger  = $result[1];
+        
         $processingDate = new DateTime();
         $occuredDate    = new DateTime();
         
@@ -63,11 +68,15 @@ class RuntimeTest extends TestWithFixture
     }
     
      /*
-     * @depends testNewInstane
+     * @depends testNewInstance
      * 
      */
-    public function testNewInstanceWhenSameProcessingButNewOccuredDate(LedgerRuntime $runtime, LedgerServiceProvider $ledger)
+    public function testNewInstanceWhenSameProcessingButNewOccuredDate()
     {
+        $result  = $this->testNewInstance();
+        $runtime = $result[0];
+        $ledger  = $result[1];
+        
         $processingDate = new DateTime();
         $occuredDate    = new DateTime();
         $occuredDate->modify('-6 days');
@@ -78,7 +87,7 @@ class RuntimeTest extends TestWithFixture
     
     public function testNewInstaneWithOnlyProcessingDate()
     {
-        $doctrine = self::getConnection();
+        $doctrine = $this->getDoctrineConnection();
         $logger   = $this->getMock('Psr\Log\LoggerInterface');
         $event    = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         
@@ -87,11 +96,11 @@ class RuntimeTest extends TestWithFixture
         
         $event->expects($this->at(0))
               ->method('dispatch')
-              ->with($this->equalTo(IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
+              ->with($this->equalTo(RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
         
         $event->expects($this->at(1))
               ->method('dispatch')
-              ->with($this->equalTo(IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents::EVENT_RUNTIME_AFTER_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
+              ->with($this->equalTo(RuntimeEvents::EVENT_RUNTIME_AFTER_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'));
               
         $runtime = new LedgerRuntime($event,$doctrine,$logger);
         $ledger  = $runtime->assemble($processingDate,$occuredDate);
@@ -99,7 +108,7 @@ class RuntimeTest extends TestWithFixture
      
         # assert Dates are same objects
         $this->assertSame($processingDate,$ledger->getProcessingDate());
-        $this->assertSame($processingDate,$ledger->getOccuredDate());
+        $this->assertEquals($processingDate,$ledger->getOccuredDate());
     }
     
    /**
@@ -109,7 +118,7 @@ class RuntimeTest extends TestWithFixture
     */ 
     public function testNewInstanceWithLedgerExceptionOccuring()
     {
-        $doctrine = self::getConnection();
+        $doctrine = $this->getDoctrineConnection();
         $logger   = $this->getMock('Psr\Log\LoggerInterface');
         $event    = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         
@@ -118,7 +127,7 @@ class RuntimeTest extends TestWithFixture
         
         $event->expects($this->at(0))
               ->method('dispatch')
-              ->with($this->equalTo(IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'))
+              ->with($this->equalTo(RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'))
               ->will($this->throwException(new LedgerException('a ledger exception has been caught')));
         
         $runtime = new LedgerRuntime($event,$doctrine,$logger);
@@ -135,7 +144,7 @@ class RuntimeTest extends TestWithFixture
     */ 
     public function testNewInstanceWithExceptionOccuring()
     {
-        $doctrine = self::getConnection();
+        $doctrine = $this->getDoctrineConnection();
         $logger   = $this->getMock('Psr\Log\LoggerInterface');
         $event    = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         
@@ -144,7 +153,7 @@ class RuntimeTest extends TestWithFixture
         
         $event->expects($this->at(0))
               ->method('dispatch')
-              ->with($this->equalTo(IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'))
+              ->with($this->equalTo(RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT),$this->isInstanceOf('IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent'))
               ->will($this->throwException(new Exception('an exception has been caught an thrown as ledgerException')));
         
         $runtime = new LedgerRuntime($event,$doctrine,$logger);

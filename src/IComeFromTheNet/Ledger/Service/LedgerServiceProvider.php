@@ -120,7 +120,7 @@ class LedgerServiceProvider extends Pimple
     //---------------------------------------------------------
     # Startup
     
-    public function boot(DateTime $now)
+    public function boot()
     {
         
         $this->setupMetaDefinitions();
@@ -242,7 +242,7 @@ class LedgerServiceProvider extends Pimple
     */    
     public function getInstalledAccounts()
     {
-        return['accounts'];
+        return $this['accounts'];
     }
     
     
@@ -274,7 +274,7 @@ class LedgerServiceProvider extends Pimple
     */
     public function getProcessingDate()
     {
-        $this['processing_date'];
+        return $this['processing_date'];
     }
     
     /**
