@@ -15,12 +15,18 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   *  4. etc
   *
   *  As we can't know every group (voucher type) this entity allows
-  *  developers to define their own and relate them back to a ledger transaction
+  *  developers to define their own and relate them back to a ledger transaction.
+  *
+  *  Each voucher is identified by a 'voucher reference'
+  *
+  *  {prefix}sequence{suffix}
+  *
+  *  e.g GL_503
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class VoucherTypes extends GenericEntity
+class VoucherType extends GenericEntity
 {
     const DESCRIPTION_MAX_SIZE  = 500;
     const NAME_MAX_SIZE         = 100;
@@ -31,8 +37,9 @@ class VoucherTypes extends GenericEntity
     const FIELD_DESCRIPTION     = 'voucher_description';
     const FIELD_ENABLE_FROM     = 'voucher_enable_from';
     const FIELD_ENABLE_TO       = 'voucher_enable_to';
-    
-    
+    const FIELD_PREFIX          = 'voucher_prefix';
+    const FIELD_SUFFIX          = 'voucher_suffix';
+    const FIELD_SLUG            = 'voucher_name_slug';
     
     public function __construct()
     {
@@ -41,15 +48,17 @@ class VoucherTypes extends GenericEntity
         $this->__set(self::FIELD_DESCRIPTION,null);
         $this->__set(self::FIELD_ENABLE_FROM,null);
         $this->__set(self::FIELD_ENABLE_TO,null);
+        $this->__set(self::FIELD_PREFIX,null);
+        $this->__set(self::FIELD_SUFFIX,null);
         
     }
     
     
     /**
-     *  docs
+     *  Get the voucher types database ID
      *
      *  @access public
-     *  @return void
+     *  @return integer the database id
      *
     */
     public function getVoucherTypeID()
@@ -58,10 +67,10 @@ class VoucherTypes extends GenericEntity
     }
     
     /**
-     *  docs
+     *  Set this vouchers type voucher id
      *
      *  @access public
-     *  @return void
+     *  @return integer $id 
      *
     */
     public function setVoucherTypeID($id)
@@ -215,5 +224,85 @@ class VoucherTypes extends GenericEntity
         
         return $this;
     }
+    
+    
+    /**
+     *  Gets the prefix that attached start of a voucher reference
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function getPrefix()
+    {
+        return $this->__get(self::FIELD_PREFIX);
+    }
+    
+    /**
+     *  Sets a prefix that attached to start of a voucher reference
+     *
+     *  @access public
+     *  @return $this;
+     *  @param string $prefix
+     *
+    */
+    public function setPrefix($prefix)
+    {
+        $this->__set(self::FIELD_PREFIX,$prefix);
+        return $this;
+    }
+    
+    /**
+     *  Get the suffix that attached to voucher reference
+     *
+     *  @access public
+     *  @return string the suffix
+     *
+    */
+    public function  getSuffix()
+    {
+        return $this->__get(self::FIELD_SUFFIX);
+    }
+    
+    /**
+     *  Sets a suffix to attach to end of a voucher reference
+     *
+     *  @access public
+     *  @return $this;
+     *  @param string $suffix
+     *
+    */
+    public function setSuffix($suffix)
+    {
+        $this->__set(self::FIELD_SUFFIX,$suffix);
+        return $this;
+    }
+    
+    /**
+     *  Gets the slug used to match voucher to validation rule
+     *
+     *  @access public
+     *  @return string the slug
+     *
+    */
+    public function getSlug()
+    {
+        return $this->__get(self::FIELD_SLUG);
+    }
+    
+    /**
+     *  Set a slug that used to match voucher to validation rule
+     *
+     *  @access public
+     *  @return $this
+     *  @param string $slug
+     *
+    */
+    public function setSlug($slug)
+    {
+        $this->__set(self::FIELD_SLUG,$slug);
+        return $this;
+    }
+    
 }
 /* End of Class */

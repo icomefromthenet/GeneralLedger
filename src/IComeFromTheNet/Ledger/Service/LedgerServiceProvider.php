@@ -82,7 +82,10 @@ class LedgerServiceProvider extends Pimple
                                                                 null,
                                                                 $c->getAccountEntityBuilder()
                                                                 );
-            
+        });
+        
+        $this['voucher_validation_rule_bag'] = $this->share(function($c){
+            return new \IComeFromTheNet\Ledger\Voucher\ValidationRuleBag();    
         });
         
         
@@ -154,6 +157,18 @@ class LedgerServiceProvider extends Pimple
     {
         
         
+    }
+    
+    /**
+     *  Return the voucher validation Rule Bag
+     *
+     *  @access public
+     *  @return IComeFromTheNet\Ledger\Voucher\ValidationRuleBag
+     *
+    */
+    public function getVoucherValidationRuleBag()
+    {
+        return $this['voucher_validation_rule_bag'];
     }
     
     
