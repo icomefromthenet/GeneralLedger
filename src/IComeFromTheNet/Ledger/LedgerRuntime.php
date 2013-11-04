@@ -64,7 +64,7 @@ class LedgerRuntime implements IteratorAggregate
     *  date not supplied assumed to be same as the processing date.
     *
     *  @access public
-    *  @return LedgerService
+    *  @return LedgerServiceProvider
     *  @param DateTime $occuredDate the date in which the event that caused the entry occured.
     *  @param DateTime $processingDate the date the processing occurs commonly NOW
     *
@@ -72,26 +72,35 @@ class LedgerRuntime implements IteratorAggregate
    public function assemble(DateTime $processingDate,DateTime $occuredDate = null)
    {
      $ledger = null;
+     $index  = null;
      
      try {
-     
+
+        # if the occuredDate date not supplied assumed to be same as the processing date.
         if($occuredDate === null) {
-           $occuredDate = $processingDate;
+           $occuredDate = clone $processingDate;
         }
         
+        # create the internal index
         $index = $this->convertDate($occuredDate);
         
         if(!isset($this->data[$index])) {
            
+           # instance the provider and set the required dates
            $ledger = new LedgerServiceProvider($this->eventDispatcher,$this->dbal,$this->logger);
-           
            $ledger->setOccuredDate($occuredDate);
            $ledger->setProcessingDate($processingDate);
            
+           # dispatch pre boot event
            $this->eventDispatcher->dispatch(RuntimeEvents::EVENT_RUNTIME_BEFORE_BOOT,new RuntimeEvent($ledger));
+            
+            # boot the ledger
             $ledger->boot();
+           
+           # dispatch after boot event
            $this->eventDispatcher->dispatch(RuntimeEvents::EVENT_RUNTIME_AFTER_BOOT,new RuntimeEvent($ledger));
            
+           # store this instance in internal cache
            $this->data[$index] = $ledger;
         }
      
@@ -100,11 +109,14 @@ class LedgerRuntime implements IteratorAggregate
         $this->eventDispatcher->dispatch(RuntimeEvents::EVENT_RUNTIME_LOAD_FAILED,
                                          new RuntimeEvent($ledger,$e)
                                          );
+        throw $e;
+        
      } catch(Exception $e) {
         
         $this->eventDispatcher->dispatch(RuntimeEvents::EVENT_RUNTIME_LOAD_FAILED,
                                          new RuntimeEvent($ledger,$e)
                                          );
+        throw new LedgerException($e);
      }
      
      return $this->data[$index];
