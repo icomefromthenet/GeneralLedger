@@ -1,9 +1,13 @@
 <?php
 namespace IComeFromTheNet\Ledger\Service;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Doctrine\DBAL\Connection;
+use IComeFromTheNet\Ledger\UnitOfWork;
 use IComeFromTheNet\Ledger\Voucher\ValidationRuleBag;
 use IComeFromTheNet\Ledger\Entity\VoucherType;
 use IComeFromTheNet\Ledger\Voucher\VoucherUpdate;
+use IComeFromTheNet\Ledger\Exception\LedgerException;
 
 /**
   *  Service to manage and validate vouchers.
@@ -35,23 +39,60 @@ use IComeFromTheNet\Ledger\Voucher\VoucherUpdate;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class VoucherService
+class VoucherService extends UnitOfWork
 {
-    
+    /*
+     * @var IComeFromTheNet\Ledger\Voucher\ValidationRuleBag
+     */
     protected $ruleBag;
+    
+    /*
+     * @var DateTime the processing date
+     */
     protected $processingDate;
+
+    /*
+     * @var Doctrine\DBAL\Connection
+     */
+    protected $dbal;
+    
+    /**
+     *  @var Symfony\Component\EventDispatcher\EventDispatcherInterface
+    */
+    protected $eventDispatcher;
+    
+    /*
+    * @var mixed array of voucherTypes to close
+    */
+    protected $closures = array();
+    
+    /*
+    * @var mixed array of voucherTypes add
+    */
+    protected $additions = array();
     
     
-    protected function validityCheck(VoucherType $voucherType)
+    /**
+     *  Class Constructor
+     *
+     *  @access public
+     *  @return void
+     *  @param EventDispatcherInterface $eventDispatcher
+     *  @param Connection $dbal
+     *  @param ValidationRuleBag $ruleBag
+     *  @param DateTime $processingDate
+     *
+    */
+    public function __construct(EventDispatcherInterface $eventDispatcher,
+                                Connection $dbal,
+                                ValidationRuleBag $ruleBag,
+                                DateTime $processingDate)
     {
         
-    }
-    
-    
-    public function __construct(ValidationRuleBag $ruleBag,DateTime $processingDate)
-    {
-        $this->ruleBag        = $ruleBag;
-        $this->processingDate = $processingDate;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->ruleBag         = $ruleBag;
+        $this->processingDate  = $processingDate;
+        $this->dbal            = $dbal;
     }
     
     
@@ -64,24 +105,36 @@ class VoucherService
      *  Assign database id to the entity if sucessful
      *
      *  @access public
-     *  @return boolean true if voucher added sucessfuly
+     *  @return $this;
      *
     */
     public function addVoucher(VoucherType $voucherType)
     {
         # check if been assigned a DB ID already
+        $id = $voucherType->getVoucherTypeID();
+        if(!empty($id)) {
+            throw new LedgerException(sprintf('Voucher Type %s already exists can not be added'),$voucherType->getSlug());
+        }
         
         # check if this voucher exists but for a different
+        
+        
+        
         # validity date range
+        
+        
         
         # If exists does this new record overlap? (throw exception)
         
+        $this->additions[$voucherType->getSlug()] = $voucherType;
+        
+        return $this;
     }
     
     
     /**
      *  Close a Voucher Type by setting validity date to the
-     *  supplied value in the object.
+     *  supplied value in the object or a max date
      *
      *  @access public
      *  @return boolean true if successful
@@ -90,8 +143,14 @@ class VoucherService
     */
     public function closeVoucher(VoucherType $voucherType)
     {
+        if($voucherType->getEnabledTo() === null) {
+            $max = new DateTime();
+            $max->setDate(3000,1,1);
+            $max->setTime(0,0,0);
+            $voucherType->setEnabledTo($max);
+        }
         
-        
+        return $this->closures[$voucherType->getSlug()] = $voucherType;
     }
     
     /**
@@ -106,19 +165,32 @@ class VoucherService
      *  @return void
      *
     */
-    public function startUpdateVoucher($voucherSlugName)
+    public function updateVoucher($voucherSlugName)
     {
         # load most current voucher
+        $v = '';        
         
-        # instance update
-        //$v = 
+        # closes the voucher
         
         
+        
+        
+        # return update facade to user
         return VoucherUpdate($this->processingDate,$v,$this);
     }
     
-
-
+    /**
+     *  Load the voucher Repositry for a
+     *  voucher lookup
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function voucherReposiory()
+    {
+        
+    }
     
     //-------------------------------------------------------
     # Voucher Validation 
@@ -130,21 +202,102 @@ class VoucherService
      *  @return void
      *
     */
-    public function validateReference($voucherReference,$voucherSlug)
+    public function getValidationRuleBag()
     {
-        
+        return $this->ruleBag;
     }
     
+    
+    //-------------------------------------------------------
+    # UnitOfWork
+    
+     /**
+     *  Return the database connection  
+     *
+     *  @access public
+     *  @return  Doctrine\DBAL\Connection
+     *
+    */
+    public function getDBAL()
+    {
+        return $this->dbal;
+    }
+    
+    
+    //---------------------------------------------------------------------
+    # API Methods to control Database Transaction
+
+    
     /**
-     *  docs
+     *  Start this unit of work
+     *
+     *  @access protected
+     *  @return void
+     *
+    */
+    protected function start()
+    {
+        $this->dbal->beginTransaction();
+    }
+    
+    
+    /**
+     *  Commit the result of the Unit of work
+     *
+     *  @access protected
+     *  @return void
+     *
+    */
+    protected function commit()
+    {
+        $this->dbal->commit();
+    }
+    
+     /**
+     *  Cause a rollback of this Unit of Work
      *
      *  @access public
      *  @return void
      *
     */
-    public function getValidationRuleBag()
+    protected function rollback()
     {
-        return $this->ruleBag;
+        $this->dbal->commit();
+    }
+    
+    /**
+     *  Does all updates, additions and closures
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function process()
+    {
+        
+        try {
+            $this->start();
+            
+            # execute all closures
+        
+        
+            # execute all addition      
+            
+            
+            $this->commit();    
+            
+        } catch(LedgerException $e) {
+            $this->rollback();
+            throw $e;
+        } catch (Exception $e) {
+            $this->rollback();
+            throw new LedgerException($e);
+        }
+        
+        # reset internal obejct closures
+        $this->additions = array();
+        $this->closures  = array();
+            
     }
     
     

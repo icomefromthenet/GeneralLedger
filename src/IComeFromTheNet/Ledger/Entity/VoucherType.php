@@ -3,6 +3,7 @@ namespace IComeFromTheNet\Ledger\Entity;
 
 use Aura\Marshal\Entity\GenericEntity;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use IComeFromTheNet\Ledger\Voucher\ValidationRuleBag;
 
 /**
   *  Represent a custom Ledger Entry type.
@@ -45,14 +46,15 @@ class VoucherType extends GenericEntity
     const NAME_MAX_SIZE         = 100;
     
     
-    const FIELD_VOUCHER_TYPE_ID = 'voucher_type_id';
-    const FIELD_NAME            = 'voucher_name';
-    const FIELD_DESCRIPTION     = 'voucher_description';
-    const FIELD_ENABLE_FROM     = 'voucher_enable_from';
-    const FIELD_ENABLE_TO       = 'voucher_enable_to';
-    const FIELD_PREFIX          = 'voucher_prefix';
-    const FIELD_SUFFIX          = 'voucher_suffix';
-    const FIELD_SLUG            = 'voucher_name_slug';
+    const FIELD_VOUCHER_TYPE_ID  = 'voucher_type_id';
+    const FIELD_NAME             = 'voucher_name';
+    const FIELD_DESCRIPTION      = 'voucher_description';
+    const FIELD_ENABLE_FROM      = 'voucher_enable_from';
+    const FIELD_ENABLE_TO        = 'voucher_enable_to';
+    const FIELD_PREFIX           = 'voucher_prefix';
+    const FIELD_SUFFIX           = 'voucher_suffix';
+    const FIELD_SLUG             = 'voucher_name_slug';
+    const FIEL_SEQUENCE_STRATEGY = 'sequence_strategy';
     
     public function __construct()
     {
@@ -63,6 +65,7 @@ class VoucherType extends GenericEntity
         $this->__set(self::FIELD_ENABLE_TO,null);
         $this->__set(self::FIELD_PREFIX,null);
         $this->__set(self::FIELD_SUFFIX,null);
+        $this->__set(self::FIEL_SEQUENCE_STRATEGY,null);
         
     }
     
@@ -315,6 +318,67 @@ class VoucherType extends GenericEntity
     {
         $this->__set(self::FIELD_SLUG,$slug);
         return $this;
+    }
+    
+    //-------------------------------------------------------
+    
+    /**
+     *  Gets the sequence strategy.
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function getSequenceStrategy()
+    {
+        return $this->__get(self::FIEL_SEQUENCE_STRATEGY);
+    }
+    
+    /**
+     *  docs
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function setSequenceStrategy()
+    {
+        
+        
+        return $this;
+    }
+    
+    
+    //-------------------------------------------------------
+    
+    /**
+     *  Generate a reference and test it is valid
+     *
+     *  @access public
+     *  @return void
+     *
+    */
+    public function generateReference(ValidationRuleBag $bag)
+    {
+        $reference = $this->getPrefix() . $this->getSequenceStrategy()->nextVal() . $this->getSuffix();
+        
+        if(!$this->validateReference($bag,$reference)) {
+            throw new LedgerException('Generated reference failed to validate, maybe sequence is broken');
+        }
+        
+        return $reference;
+    }
+    
+    /**
+     *  Validate a reference with matching rule
+     *
+     *  @access public
+     *  @return true if valid
+     *
+    */
+    public function validateReference(ValidationRuleBag $bag,$reference)
+    {
+        
     }
     
 }

@@ -81,6 +81,12 @@ class LedgerRuntime implements IteratorAggregate
            $occuredDate = clone $processingDate;
         }
         
+        # test that the occur date before processing date
+        if($processingDate < $occuredDate) {
+            throw new LedgerException('The processing date has been set to a value before the occured date');
+        }
+        
+        
         # create the internal index
         $index = $this->convertDate($occuredDate);
         

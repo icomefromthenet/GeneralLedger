@@ -161,6 +161,29 @@ class RuntimeTest extends TestWithFixture
 
         
     }
+    /**
+     * @expectedException IComeFromTheNet\Ledger\Exception\LedgerException
+     * @expectedExceptionMessage The processing date has been set to a value before the occured date
+     * 
+    */ 
+    public function testNewInstanceErrorProcessingDateBeforeOccursDate()
+    {
+        $doctrine = $this->getDoctrineConnection();
+        $logger   = $this->getMock('Psr\Log\LoggerInterface');
+        $event    = $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        
+        $processingDate = new DateTime();
+        $occuredDate    = new DateTime();
+        
+        $processingDate->modify('- 3 weeks');
+
+        $runtime = new LedgerRuntime($event,$doctrine,$logger);
+        $ledger  = $runtime->assemble($processingDate,$occuredDate);
+
+        
+    }
+    
+   
         
 }
 /* End of File */    

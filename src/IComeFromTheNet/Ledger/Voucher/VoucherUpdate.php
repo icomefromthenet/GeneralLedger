@@ -5,13 +5,14 @@ use IComeFromTheNet\Ledger\Entity\VoucherType;
 use IComeFromTheNet\Ledger\Service\VoucherService;
 
 /**
-  *  Represent a change to voucher properties.
+  *  Represent a change to voucher properties. Facade is used to
+  *  hide properties that can not be changed by a user.
   *
-  *  Voucher is a temporal object, changes to properties
+  *  Because: Voucher is a temporal object, changes to properties
   *  require a new entity be registered and the existing
   *  current voucher be closed.
   *
-  *  You can only change current Vouchers ir vouchers open
+  *  You can only change current Vouchers if vouchers open
   *  as of the known processing date.
   *
   *  only the following properties can be updated by user
@@ -34,56 +35,64 @@ class VoucherUpdate
     
     protected $voucherService;
     
-    
-    protected function validateCurrent(DateTime $processingDate,VoucherType $voucher,VoucherService $service)
-    {
-        
-    }
-    
-    
-    public function __construct(DateTime $processingDate,VoucherType $voucher)
+    /**
+     *  Class Constructor
+     *
+     *  @access public
+     *  @return void
+     *  @param DateTime $processingDate
+     *  @param VoucherType $voucher
+     *  @param VoucherService $service
+     *
+    */
+    public function __construct(DateTime $processingDate,VoucherType $voucher,$voucher,VoucherService $service)
     {
         $this->voucher        = $voucher;
         $this->processingDate = $processingDate;
+        $this->voucherService = $voucherService;
         
     }
     
     
-    public function setDescription()
+    public function setDescription($description)
     {
-        
+        $this->voucher->setDescription($description);
+        return $this;
     }
     
     
-    public function setSuffix()
+    public function setSuffix($suffix)
     {
-        
+        $this->voucher->setSuffix($suffix);
+        return $this;
     }
     
     
-    public function setPrefix()
+    public function setPrefix($prefix)
     {
-        
+        $this->voucher->setPrefix($prefix);
+        return $this;
     }
     
     
     public function setSequenceStrategy()
     {
         
+        return $this;
     }
     
     //-------------------------------------------------------
     
     /**
-     *  Freese the updates state by returning the service
+     *  Calls the service to update this voucher
      *
      *  @access public
      *  @return VoucherService
      *
     */
-    public function freeze()
+    public function commit()
     {
-        return $this->voucherService;
+        $this->voucherService->addVoucher($this->voucher);
         
     }
     
