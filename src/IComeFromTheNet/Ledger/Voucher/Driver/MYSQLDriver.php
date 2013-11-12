@@ -43,18 +43,6 @@ class MYSQLDriver implements SequenceDriverInterface
     }
     
     /**
-     *  Test if sequence table exists in the datastore
-     *
-     *  @access public
-     *  @return true if table exists
-     *
-    */
-    protected function sequenceTableExist()
-    {
-        
-    }
-    
-    /**
      *  Class Constructor
      *
      *  @access public
@@ -100,27 +88,7 @@ class MYSQLDriver implements SequenceDriverInterface
         //return $thi->dbal->
     }
     
-   
-    public function addSequence($sequenceName,$start = 0)
-    {
-        # exist already
-        
-        # lock table
-        
-        # create new row
-        
-    }
-    
-    
-   
-    public function removeSequence($sequenceName)
-    {
-        # does sequence exist
-        
-        # lock row and delete
-        
-        
-    }
+ 
     
 }
 /* End of Class */
