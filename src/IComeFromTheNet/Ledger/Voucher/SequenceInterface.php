@@ -2,7 +2,12 @@
 namespace IComeFromTheNet\Ledger\Voucher;
 
 /**
-  *  All Class that generate a sequence which is an autoincrementing value 
+  *  A sequence is an auto incrementing value. Database platforms implement
+  *  their sequences in different ways. MYSQL uses autoincrement columns while
+  *  Oracle uses named sequences.
+  *
+  *  When given a sequence name, a class that implements this interface
+  *  should map that name to a value.
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
@@ -10,36 +15,15 @@ namespace IComeFromTheNet\Ledger\Voucher;
 interface SequenceInterface
 {
     /*
-     * Generate a value from autoincrement column
+     * Generate an incrementing value
      *
      * @access public
-     * @return integer
+     * @return integer|string a sequence value
      * @param string $sequenceName the sequence name
      *
      */
     public function nextVal($sequenceName);
     
-    /**
-     *  Creates a new sequence
-     *
-     *  @access public
-     *  @return true if sequence added
-     *  @param string $sequenceName sequence name
-     *  @param integer $start the start value
-     *
-    */
-    public function addSequence($sequenceName,$start = 0);
-    
-    
-    /**
-     *  Remove an existing sequence
-     *
-     *  @access public
-     *  @return true if removed
-     *  @param string $sequenceName
-     *
-    */
-    public function removeSequence($sequenceName);
     
 }
 /* End of Interface */
