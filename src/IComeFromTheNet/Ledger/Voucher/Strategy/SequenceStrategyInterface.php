@@ -1,7 +1,8 @@
 <?php
-namespace IComeFromTheNet\Ledger\Voucher;
+namespace IComeFromTheNet\Ledger\Voucher\Strategy;
 
 use IComeFromTheNet\Ledger\Voucher\SequenceInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
   *  A Sequence a class that returns an incrementing value
@@ -32,6 +33,15 @@ interface SequenceStrategyInterface extends SequenceInterface
      *
     */
     public function getDriver();
+    
+    /**
+     *  Fetch the event dispatcher 
+     *
+     *  @access public
+     *  @return Symfony\Component\EventDispatcher\EventDispatcherInterface
+     *
+    */
+    public function getEventDispatcher();
     
     
     /**

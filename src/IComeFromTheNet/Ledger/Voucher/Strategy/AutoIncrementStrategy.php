@@ -1,8 +1,11 @@
 <?php
 namespace IComeFromTheNet\Ledger\Voucher\Strategy;
 
-use IComeFromTheNet\Ledger\Voucher\SequenceStrategyInterface;
+use IComeFromTheNet\Ledger\Voucher\Strategy\SequenceStrategyInterface;
 use IComeFromTheNet\Ledger\Voucher\Driver\SequenceDriverInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use IComeFromTheNet\Ledger\Event\Voucher\VoucherEvents;
+use IComeFromTheNet\Ledger\Event\Voucher\SequenceEvent;
 
 /**
   *  Uses the database to generate a unique identity.
@@ -26,6 +29,11 @@ class AutoIncrementStrategy implements SequenceStrategyInterface
     protected $driver;
     
     /**
+     * @var Symfony\Component\EventDispatcher\EventDispatcherInterface
+    */
+    protected $event;
+    
+    /**
      *  Class constructor
      *
      *  @access public
@@ -33,11 +41,25 @@ class AutoIncrementStrategy implements SequenceStrategyInterface
      *  @param SequenceDriverInterface $driver the database driver
      *
     */
-    public function __construct(SequenceDriverInterface $driver)
+    public function __construct(SequenceDriverInterface $driver, EventDispatcherInterface $dispatcher)
     {
         $this->driver = $driver;
+        $this->event  = $dispatcher;
     }
     
+    
+    /**
+     *  Fetch the event dispatcher 
+     *
+     *  @access public
+     *  @return Symfony\Component\EventDispatcher\EventDispatcherInterface
+     *
+    */
+    public function getEventDispatcher()
+    {
+        return $this->event;
+    }
+   
     
     /*
      * @inheritDoc
@@ -68,7 +90,11 @@ class AutoIncrementStrategy implements SequenceStrategyInterface
      */
     public function nextVal($sequenceName)
     {
-        return $this->getDriver()->nextVal($sequenceName);
+        $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_BEFORE, new SequenceEvent($this,$this->getDriver()));
+            $seq =  $this->getDriver()->nextVal($sequenceName);
+        $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_AFTER.new SequenceEvent($this,$this->getDriver(),$seq));
+        
+        return $seq;
     }
 }
 /* End of Class */

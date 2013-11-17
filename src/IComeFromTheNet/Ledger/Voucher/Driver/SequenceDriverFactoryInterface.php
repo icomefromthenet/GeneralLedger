@@ -3,6 +3,7 @@ namespace IComeFromTheNet\Ledger\Voucher\Driver;
 
 use IComeFromTheNet\Ledger\Voucher\Driver\SequenceDriverInterface;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
 /**
@@ -39,6 +40,15 @@ interface SequenceDriverFactoryInterface
     */
     public function getDBAL();
     
+    
+    /**
+     *  Load the Event Dispatcher
+     *
+     *  @access public
+     *  @return  Symfony\Component\EventDispatcher\EventDispatcherInterface;
+     *
+    */ 
+    public function getEventDispatcher();
     
     /**
      *  Create and instance of a driver when given the platform
