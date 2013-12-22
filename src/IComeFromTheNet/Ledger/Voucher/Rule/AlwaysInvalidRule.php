@@ -1,15 +1,18 @@
 <?php
-namespace IComeFromTheNet\Ledger\Voucher;
+namespace IComeFromTheNet\Ledger\Voucher\Rule;
+
+use IComeFromTheNet\Ledger\Voucher\ValidationRuleInterface;
 
 /**
-  *  Interface for a Voucher Rule
+  *  A Rule that will return invalid to a check.
+  *
+  *  Used in testing.
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-interface ValidationRuleInterface
+class AlwaysInvalidRule implements ValidationRuleInterface
 {
-    
     /**
      *  Validate a voucher reference
      *
@@ -18,8 +21,10 @@ interface ValidationRuleInterface
      *  @param string $voucherReference the reference to validate
      *
     */
-    public function validate($voucherReference);
-    
+    public function validate($voucherReference)
+    {
+        return false;
+    }
     
     /**
      *  Return the validation rules name.
@@ -31,8 +36,11 @@ interface ValidationRuleInterface
      *  @return void
      *
     */
-    public function getName();
+    public function getName()
+    {
+        return 'always-invalid';
+    }
     
     
 }
-/* End of Interface */
+/* End of Class */

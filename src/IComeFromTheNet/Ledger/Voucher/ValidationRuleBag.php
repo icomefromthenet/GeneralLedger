@@ -47,13 +47,15 @@ class ValidationRuleBag implements IteratorAggregate
      *  @param ValidationRuleInterface $rule the instanced rule to bind name to
      *
     */
-    public function addRule($voucherSlug,ValidationRuleInterface $rule)
+    public function addRule(ValidationRuleInterface $rule)
     {
+        $voucherSlug = $rule->getName();
+        
         if(isset($this->rules[$voucherSlug])) {
             throw new LedgerException("$voucherSlug already been added to the Rule Bag");
         }
         
-        $this->rules[$voucherSlug] = $voucherSlug;
+        $this->rules[$voucherSlug] = $rule;
         
         return $this;
     }
@@ -66,8 +68,10 @@ class ValidationRuleBag implements IteratorAggregate
      *  @param string $voucherSlug slug of the rule to remove from bag
      *
     */
-    public function removeRule($voucherSlug)
+    public function removeRule(ValidationRuleInterface $rule)
     {
+        $voucherSlug = $rule->getName();
+        
         if(isset($this->rules[$voucherSlug])) {
             unset($this->rules[$voucherSlug]);
         }
