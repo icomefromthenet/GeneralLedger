@@ -5,6 +5,7 @@ use DateTime;
 use Pimple;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Schema;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -19,39 +20,15 @@ class LedgerServiceProvider extends Pimple
     
     protected function setupMetaDefinitions()
     {
-         $this['account_group_db_meta'] = $this->share(function($c) {
-            $table = new \DBALGateway\Metadata\Table('ledger_account_group');
-            $table->addColumn("group_id", "integer", array("unsigned" => true));
-            $table->addColumn("group_name", "string", array("length" => 50));
-            $table->addColumn("group_description", "string", array("length" => 150));
-            $table->addColumn("group_date_added", "date",array());
-            $table->addColumn("group_date_removed", "date",array());
-            $table->addColumn("parent_group_id", "integer", array("unsigned" => true,'notnull'=> false));
-            $table->setPrimaryKey(array("group_id"));
-            $table->addForeignKeyConstraint($table,  array("parent_group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
-        
-            return $table;
-        }); 
-            
-        $this['account_db_meta'] = $this->share(function($c){
-           
-            $accountTable = new \DBALGateway\Metadata\Table("ledger_account");
-            $accountTable->addColumn("account_number", "integer", array("unsigned" => true));
-            $accountTable->addColumn("account_name","string",array('length' => 50));
-            $accountTable->addColumn("account_date_opened", "date",array());
-            $accountTable->addColumn("account_date_closed", "date",array());
-            $accountTable->addColumn("account_group_id", "integer", array("unsigned" => true));
-            $accountTable->setPrimaryKey(array("account_number"));
-            $accountTable->addForeignKeyConstraint($this['account_group_db_meta'], array("account_group_id"), array("group_id"), array("onUpdate" => "CASCADE")); 
-            
-            return $accountTable;            
-        });
-          
+        require __DIR__ .'/../../../../database/migration/init_schema.php';
+        $schema = new \Migration\Components\Migration\Entities\init_schema();
+        $this['database_meta'] = $schema->buildSchema($this->getDoctrineDBAL(),new Schema());
     }
     
     
     protected function setupTableGateways()
     {
+        
         $this['account_group_entity_builder'] = $this->share(function($c){
             return new \IComeFromTheNet\Ledger\DB\AccountGroupBuilder();    
         });
@@ -241,6 +218,19 @@ class LedgerServiceProvider extends Pimple
     
     //---------------------------------------------------------
     # Internal Dep
+    
+    /**
+     *  Return the database schema 
+     *
+     *  @access public
+     *  @return Doctrine\DBAL\Schema\Schema;
+     *
+    */
+    public function getDatabaseSchema()
+    {
+        return $this['database_meta'];
+        
+    }
     
     public function getAccountsAndGroupInstaller()
     {

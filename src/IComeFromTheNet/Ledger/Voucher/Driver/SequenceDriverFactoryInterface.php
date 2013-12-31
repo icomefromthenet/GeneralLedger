@@ -56,8 +56,9 @@ interface SequenceDriverFactoryInterface
      *  @access public
      *  @return SequenceDriverInterface
      *  @param string $platform same as SequenceDriverInterface::getPlatform();
+     *  $param string $table the database table for vouchers
     */
-    public function getInstance($platform);
+    public function getInstance($platform,$table);
     
 }
 /* End of Interface */

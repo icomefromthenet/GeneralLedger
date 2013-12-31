@@ -8,6 +8,13 @@ use Migration\Database\Handler,
 class test_data implements EntityInterface
 {
     
+    protected function insertDefaultSequences()
+    {
+        $db->insert('ledger_voucher_sequences', array('sequence_name' => 'test_sequence','sequence_no' => 0));
+        
+    }
+    
+    
     public function up(Connection $db, Schema $sc)
     {
 

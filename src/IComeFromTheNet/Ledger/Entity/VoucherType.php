@@ -54,7 +54,7 @@ class VoucherType extends GenericEntity
     const FIELD_PREFIX           = 'voucher_prefix';
     const FIELD_SUFFIX           = 'voucher_suffix';
     const FIELD_SLUG             = 'voucher_name_slug';
-    const FIEL_SEQUENCE_STRATEGY = 'sequence_strategy';
+    const FIELD_SEQUENCE_STRATEGY = 'sequence_strategy';
     
     public function __construct()
     {
@@ -65,7 +65,7 @@ class VoucherType extends GenericEntity
         $this->__set(self::FIELD_ENABLE_TO,null);
         $this->__set(self::FIELD_PREFIX,null);
         $this->__set(self::FIELD_SUFFIX,null);
-        $this->__set(self::FIEL_SEQUENCE_STRATEGY,null);
+        $this->__set(self::FIELD_SEQUENCE_STRATEGY,null);
         
     }
     
@@ -295,26 +295,26 @@ class VoucherType extends GenericEntity
     }
     
     /**
-     *  Gets the slug used to match voucher to validation rule
+     *  Gets the slug rule used to match voucher to validation rule
      *
      *  @access public
      *  @return string the slug
      *
     */
-    public function getSlug()
+    public function getSlugRule()
     {
         return $this->__get(self::FIELD_SLUG);
     }
     
     /**
-     *  Set a slug that used to match voucher to validation rule
+     *  Set a slug rule that used to match voucher to validation rule
      *
      *  @access public
      *  @return $this
      *  @param string $slug
      *
     */
-    public function setSlug($slug)
+    public function setSlugRule($slug)
     {
         $this->__set(self::FIELD_SLUG,$slug);
         return $this;
@@ -331,7 +331,7 @@ class VoucherType extends GenericEntity
     */
     public function getSequenceStrategy()
     {
-        return $this->__get(self::FIEL_SEQUENCE_STRATEGY);
+        return $this->__get(self::FIELD_SEQUENCE_STRATEGY);
     }
     
     /**

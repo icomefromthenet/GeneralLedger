@@ -1,5 +1,5 @@
 <?php
-namespace IComeFromTheNet\Ledger\Event\Voucher;
+namespace IComeFromTheNet\Ledger\Voucher\Event;
 
 /**
   *  List of events that used in the voucher component

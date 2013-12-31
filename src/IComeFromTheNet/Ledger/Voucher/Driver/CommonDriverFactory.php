@@ -1,13 +1,13 @@
 <?php
-namespace IComeFromTheNet\Ledger\Voucher\Strategy;
+namespace IComeFromTheNet\Ledger\Voucher\Driver;
 
 use Doctrine\DBAL\Connection;
 use IComeFromTheNet\Ledger\Voucher\Driver\SequenceDriverInterface;
 use IComeFromTheNet\Ledger\Voucher\Driver\SequenceDriverFactoryInterface;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use IComeFromTheNet\Ledger\Event\Voucher\VoucherEvents;
-use IComeFromTheNet\Ledger\Event\Voucher\DriverFactoryEvent;
+use IComeFromTheNet\Ledger\Voucher\Event\VoucherEvents;
+use IComeFromTheNet\Ledger\Voucher\Event\DriverFactoryEvent;
 
 /**
   *  A Driver Factory for Drivers that power the UUID Sequence Strategy
@@ -45,6 +45,9 @@ class CommonDriverFactory implements SequenceDriverFactoryInterface
     {
         $this->database         = $database;
         $this->eventDispatcher  = $dispatcher;
+
+        $this->registerDriver('mysql','IComeFromTheNet\\Ledger\\Voucher\\Driver\\MYSQLDriver');
+        
     }
     
     
@@ -65,7 +68,6 @@ class CommonDriverFactory implements SequenceDriverFactoryInterface
         if(class_exists($class) === false) {
             throw new LedgerException("Platform driver $class does not exist");
         }
-        
         
         $this->factoryInstances[$platform] = $class;
         
@@ -97,23 +99,23 @@ class CommonDriverFactory implements SequenceDriverFactoryInterface
     /**
      * @inhertDoc
     */
-    public function getInstance($platform)
+    public function getInstance($platform,$table)
     {
-        if(isset($this->factoryInstances[$platform]) === true) {
+        if(!isset($this->factoryInstances[$platform])) {
             throw new LedgerException("Platform $platform not registered with factory");
         }
         
-        if(!$class instanceof SequenceDriverInterface ) {
-            $class = $this->factoryInstances[$platform];
-            $this->factoryInstances[$platform] = new $class($this->database);
-            $this->eventDispatcher->dispatch(VoucherEvents::SEQUNENCE_DRIVER_INSTANCED,
+        $class = $this->factoryInstances[$platform];
+        
+        $this->factoryInstances[$platform] = new $class($this->database,$table);
+
+        $this->eventDispatcher->dispatch(VoucherEvents::SEQUNENCE_DRIVER_INSTANCED,
                                              new DriverFactoryEvent($this,
                                                                     $platform,
                                                                     $class,
                                                                     $this->factoryInstances[$platform]
                                                                 )
                                             );
-        }
         
         return $this->factoryInstances[$platform];
         

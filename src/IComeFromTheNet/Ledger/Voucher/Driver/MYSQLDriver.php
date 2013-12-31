@@ -5,7 +5,7 @@ use Doctrine\DBAL\Connection;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
 
 /**
-  *  Driver for the mysql plaform. will generate sequences
+  *  Driver for the mysql plaform. 
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
@@ -14,33 +14,18 @@ class MYSQLDriver implements SequenceDriverInterface
 {
     
     
+    const PLATFORM = 'mysql';
     
     /**
      *  @var Doctrine\DBAL\Connection the database connection
     */
     protected $dbal;
     
-    /**
-     *  @var boolean true if sequence table found
-    */
-    protected $sequenceTableFound;
-    
     /*
      * @var string the sequence table name
      */
     protected $sequenceTableName;
     
-    /**
-     *  Test if a Sequence Exists
-     *
-     *  @access public
-     *  @return void
-     *
-    */
-    protected function doesSequenceExist($sequenceName)
-    {
-        
-    }
     
     /**
      *  Class Constructor
@@ -52,7 +37,6 @@ class MYSQLDriver implements SequenceDriverInterface
     public function __construct(Connection $dbal,$sequenceTableName)
     {
         $this->dbal               = $dbal;
-        $this->sequenceTableFound = false;
         
         if(empty($sequenceTableName)) {
            throw new LedgerException(sprinf("The sequence table name is empty string"));
@@ -67,7 +51,7 @@ class MYSQLDriver implements SequenceDriverInterface
     
     public function getPlatform()
     {
-        return 'mysql';
+        return self::PLATFORM;
     }
     
     
@@ -75,17 +59,52 @@ class MYSQLDriver implements SequenceDriverInterface
     # SequenceInterface
     
    
-    public function nextVal($sequenceName)
+    /*
+     * Generate a unique UUID from database
+     *
+     * @access public
+     * @return integer|string a sequence value
+     * @param string $sequenceName the sequence name
+     *
+     */
+    public function uuid($name)
     {
-        # is the sequence table found
+        $statement =  $this->dbal->prepare('SELECT '.$this->dbal->getDatabasePlatform()->getGuidExpression().' AS myuuid;');
         
-        # lock sequence with select for update
+        if($statement->execute() === false) {
+            throw new LedgerException('Unable to call uuid on database');
+        }
+        
+        return $statement->fetchColumn(0);
+    }
+    
+    /*
+     * Generate a uniqe incrementing number
+     *
+     * @access public
+     * @return integer|string a sequence value
+     * @param string $sequenceName the sequence name
+     *
+     */
+    public function sequence($name)
+    {
+        # will find the current voucher ie where max-date is set
+        $updateStr = 'UPDATE '.$this->sequenceTableName. ' SET voucher_sequence_no = LAST_INSERT_ID(voucher_sequence_no + 1) WHERE voucher_slug = ? AND voucher_enabled_to = \'3000-01-01 00:00:00\';';
+        $selectStr = 'SELECT LAST_INSERT_ID();';
         
         # update row
+        if($this->dbal->executeUpdate($updateStr,array($name)) == 0) {
+            throw new LedgerException('Unable to update voucher sequence with name '.$name);
+        }
         
-        # fetch auto-increment from driver
+        # select the return
+        $statement =  $this->dbal->prepare($selectStr);
         
-        //return $thi->dbal->
+        if($statement->execute() === false) {
+            throw new LedgerException('Unable to reterive last updated sequence for name '.$name);
+        }
+        
+        return (integer) $statement->fetchColumn(0);
     }
     
  

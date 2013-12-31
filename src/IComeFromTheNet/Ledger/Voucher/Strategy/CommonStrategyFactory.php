@@ -5,9 +5,11 @@ use IComeFromTheNet\Ledger\Voucher\Strategy\StrategyFactoryInterface;
 use IComeFromTheNet\Ledger\Voucher\Driver\SequenceDriverFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
-use IComeFromTheNet\Ledger\Event\Voucher\VoucherEvents;
-use IComeFromTheNet\Ledger\Event\Voucher\StrategyFactoryEvent;
+use IComeFromTheNet\Ledger\Voucher\Event\VoucherEvents;
+use IComeFromTheNet\Ledger\Voucher\Event\StrategyFactoryEvent;
 use IComeFromTheNet\Ledger\Voucher\Strategy\SequenceStrategyInterface;
+use IComeFromTheNet\Ledger\Voucher\Strategy\AutoIncrementStrategy;
+use IComeFromTheNet\Ledger\Voucher\Strategy\UUIDStrategy;
 
 /**
   *  Factory that builds Sequence Strategies
@@ -25,12 +27,23 @@ class CommonStrategyFactory implements StrategyFactoryInterface
     protected $driverFactory;
     
     
-    
+    /**
+     *  Class Constructor
+     *
+     *  @access public
+     *  @return void
+     *  @param SequenceDriverFactoryInterface $driverFactory
+     *  @param EventDispatcherInterface $dispatcher
+     *
+    */
     public function __construct(SequenceDriverFactoryInterface $driverFactory, EventDispatcherInterface $dispatcher)
     {
         $this->driverFactory     = $driverFactory;
         $this->eventDispatcher   = $dispatcher;
         $this->strategyInstances = array();
+        
+        $this->registerStrategy('sequence','IComeFromTheNet\\Ledger\\Voucher\\Strategy\\AutoIncrementStrategy');
+        $this->registerStrategy('uuid','IComeFromTheNet\\Ledger\\Voucher\\Strategy\\UUIDStrategy');
     }
     
     
@@ -46,7 +59,7 @@ class CommonStrategyFactory implements StrategyFactoryInterface
     */
     public function registerStrategy($name,$class)
     {
-        if(isset($this->strategyInstances[$name]) === true) {
+        if(isset($this->strategyInstances[$name])) {
             throw new LedgerException("Sequence strategy $name already registered with factory");
         }
         
@@ -54,10 +67,9 @@ class CommonStrategyFactory implements StrategyFactoryInterface
             throw new LedgerException("Sequence strategy $class does not exist");
         }
         
+        $this->strategyInstances[$name] = $class;
         
-        $this->strategyInstancess[$platform] = $class;
-        
-        $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_STRATEGY_REGISTERED,new StrategyFactoryEvent($factory,$name,$class));
+        $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_STRATEGY_REGISTERED,new StrategyFactoryEvent($this,$name,$class));
         
         return $this;
     }
@@ -95,9 +107,10 @@ class CommonStrategyFactory implements StrategyFactoryInterface
      *
      *  @access public
      *  @return SequenceStrategyInterface
-     *  @param string $name  SequenceStrategyInterface::getStrategyName() 
+     *  @param string $name     SequenceStrategyInterface::getStrategyName()
+     *  @param string $platform SequenceDriverInterface::getPlatform()
     */
-    public function getInstance($name)
+    public function getInstance($name,$platform)
     {
         if(isset($this->strategyInstances[$name]) === true) {
             throw new LedgerException("Sequence strategy $name not registered with factory");
@@ -105,8 +118,8 @@ class CommonStrategyFactory implements StrategyFactoryInterface
         
         if(!$class instanceof SequenceStrategyInterface ) {
             
-            $class = $this->strategyInstances[$platform];
-            $this->factoryInstances[$platform] = new $class($this->driverFactory,$this->getEventDispatcher());
+            $class = $this->strategyInstances[$name];
+            $this->factoryInstances[$name] = new $class($this->getDriverFactory()->getInstance($platform),$this->getEventDispatcher());
             
             $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUNENCE_STRATEGY_INSTANCED,
                                              new StrategyFactoryEvent($this,
@@ -117,7 +130,7 @@ class CommonStrategyFactory implements StrategyFactoryInterface
                                             );
         }
         
-        return $this->factoryInstances[$platform];
+        return $this->factoryInstances[$name];
     }
     
 }

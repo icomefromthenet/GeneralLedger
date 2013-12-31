@@ -7,6 +7,7 @@ use IComeFromTheNet\Ledger\Entity\AccountGroup;
 use IComeFromTheNet\Ledger\Entity\Account;
 use IComeFromTheNet\Ledger\Entity\StatementPeriod;
 use IComeFromTheNet\Ledger\Entity\OrganisationUnit;
+use IComeFromTheNet\Ledger\Entity\VoucherType;
 
 
 /**
@@ -273,6 +274,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         
     }
     
+    
+    
+    public function testNewVoucherEntity()
+    {
+        $voucher = new VoucherType();
+        
+        $name = 'sales receipt';
+        $description = 'a recepit of a sale';
+        $suffix = '000';
+        $preffix = 'INV';
+        
+        
+    }
     
    
     

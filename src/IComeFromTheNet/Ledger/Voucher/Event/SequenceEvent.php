@@ -1,5 +1,5 @@
 <?php
-namespace IComeFromTheNet\Ledger\Event\Voucher;
+namespace IComeFromTheNet\Ledger\Voucher\Event;
 
 use Exception;
 use Symfony\Component\EventDispatcher\Event;

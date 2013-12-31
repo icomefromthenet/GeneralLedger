@@ -13,7 +13,7 @@
     
     <php>
         <var name="DEMO_DATABASE_DSN" value="mysql:dbname=ledger;host=127.0.0.1"/>
-        <var name="DEMO_DATABASE_USER" value="root"/>
+        <var name="DEMO_DATABASE_USER" value="vagrant"/>
         <var name="DEMO_DATABASE_PASSWORD" value="vagrant"/>
         <var name="DEMO_DATABASE_SCHEMA" value="ledger"/>
         <var name="DEMO_DATABASE_PORT" value="3306"/>

@@ -10,6 +10,7 @@ use IComeFromTheNet\Ledger\Service\LedgerServiceProvider;
 use IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvent;
 use IComeFromTheNet\Ledger\Event\Runtime\RuntimeEvents;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use IComeFromTheNet\Ledger\Lockout\LockoutDecisionInterface;
 
 /**
   *  Loads a ledger and rules at given a date.
@@ -25,6 +26,8 @@ class LedgerRuntime implements IteratorAggregate
    protected $dbal;
    
    protected $logger;
+   
+   protected $lockingMethod;
    
    /**
      * 
@@ -43,18 +46,21 @@ class LedgerRuntime implements IteratorAggregate
     *  @return void
     *  @param EventDispatcherInterface $eventDispatcher the symfony2 event dispatcher
     *  @param Connection $dbal the doctrine DBAL interface
-    *  @param LoggerInterface the PSR Logger
+    *  @param LoggerInterface $logger the PSR Logger
+    *  @param LockoutDecisionInterface $lockingMethod the locking method to use
     *
    */
    public function __construct(EventDispatcherInterface $eventDispatcher,
                                Connection $dbal,
-                               LoggerInterface $logger
+                               LoggerInterface $logger,
+                               LockoutDecisionInterface $lockingMethod
                                )
    {
     
     $this->eventDispatcher = $eventDispatcher;
     $this->logger          = $logger;
     $this->dbal            = $dbal;
+    $this->lockingMethod   = $lockingMethod;
    }
    
    

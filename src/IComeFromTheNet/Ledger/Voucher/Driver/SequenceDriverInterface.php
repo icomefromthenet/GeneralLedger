@@ -9,7 +9,7 @@ use IComeFromTheNet\Ledger\Voucher\SequenceInterface;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-interface SequenceDriverInterface extends SequenceInterface
+interface SequenceDriverInterface 
 {
     
     /**
@@ -22,6 +22,27 @@ interface SequenceDriverInterface extends SequenceInterface
      *
     */
     public function getPlatform();
+    
+     /*
+     * Generate a unique UUID from database
+     *
+     * @access public
+     * @return integer|string a sequence value
+     * @param string $sequenceName the sequence name
+     *
+     */
+    public function uuid($name);
+    
+    /*
+     * Generate a uniqe incrementing number
+     *
+     * @access public
+     * @return integer|string a sequence value
+     * @param string $sequenceName the sequence name
+     *
+     */
+    public function sequence($name);
+    
     
 }
 /* End of Interface */

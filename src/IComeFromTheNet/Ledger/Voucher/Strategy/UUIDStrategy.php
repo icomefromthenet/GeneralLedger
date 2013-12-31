@@ -4,8 +4,8 @@ namespace IComeFromTheNet\Ledger\Voucher\Strategy;
 use IComeFromTheNet\Ledger\Voucher\Strategy\SequenceStrategyInterface;
 use IComeFromTheNet\Ledger\Voucher\Driver\SequenceDriverInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use IComeFromTheNet\Ledger\Event\Voucher\VoucherEvents;
-use IComeFromTheNet\Ledger\Event\Voucher\SequenceEvent;
+use IComeFromTheNet\Ledger\Voucher\Event\VoucherEvents;
+use IComeFromTheNet\Ledger\Voucher\Event\SequenceEvent;
 
 /**
   *  Generates a unique identity using UUID functions
@@ -38,6 +38,7 @@ class UUIDStrategy implements SequenceStrategyInterface
      *  @access public
      *  @return void
      *  @param SequenceDriverInterface $driver the database driver
+     *  @param EventDispatcherInterface $dispatcher the event dispatcher
      *
     */
     public function __construct(SequenceDriverInterface $driver, EventDispatcherInterface $event)
@@ -76,7 +77,7 @@ class UUIDStrategy implements SequenceStrategyInterface
      */
     public function getStrategyName()
     {
-        return $self::STRATEGY_NAME;
+        return self::STRATEGY_NAME;
     }
     
     
@@ -92,8 +93,8 @@ class UUIDStrategy implements SequenceStrategyInterface
     public function nextVal($sequenceName)
     {
         $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_BEFORE, new SequenceEvent($this,$this->getDriver()));
-            $seq =  $this->getDriver()->nextVal($sequenceName);
-        $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_AFTER.new SequenceEvent($this,$this->getDriver(),$seq));
+            $seq =  $this->getDriver()->uuid($sequenceName);
+        $this->getEventDispatcher()->dispatch(VoucherEvents::SEQUENCE_AFTER,new SequenceEvent($this,$this->getDriver(),$seq));
         
         return $seq;
     }

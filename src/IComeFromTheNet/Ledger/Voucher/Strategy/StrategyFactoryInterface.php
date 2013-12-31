@@ -53,9 +53,10 @@ interface StrategyFactoryInterface
      *
      *  @access public
      *  @return SequenceStrategyInterface
-     *  @param string $name  SequenceStrategyInterface::getStrategyName() 
+     *  @param string $name     SequenceStrategyInterface::getStrategyName()
+     *  @param string $platform SequenceDriverInterface::getPlatform()
     */
-    public function getInstance($name);
+    public function getInstance($name,$platform);
     
 }
 /* End of Interface */
