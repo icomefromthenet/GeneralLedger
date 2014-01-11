@@ -1,23 +1,26 @@
 <?php
 namespace Migration\Components\Migration\Entities;
 
-use Migration\Database\Handler,
-    Doctrine\DBAL\Schema\AbstractSchemaManager as Schema,
-    Migration\Components\Migration\EntityInterface;
+use Migration\Database\Handler;
+use Doctrine\DBAL\Schema\AbstractSchemaManager as Schema;
+use Migration\Components\Migration\EntityInterface;
+use Doctrine\DBAL\Connection;
 
 class test_data implements EntityInterface
 {
     
-    protected function insertDefaultSequences()
+    protected function insertDefaultSequences($db)
     {
-        $db->insert('ledger_voucher_sequences', array('sequence_name' => 'test_sequence','sequence_no' => 0));
-        
+        $db->insert('ledger_voucher',
+
+
+                );
     }
     
     
     public function up(Connection $db, Schema $sc)
     {
-
+        $this->insertDefaultSequences($db);
 
     }
 

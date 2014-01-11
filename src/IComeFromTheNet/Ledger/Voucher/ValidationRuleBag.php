@@ -25,14 +25,14 @@ class ValidationRuleBag implements IteratorAggregate
      *
      *  @access public
      *  @return ValidationRuleInterface|null rule if found
-     *  @param string $voucherSlug
+     *  @param string $ruleName the name of the rule 
      *
     */
-    public function getRule($voucherSlug)
+    public function getRule($ruleName)
     {
         $rule = null;
-        if(isset($this->rules[$voucherSlug])) {
-            $rule = $this->rules[$voucherSlug];
+        if(isset($this->rules[$ruleName])) {
+            $rule = $this->rules[$ruleName];
         }
         
         return $rule;
@@ -43,19 +43,19 @@ class ValidationRuleBag implements IteratorAggregate
      *
      *  @access public
      *  @return $this
-     *  @param string $voucherSlug the name to index rule with
+     *  @param string $ruleName the name to index rule with
      *  @param ValidationRuleInterface $rule the instanced rule to bind name to
      *
     */
     public function addRule(ValidationRuleInterface $rule)
     {
-        $voucherSlug = $rule->getName();
+        $ruleName = $rule->getName();
         
-        if(isset($this->rules[$voucherSlug])) {
-            throw new LedgerException("$voucherSlug already been added to the Rule Bag");
+        if(isset($this->rules[$ruleName])) {
+            throw new LedgerException("$ruleName already been added to the Rule Bag");
         }
         
-        $this->rules[$voucherSlug] = $rule;
+        $this->rules[$ruleName] = $rule;
         
         return $this;
     }
@@ -65,15 +65,13 @@ class ValidationRuleBag implements IteratorAggregate
      *
      *  @access public
      *  @return $this
-     *  @param string $voucherSlug slug of the rule to remove from bag
+     *  @param string $ruleName slug of the rule to remove from bag
      *
     */
-    public function removeRule(ValidationRuleInterface $rule)
+    public function removeRule($ruleName)
     {
-        $voucherSlug = $rule->getName();
-        
-        if(isset($this->rules[$voucherSlug])) {
-            unset($this->rules[$voucherSlug]);
+        if(isset($this->rules[$ruleName])) {
+            unset($this->rules[$ruleName]);
         }
         return $this;
     }

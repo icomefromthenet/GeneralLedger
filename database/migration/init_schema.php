@@ -21,8 +21,11 @@ class init_schema implements EntityInterface
         $table->addColumn('voucher_description','string',array('length'=>500));
         $table->addColumn('voucher_prefix','string',array('length'=> 20));
         $table->addColumn('voucher_suffix','string',array('length'=>20));
+        $table->addColumn('voucher_maxlength','integer',array('unsiged'=> true));
+        $table->addColumn('voucher_formatter','string',array('length'=> 100));
         $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
         $table->addColumn('voucher_sequence_no','integer',array('unsiged'=> true));
+        $table->addColumn('voucher_sequence_padding_char','string',array('legnth'=>'1'));
         
         $table->setPrimaryKey(array('voucher_slug','voucher_enabled_from'));
     }

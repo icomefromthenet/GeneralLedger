@@ -23,8 +23,9 @@ class Voucher
     const FIELD_VOUCHER_SUFFIX           = 'voucher_suffix';
     const FIELD_VOUCHER_SLUG             = 'voucher_slug';
     const FIELD_VOUCHER_SEQENCE_STRATEGY = 'voucher_sequence_strategy';
-    const FIELD_VOUCHER_SEQENCE_NO       = 'voucher_sequence_no';    
-    
+    const FIELD_VOUCHER_SEQENCE_NO       = 'voucher_sequence_no';
+    const FIELD_VOUCHER_SEQUENCE_PADDING_CHAR  = 'voucher_sequence_padding_char';
+    const FIELD_VOUCHER_FORMATTER        = 'voucher_formatter';
     
     /**
      * @var Faker\Components\Engine\Entity\Builder\EntityGenerator
@@ -250,6 +251,30 @@ class Voucher
         return $builder;
     }
     
+    
+    public function configureVoucherSequencePaddingChar(FieldCollection $builder)
+    {
+        $name = self::FIELD_VOUCHER_SEQUENCE_PADDING_CHAR;
+        
+        $builder->addField($name)
+                    ->fieldRegex()
+                        ->regex('[@| |*]{1,1}')
+                    ->end()
+        ->end();
+        
+        return $builder;    
+    }
+    
+    public function configureVoucherFormatter(FieldCollection $builder)
+    {
+        $builder->addField(self::FIELD_VOUCHER_FORMATTER)
+                ->fieldRegex()
+                    ->regex('default|passthrough')
+                ->end()
+        ->end();
+        
+        return $builder;
+    }
     
     /**
      *  Return a collection of voucher GenericEntities

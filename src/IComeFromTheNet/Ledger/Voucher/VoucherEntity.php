@@ -1,8 +1,10 @@
 <?php
-namespace IComeFromTheNet\Ledger\Entity;
+namespace IComeFromTheNet\Ledger\Voucher\VoucherEntity;
 
 use Aura\Marshal\Entity\GenericEntity;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use IComeFromTheNet\Ledger\Voucher\Formatter\FormatterInterface;
+use IComeFromTheNet\Ledger\Voucher\Strategy\SequenceStrategyInterface;
 use IComeFromTheNet\Ledger\Voucher\ValidationRuleBag;
 
 /**
@@ -40,21 +42,21 @@ use IComeFromTheNet\Ledger\Voucher\ValidationRuleBag;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class VoucherType extends GenericEntity
+class VoucherEntity extends GenericEntity
 {
     const DESCRIPTION_MAX_SIZE  = 500;
     const NAME_MAX_SIZE         = 100;
     
     
-    const FIELD_VOUCHER_TYPE_ID  = 'voucher_type_id';
     const FIELD_NAME             = 'voucher_name';
     const FIELD_DESCRIPTION      = 'voucher_description';
     const FIELD_ENABLE_FROM      = 'voucher_enable_from';
     const FIELD_ENABLE_TO        = 'voucher_enable_to';
     const FIELD_PREFIX           = 'voucher_prefix';
     const FIELD_SUFFIX           = 'voucher_suffix';
-    const FIELD_SLUG             = 'voucher_name_slug';
-    const FIELD_SEQUENCE_STRATEGY = 'sequence_strategy';
+    const FIELD_MAXLENGTH        = 'voucher_maxlength';
+    const FIELD_SLUG             = 'voucher_slug';
+    
     
     public function __construct()
     {
@@ -70,33 +72,29 @@ class VoucherType extends GenericEntity
     }
     
     
-    /**
-     *  Get the voucher types database ID
+     /**
+     *  Gets the voucher slug name (database_id)
      *
      *  @access public
-     *  @return integer the database id
+     *  @return string the slug
      *
     */
-    public function getVoucherTypeID()
+    public function getSlug()
     {
-        return $this->__get(self::FIELD_VOUCHER_TYPE_ID);
+        return $this->__get(self::FIELD_SLUG);
     }
     
     /**
-     *  Set this vouchers type voucher id
+     *  Set the voucher slug name (database id)
      *
      *  @access public
-     *  @return integer $id 
+     *  @return $this
+     *  @param string $slug the database identity
      *
     */
-    public function setVoucherTypeID($id)
+    public function setSlug($slug)
     {
-        if(!is_init($id) || (int) $id <= 0) {
-            throw new LedgerException('Voucher type ID must be an integer > 0');
-        }
-        
-        $this->__set(self::FIELD_VOUCHER_TYPE_ID,null);
-        
+        $this->__set(self::FIELD_SLUG,$slug);
         return $this;
     }
     
@@ -295,56 +293,115 @@ class VoucherType extends GenericEntity
     }
     
     /**
-     *  Gets the slug rule used to match voucher to validation rule
+     *  Sets the MaxLength of a reference field
      *
      *  @access public
-     *  @return string the slug
+     *  @return integer field length | null for no max
      *
     */
-    public function getSlugRule()
+    public function getMaxLength()
     {
-        return $this->__get(self::FIELD_SLUG);
+        $this->get(self::FIELD_MAXLENGTH);        
     }
     
     /**
-     *  Set a slug rule that used to match voucher to validation rule
+     *  The maxlength of the reference field
+     *
+     *  can me null for no max
      *
      *  @access public
-     *  @return $this
-     *  @param string $slug
+     *  @param integer | null $max
      *
     */
-    public function setSlugRule($slug)
+    public function setMaxLength($max)
     {
-        $this->__set(self::FIELD_SLUG,$slug);
+        $this->_set(self::FIELD_MAXLENGTH,$max);
         return $this;
     }
     
-    //-------------------------------------------------------
+    
+    //----------------------------------------------------------------
+    # Object Properties 
+    
+    protected $voucherFormatter;
+    protected $sequenceStrategy;
+    protected $validationRuleBag;
     
     /**
-     *  Gets the sequence strategy.
+     *  Gets the voucher formatter
      *
      *  @access public
-     *  @return void
+     *  @return IComeFromTheNet\Ledger\Voucher\Formatter\FormatterInterface
+     *
+    */
+    public function getVoucherFormatter()
+    {
+        return $this->voucherFormatter;    
+    }
+    
+    /**
+     *  Sets the class that format the generated sequence
+     *
+     *  @access public
+     *  @return VoucherEntity
+     *  @param IComeFromTheNet\Ledger\Voucher\Formatter\FormatterInterface $formatter
+     *
+    */
+    public function setVoucherFormatter(FormatterInterface $formatter)
+    {
+        $this->voucherFormatter = $formatter;
+        return $this;
+    }
+    
+    /**
+     *  Get the class that generate the sequence.
+     *
+     *  @access public
+     *  @return IComeFromTheNet\Ledger\Voucher\Strategy\SequenceStrategyInterface
      *
     */
     public function getSequenceStrategy()
     {
-        return $this->__get(self::FIELD_SEQUENCE_STRATEGY);
+        return $this->sequenceStrategy;
     }
     
     /**
-     *  docs
+     *  Set the class that generate the sequence
      *
      *  @access public
-     *  @return void
+     *  @return VoucherEntity
+     *  @param IComeFromTheNet\Ledger\Voucher\Strategy\SequenceStrategyInterface $sequenceStrategy
      *
     */
-    public function setSequenceStrategy()
+    public function setSequenceStrategy(SequenceStrategyInterface $sequenceStrategy)
     {
-        
-        
+        $this->sequenceStrategy = $sequenceStrategy;
+        return $this;
+    }
+    
+    /**
+     *  Gets the sequence validator rule set
+     *
+     *  @access public
+     *  @return IComeFromTheNet\Ledger\Voucher\ValidationRuleBag
+     *
+    */
+    public function getValidationRuleRuleBag()
+    {
+        return $this->validationRuleBag;
+    }
+    
+    /**
+     *  Sets the sequence valdiator rule set
+     *
+     *  @access public
+     *  @return VoucherEntity
+     *  @param IComeFromTheNet\Ledger\Voucher\ValidationRuleBag $bag
+     *
+    */
+    public function setValidationRuleRuleBag(ValidationRuleBag $bag)
+    {
+        $this->validationRuleBag = $bag;
         return $this;
     }
     
@@ -360,7 +417,7 @@ class VoucherType extends GenericEntity
     */
     public function generateReference(ValidationRuleBag $bag)
     {
-        $reference = $this->getPrefix() . $this->getSequenceStrategy()->nextVal() . $this->getSuffix();
+        $reference = $this->getVoucherFormatter()->format($this->getSequenceStrategy()->nextVal($this->getSlug()));
         
         if(!$this->validateReference($bag,$reference)) {
             throw new LedgerException('Generated reference failed to validate, maybe sequence is broken');
@@ -378,7 +435,16 @@ class VoucherType extends GenericEntity
     */
     public function validateReference(ValidationRuleBag $bag,$reference)
     {
+        $valid = true;
         
+        foreach($this->getValidationRuleRuleBag() as $rule) {
+            if(!$rule->validate($reference)){
+                $valid = false;
+                break;
+            };
+        }
+    
+        return $valid;
     }
     
 }
