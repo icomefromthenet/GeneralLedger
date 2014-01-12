@@ -38,6 +38,7 @@ class VoucherEntityTest extends TestWithContainer
         $voucherMaxLength   = 10;
         $voucherSuffix      = 'REF_';
         $voucherPrefix      = 'PRE_';
+        $voucherPaddingChar = '@';
         
         
         $entity = new VoucherEntity();
@@ -65,6 +66,9 @@ class VoucherEntityTest extends TestWithContainer
         
         $entity->setMaxLength($voucherMaxLength);
         $this->assertSame($voucherMaxLength,$entity->getMaxLength());
+        
+        $entity->setPaddingChar($voucherPaddingChar);
+        $this->assertSame($voucherPaddingChar,$entity->getPaddingChar());
         
         $entity->setVoucherFormatter($formatter);
         $this->assertEquals($formatter,$entity->getVoucherFormatter());

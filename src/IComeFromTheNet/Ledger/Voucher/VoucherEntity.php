@@ -54,6 +54,7 @@ class VoucherEntity extends GenericEntity
     const FIELD_SUFFIX           = 'voucher_suffix';
     const FIELD_MAXLENGTH        = 'voucher_maxlength';
     const FIELD_SLUG             = 'voucher_slug';
+    const FIELD_PADDING_CHAR     = 'voucher_sequence_padding_char';
     
     
     public function __construct()
@@ -66,7 +67,7 @@ class VoucherEntity extends GenericEntity
         $this->__set(self::FIELD_SUFFIX,null);
         $this->__set(self::FIELD_MAXLENGTH,null);
         $this->__set(self::FIELD_SLUG,null);
-        
+        $this->__set(self::FIELD_PADDING_CHAR,null);
     }
     
     
@@ -307,12 +308,41 @@ class VoucherEntity extends GenericEntity
      *
      *  @access public
      *  @param integer | null $max
-     *
+     *  @return $this;
     */
     public function setMaxLength($max)
     {
         $this->__set(self::FIELD_MAXLENGTH,$max);
         return $this;
+    }
+    
+    /**
+     *  The Padding Character 
+     *
+     *  can me null for no character
+     *
+     *  @access public
+     *  @param integer | null $char
+     *  @return $this;
+    */
+    public function setPaddingChar($char)
+    {
+        $this->__set(self::FIELD_PADDING_CHAR,$char);
+        return $this;
+    }
+    
+    /**
+     *  The Padding Character 
+     *
+     *  can me null for no character
+     *
+     *  @access public
+     *  @param integer | null $char
+     *  
+    */
+    public function getPaddingChar()
+    {
+        return $this->__get(self::FIELD_PADDING_CHAR);
     }
     
     
