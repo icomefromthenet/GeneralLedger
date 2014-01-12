@@ -6,7 +6,7 @@ use Aura\Marshal\Entity\BuilderInterface as EntityBuilderInterface;
 use IComeFromTheNet\Ledger\Voucher\VoucherEntity;
 use IComeFromTheNet\Ledger\Voucher\ValidationRuleBag;
 use IComeFromTheNet\Ledger\Voucher\Strategy\StrategyFactoryInterface;
-use IComeFromTheNet\Ledger\Voucher\FormatterBagInterface;
+use IComeFromTheNet\Ledger\Voucher\Formatter\FormatterBagInterface;
 
 /**
   *  Builds an Voucher Entity
@@ -29,7 +29,7 @@ class VoucherBuilder implements BuilderInterface,EntityBuilderInterface
     public function __construct(FormatterBagInterface $formatterBag,
                                 StrategyFactoryInterface $strategyFactory,
                                 ValidationRuleBag $ruleBag,
-                                databasePlatform $databasePlarform)
+                                $databasePlatform)
     {
         $this->strategyFactory   = $strategyFactory;
         $this->formatterBag      = $formatterBag;
@@ -76,7 +76,7 @@ class VoucherBuilder implements BuilderInterface,EntityBuilderInterface
         $voucher->setPaddingChar($data['voucher_sequence_padding_char']);
         
         # pull the formatter from the bag
-        $this->setVoucherFormatter($this->formatterBag->getFormatter($data['voucher_formatter']));
+        $voucher->setVoucherFormatter($this->formatterBag->getFormatter($data['voucher_formatter']));
         
         
         # pull sequence strategy from factory.
@@ -101,7 +101,18 @@ class VoucherBuilder implements BuilderInterface,EntityBuilderInterface
     public function demolish($entity)
     {
        $data = array(
-           
+            'voucher_slug'              => $entity->getSlug(),
+            'voucher_enabled_from'      => $entity->getEnabledFrom(),
+            "voucher_enabled_to"        => $entity->getEnabledTo(),
+            'voucher_name'              => $entity->getName(),
+            'voucher_description'       => $entity->getDescription(),
+            'voucher_prefix'            => $entity->getPrefix(),
+            'voucher_suffix'            => $entity->getSuffix(),
+            'voucher_maxlength'         => $entity->getMaxLength(),
+            'voucher_formatter'         => $entity->getVoucherFormatter()->getName(),
+            'voucher_sequence_strategy' => $entity->getSequenceStrategy()->getStrategyName(),
+            'voucher_sequence_padding_char' => $entity->getPaddingChar()
+    
         );
         
         return $data;
