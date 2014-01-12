@@ -45,7 +45,7 @@ class VoucherRuleBagTest extends TestWithContainer
         $rule = new AlwaysInvalidRule();
         
         $bag->addRule($rule);
-        $this->assertSame($bag,$bag->removeRule($rule));
+        $this->assertSame($bag,$bag->removeRule('always-invalid'));
         $bag->addRule($rule); # add without exception
     }
     

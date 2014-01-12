@@ -70,6 +70,7 @@ class ValidationRuleBag implements IteratorAggregate
     */
     public function removeRule($ruleName)
     {
+        
         if(isset($this->rules[$ruleName])) {
             unset($this->rules[$ruleName]);
         }
