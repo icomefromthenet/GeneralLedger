@@ -473,5 +473,21 @@ class VoucherEntity extends GenericEntity
         return $valid;
     }
     
+    
+    //---------------------------------------------------
+    # Used in Marshaler Definition
+    
+    /**
+     *  Return the field that used as the
+     *  Identity filed in Aura Marshaler Identity Map
+     * 
+     *  @access public
+     *  @return string the field name
+     */
+    public function getIdentityField() 
+    {
+        return self::FIELD_SLUG;
+    }
+    
 }
 /* End of Class */

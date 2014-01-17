@@ -36,15 +36,12 @@ class VouchQuery extends AbstractQuery implements QueryInterface
      * 
      * @param string $slug the slug id field
      */ 
-    public function filterBySlug($slug)
+    public function filterBySlugKey($slug)
     {
          $this->where('account_number = :account_number')
              ->setParameter('account_number',
                             $accountNumber,
                             $this->getGateway()->getMetaData()->getColumn('account_number')->getType());
-        return $this;
-    
-    
         return $this;
     }
    
@@ -55,7 +52,7 @@ class VouchQuery extends AbstractQuery implements QueryInterface
      * @param DateTime $start
      * @param DateTime $finish
      */ 
-    public function enabledBetween(DateTime $start, DateTime $finish)
+    public function filterByEnabledBetween(DateTime $start, DateTime $finish)
     {
     
         return $this;
@@ -67,7 +64,7 @@ class VouchQuery extends AbstractQuery implements QueryInterface
      * @access public
      * @param DateTime $after
      */ 
-    public function enabledAfter(DateTime $after)
+    public function filterByEnabledAfter(DateTime $after)
     {
             $this->where('voucher_enabled_from = :voucher_enabled_after')
              ->setParameter('voucher_enabled_after',
@@ -85,7 +82,7 @@ class VouchQuery extends AbstractQuery implements QueryInterface
      * @access public
      * @param DateTime $before
      */
-    public function enabledBefore(DateTime $before)
+    public function filterByEnabledBefore(DateTime $before)
     {
             $this->where('account_date_opened = :account_date_opened')
              ->setParameter('account_date_opened',
@@ -103,7 +100,7 @@ class VouchQuery extends AbstractQuery implements QueryInterface
      * @access public
      * @param string $name the name part to search
      */
-    public function nameStartsWith($name)
+    public function filterLikeVoucherName($name)
     {
          $this->where($this->expr()->like('account_name','%:account_name%'))
             ->setParameter('account_name',
