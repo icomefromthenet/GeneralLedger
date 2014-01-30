@@ -52,4 +52,32 @@ final class VoucherEvents
     const SEQUENCE_DRIVER_REGISTERED = 'icomefromthenet.ledger.voucher.sequence.driver.registered';
     
     
+    /**
+     * The icomefromthenet.ledger.voucher.created event is raised after a voucher first stored
+     *
+     * @var string
+     */
+    const voucher_created = 'icomefromthenet.ledger.voucher.created';
+    
+    /**
+     * The icomefromthenet.ledger.voucher.unexpired event is raised after a voucher has expiry date set range
+     *
+     * @var string
+     */
+    const voucher_expired = 'icomefromthenet.ledger.voucher.expired';
+    
+    /**
+     * The icomefromthenet.ledger.voucher.driver.registered event is raised after a voucher has expire date range changed to future
+     *
+     * @var string
+     */ 
+    const voucher_unexpired = 'icomefromthenet.ledger.voucher.unexpired';
+    
+    /**
+     * The 'icomefromthenet.ledger.voucher.modified' event is raised after a new voucher version saved 
+     *
+     * @var string
+     */
+    const voucher_modified = 'icomefromthenet.ledger.voucher.modified';
+    
 }

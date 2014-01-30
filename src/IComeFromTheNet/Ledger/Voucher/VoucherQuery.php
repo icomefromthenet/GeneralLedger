@@ -8,7 +8,7 @@ use DBALGateway\Query\QueryInterface;
 /**
   *  Vouch Type Query Builder
   *
-  *  They are a temporal versioned entity. They are identified by the slug field.
+  *  They are a temporal versioned entities. They are identified by the slug field.
   *  with their enabled from date as second key.
   *
   *  For example, if change the prefix for sales recepits, that create a new instance of same type.
@@ -44,6 +44,22 @@ class VouchQuery extends AbstractQuery implements QueryInterface
                             $this->getGateway()->getMetaData()->getColumn('account_number')->getType());
         return $this;
     }
+    
+    
+    public function filterByEnabledOn(DateTime $enabled)
+    {
+        
+        return $this;
+    }
+    
+    
+    public function filterByDisabledOn(DateTime $disabled)
+    {
+        
+        
+        return $this;
+    }
+   
    
     /**
      * Filter to voucher enabled between these dates 

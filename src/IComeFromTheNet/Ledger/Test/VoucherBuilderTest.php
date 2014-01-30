@@ -8,6 +8,7 @@ use IComeFromTheNet\Ledger\Voucher\Strategy\StrategyFactoryInterface;
 use IComeFromTheNet\Ledger\Voucher\Formatter\FormatterBagInterface;
 use IComeFromTheNet\Ledger\Voucher\VoucherEntity;
 use IComeFromTheNet\Ledger\Voucher\VoucherBuilder;
+use IComeFromTheNet\Ledger\Voucher\VoucherDomainBuilder;
 
 class VoucherBuilderTest extends TestWithContainer
 {
@@ -18,7 +19,6 @@ class VoucherBuilderTest extends TestWithContainer
         $strategyFactory = $this->getMock('IComeFromTheNet\Ledger\Voucher\Strategy\StrategyFactoryInterface');
         $formatterBag    = $this->getMock('IComeFromTheNet\Ledger\Voucher\Formatter\FormatterBagInterface');
         $platform        = 'mysql';
-        
         
         $builder = new VoucherBuilder($formatterBag,$strategyFactory,$bag,$platform);
         
@@ -158,6 +158,22 @@ class VoucherBuilderTest extends TestWithContainer
                 
     }
     
+    
+    public function testDomainBuilder()
+    {
+        $data    = array('one' => 'two');
+        $entity  = new \stdClass();
+        $map     = $this->getMock('Aura\Marshal\Type\GenericType');
+        
+        $map->expects($this->once())
+            ->method('loadEntity')
+            ->with($this->equalTo($data))
+            ->will($this->returnValue($entity));
+            
+        $builder = new VoucherDomainBuilder($map);
+        
+        $this->assertSame($entity,$builder->build($data));
+    }
     
     
 }

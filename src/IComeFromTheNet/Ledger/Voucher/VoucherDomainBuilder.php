@@ -23,7 +23,7 @@ use Aura\Marshal\Type\GenericType;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class VoucherBuilder implements BuilderInterface
+class VoucherDomainBuilder implements BuilderInterface
 {
     
     /**

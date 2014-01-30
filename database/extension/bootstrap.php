@@ -17,6 +17,8 @@ use Migration\ColumnTypeFactory;
 use Migration\Components\Migration\Driver\SchemaManagerFactory;
 use Migration\Components\Migration\Driver\TableManagerFactory;
 
+date_default_timezone_set('Australia/Sydney');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -84,6 +86,9 @@ use Migration\Components\Migration\Driver\TableManagerFactory;
 */
 
     //SchemaManagerFactory::registerExtension('mongo','Migration\\Components\\Extension\\Migration\\Driver\\Mongo\\SchemaManager');
+
+
+
 
 
 /* End of File */

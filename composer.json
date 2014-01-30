@@ -15,7 +15,8 @@
         "symfony/console": "2.3.*",
         "symfony/finder" : "2.3.*",
         "icomefromthenet/migration" : "dev-master",
-        "icomefromthenet/faker" : "dev-master"
+        "icomefromthenet/faker" : "dev-master",
+        "psy/psysh"             : "dev-master"
     },
     "require" : {
         "icomefromthenet/dbal-gateway" : "dev-master",
