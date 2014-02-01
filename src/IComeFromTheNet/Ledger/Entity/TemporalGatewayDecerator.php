@@ -1,10 +1,13 @@
 <?php 
 namespace IComeFromTheNet\Ledger\Entity;
 
+use PDO;
 use DateInterval;
 use DateTime;
+use Exception;
 use IComeFromTheNet\Ledger\Entity\TemporalGatewayDecoratorInterface;
 use IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface;
+use IComeFromTheNet\Ledger\Exception\LedgerException;
 
 class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
 {
@@ -40,11 +43,21 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
      */ 
     protected function validateSlot(DateTime $from, DateTime $to)
     {
-        # from  
+        $f = clone $from;
+        $t = clone $to;
         
+        if($f > $t) {
+            throw new LedgerException('The opening from date occurs after the closing to date');
+        }
+        
+        $f->add($this->minSlotInterval);
         
         # validate slot length
+        if($f > $t) {
+            throw new LedgerException('The length of the slot is below the minimum allowed');
+        }
         
+        return true;
     }
     
     
@@ -69,15 +82,18 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
   
     public function isSlotAvailable($entitySlug, DateTime $from, DateTime $to)
     {
-        $query        = $this->getTableGateway()->newQueryBuilder();
-        $dbal         = $this->getTableGateway()->getAdapater();
-        $temporalMap  = $this->getTableGateway()->getTemporalColumns();
         
-        $tableName    = $this->getTableGateway()->getMetaData()->getName();
+        $this->validateSlot($from,$to);
         
-        $slugColumn = $temporalMap->getSlugColumn();
-        $fromColumn = $temporalMap->getFromColumn();
-        $toColumn   = $temporalMap->getToColumn();
+        $query          = $this->getTableGateway()->newQueryBuilder();
+        $dbal           = $this->getTableGateway()->getAdapater();
+        $temporalMap    = $this->getTableGateway()->getTemporalColumns();
+        
+        $tableName      = $this->getTableGateway()->getMetaData()->getName();
+        
+        $slugColumn     = $temporalMap->getSlugColumn();
+        $fromColumn     = $temporalMap->getFromColumn();
+        $toColumn       = $temporalMap->getToColumn();
         
         $toColumnName   = $toColumn->getName();
         $fromColumnName = $fromColumn->getName();
@@ -87,26 +103,51 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
         $fromColumnType = $fromColumn->getType();
         $slugColumnType = $slugColumn->getType();
         
+        $available      = false;
         
-        $dateRangeQuery = $query->expr()->andX
-                $query->expr()->gte($fromColumnName,':fromDate'),
-                $query->expr()->gte($fromColumnName,':toDate'),
+        try {
+        
+            $statement->select($slugColumn . ' AS slugColumn')
+                  ->select($fromColumn . ' AS fromColumn')
+                  ->select($toColumn   . ' AS toColumn')
+                  ->from($tableName)
+                  ->where($query->expr()->eq($slugColumnName,' :slug_id'))
+                  ->andWhere($query->expr()->andX(
+                    $query->expr()->gte($fromColumnName,':fromDate'),
+                    $query->expr()->lte($fromColumnName,':toDate')))
+                  ->setParameter(':slug_id', $entitySlug,$slugColumnType)
+                  ->setParameter(':fromDate',$from,$fromColumnType)
+                  ->setParameter('toDate'.$to,$toColumnType)
+                  ->setMaxResults(1)
+                  ->execute();
+            
+            $selectedRow = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            if($selectedRow === false) {
+                $available = true;
+            }
+            else {
                 
-        )->setParameter(':fromDate',$from,$fromColumnType)
-         ->setParameter('toDate'.$to,$toColumnType);
+                # check for current slot is set with max date ie open ended stop time.
+                $selectedToDate = $toColumnType->convertToPHPValue($selectedRow['toColumn'], $dbal->getDatabasePlatform());
+                $fromToDate     = $fromColumnType->convertToPHPValue($selectedRow['fromColumn'], $dbal->getDatabasePlatform());
+                
+                if($selectedToDate->format('d/m/y') == $this->maxDate->format('d/m/y')) {
+                    
+                    # check if the current row selected can be closed when consider
+                    # the minimum slot interval
+                    if($fromToDate->add($this->minSlotInterval) < $from) {
+                      $available = true;    
+                    }
+                    
+                }
+            }
+        }
+        catch (Exception $e) {
+            throw new LedgerException($e->getMessage());
+        }
         
-        $query->select('1')
-              ->from($tableName)
-              ->where($query->expr()->eq($slugColumnName,' :slug_id')
-              ->andWhere($dateRangeQuery)
-              ->setParameter(':slug_id', $entitySlug,$slugColumnType)
-              ->setMaxResults(1);
-              
-        
-        $statement = $query->execute($query->getSql());
-        
-        return (boolean) $statement->fetchColumn(1);
-             
+        return $available;
     }
 
    
@@ -126,13 +167,13 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
         
     }
     
-    public function findManySlotsUntil($entitySlug, DateTime $from, DateTime $until);
+    public function findManySlotsUntil($entitySlug, DateTime $from, DateTime $until)
     {
         
         
     }
     
-    public function findAllCurrentSlots(DateTime $processingDate);
+    public function findAllCurrentSlots(DateTime $processingDate)
     {
         
         
