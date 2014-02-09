@@ -20,9 +20,11 @@ class LedgerServiceProvider extends Pimple
     
     protected function setupMetaDefinitions()
     {
-        require __DIR__ .'/../../../../database/migration/init_schema.php';
-        $schema = new \Migration\Components\Migration\Entities\init_schema();
-        $this['database_meta'] = $schema->buildSchema($this->getDoctrineDBAL(),new Schema());
+        
+        $this['database_meta'] = new Schema();
+        
+        
+        
     }
     
     
@@ -64,7 +66,6 @@ class LedgerServiceProvider extends Pimple
         $this['voucher_validation_rule_bag'] = $this->share(function($c){
             return new \IComeFromTheNet\Ledger\Voucher\ValidationRuleBag();    
         });
-        
         
     }
     

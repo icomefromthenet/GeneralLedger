@@ -1,8 +1,8 @@
 <?php
-namespace IComeFromTheNet\Ledger\Entity;
+namespace IComeFromTheNet\Ledger\DB;
 
 use DBALGateway\Table\TableInterface;
-use IComeFromTheNet\Ledger\Entity\TemporalMap;
+use IComeFromTheNet\Ledger\DB\TemporalMap;
 
 /**
  * This allow a gateway to return a map of

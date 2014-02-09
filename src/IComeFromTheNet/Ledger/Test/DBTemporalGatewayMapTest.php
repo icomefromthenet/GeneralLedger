@@ -8,6 +8,9 @@ use IComeFromTheNet\Ledger\Entity\TemporalMap;
 use IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface;
 use IComeFromTheNet\Ledger\Entity\TemporalGatewayDecerator;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use IComeFromTheNet\Ledger\Test\Base\TestWithContainer;
+
+use IComeFromTheNet\Ledger\Test\Base\Mock\MockGateway;
 
 /**
   *  Unit test of the Temporal Map
@@ -15,8 +18,14 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class DBTemporalGatewayTest extends \PHPUnit_Framework_TestCase
+class DBTemporalGatewayTest extends TestWithContainer
 {
+ 
+   public function getDataSet()
+   {
+        return $this->createXMLDataSet(__DIR__ . DIRECTORY_SEPARATOR . 'Fixture'. DIRECTORY_SEPARATOR .'test_db_fixture_mysql.xml');
+   }
+  
  
   public function testMapProperties()
   {
@@ -96,7 +105,15 @@ class DBTemporalGatewayTest extends \PHPUnit_Framework_TestCase
  
   public function testIsSlotAvaiable()
   {
-      
+    //$tableGateway    = new MockGateway('mock_temportal', $this->getDoctrineConnection(), EventDispatcherInterface $event, Table $meta = null, Collection $result_set = null, BuilderInterface $builder = null)
+    
+    $continer = $this->getContainer();
+    
+    
+    $processingDate  = new DateTime('Yesterday');
+    $maxDate         = new DateTime('3000-01-01 00:00:00');
+    $minSlotInterval = new DateInterval('P0000-00-00T23:59:59'); 
+    $decerator       = new TemporalGatewayDecerator($continer['mock_temportal_gateway'],$processingDate,$maxDate,$minSlotInterval);  
       
   }
  

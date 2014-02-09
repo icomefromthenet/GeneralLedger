@@ -1,10 +1,10 @@
 <?php
-namespace IComeFromTheNet\Ledger\Entity;
+namespace IComeFromTheNet\Ledger\DB;
 
 use DateTime;
 use Aura\Marshal\Entity\GenericEntity;
 use Doctrine\Common\Collections\Collection;
-use IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface;
+use IComeFromTheNet\Ledger\DB\TemporalGatewayInterface;
 
 /**
  * Interface for decorate that provided wrapper for

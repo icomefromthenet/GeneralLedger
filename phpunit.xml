@@ -12,12 +12,12 @@
 >
     
     <php>
-        <var name="DEMO_DATABASE_DSN" value="mysql:dbname=c9;host=127.12.216.129"/>
+        <var name="DEMO_DATABASE_DSN" value="mysql:dbname=c9;host=10.168.12.79"/>
         <var name="DEMO_DATABASE_USER" value="icomefromthenet"/>
         <var name="DEMO_DATABASE_PASSWORD" value=""/>
         <var name="DEMO_DATABASE_SCHEMA" value="c9"/>
         <var name="DEMO_DATABASE_PORT" value="3306"/>
-        <var name="DEMO_DATABASE_HOST" value="127.12.216.129"/>
+        <var name="DEMO_DATABASE_HOST" value="10.168.12.79"/>
         <var name="DEMO_DATABASE_TYPE" value="pdo_mysql"/>
         <ini name="date.timezone" value="Australia/Sydney"/>
     </php>

@@ -1,16 +1,22 @@
 <?php 
-namespace IComeFromTheNet\Ledger\Entity;
+namespace IComeFromTheNet\Ledger\DB;
 
 use PDO;
 use DateInterval;
 use DateTime;
 use Exception;
-use IComeFromTheNet\Ledger\Entity\TemporalGatewayDecoratorInterface;
-use IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface;
+use IComeFromTheNet\Ledger\DB\TemporalGatewayDecoratorInterface;
+use IComeFromTheNet\Ledger\DB\TemporalGatewayInterface;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
 
 class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
 {
+   
+    const STATUS_TAKEN         = 0;
+    const STATUS_EMPTY         = 1;
+    const STATUS_CLOSE_CURRENT = 2; 
+   
+   
     /**
      * @var  IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface
      */
@@ -103,7 +109,7 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
         $fromColumnType = $fromColumn->getType();
         $slugColumnType = $slugColumn->getType();
         
-        $available      = false;
+        $available      = self::STATUS_TAKEN;
         
         try {
         
@@ -124,7 +130,7 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
             $selectedRow = $statement->fetch(PDO::FETCH_ASSOC);
             
             if($selectedRow === false) {
-                $available = true;
+                $available = self::STATUS_EMPTY;
             }
             else {
                 
@@ -137,7 +143,7 @@ class TemporalGatewayDecerator implements TemporalGatewayDeceratorInterface
                     # check if the current row selected can be closed when consider
                     # the minimum slot interval
                     if($fromToDate->add($this->minSlotInterval) < $from) {
-                      $available = true;    
+                      $available = self::STATUS_CLOSE_CURRENT;    
                     }
                     
                 }

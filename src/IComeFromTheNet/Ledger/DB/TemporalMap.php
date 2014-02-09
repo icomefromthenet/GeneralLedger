@@ -1,5 +1,5 @@
 <?php
-namespace IComeFromTheNet\Ledger\Entity;
+namespace IComeFromTheNet\Ledger\DB;
 
 use Doctrine\DBAL\Schema\Column;
 

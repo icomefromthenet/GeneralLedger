@@ -62,6 +62,17 @@ class init_schema implements EntityInterface
     }
 
     
+    public function buildUtilityTables(Connection $db, ASchema $sc)
+    {
+        $mockTemporalTable = $sc->createTable('mock_temporal');
+        $mockTemporalTable->addColumn('slug_name',"string", array("length" => 150));
+        $mockTemporalTable->addColumn('enabled_from',"date",array());
+        $mockTemporalTable->addColumn('enabled_to',"date",array());
+        $mockTemporalTable->setPrimaryKey(array("slug_name",'enabled_from'));
+        $mockTemporalTable->addIndex(array('enabled_to'));
+    }
+    
+    
     public function buildSchema(Connection $db, ASchema $schema)
     {
         # Accounts Group Tables
@@ -72,6 +83,9 @@ class init_schema implements EntityInterface
         
         # Voucher Table
         $this->buildVoucherTable($db,$schema);
+        
+        # utility tables
+        $this->buildUtilityTables($db,$schema);
         
         return $schema;
     }

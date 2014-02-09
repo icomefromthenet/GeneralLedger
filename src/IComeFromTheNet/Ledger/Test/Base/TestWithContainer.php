@@ -25,6 +25,22 @@ class TestWithContainer extends TestWithFixture
     if(isset(self::$container) === false) {
         self::$container = new LedgerServiceProvider($this->getEventDispatcher(),$this->getDoctrineConnection(),$this->getLogger());
         self::$container->boot($this->getNow());
+        
+        # register test services
+        
+        self::$container['mock_temportal_gateway'] = self::$container->share(function($c){
+           
+           $meta    = \IComeFromTheNet\Ledger\Test\Base\MockGateway::getTableMetaData();
+           $builder = \IComeFromTheNet\Ledger\Test\Base\MockBuilder();
+           
+           return new \IComeFromTheNet\Ledger\Test\Base\MockGateway('mock_temportal',
+                                                                $c->getDoctrineDBAL(),
+                                                                $c->getEventDispatcher(),
+                                                                $meta,
+                                                                null,
+                                                                $builder
+                                                                );
+        });
     }
    
     return self::$container;
