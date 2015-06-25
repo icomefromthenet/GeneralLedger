@@ -14,8 +14,6 @@
         "phpunit/dbunit": ">=1.2",
         "symfony/console": "2.3.*",
         "symfony/finder" : "2.3.*",
-        "icomefromthenet/migration" : "dev-master",
-        "icomefromthenet/faker" : "dev-master",
         "psy/psysh"             : "dev-master"
     },
     "require" : {
@@ -24,13 +22,13 @@
         "pimple/pimple"                : "1.0.* ",
         "psr/log"                      : "1.0.*",
         "bluem/tree"                   : "dev-master",
-        "zendframework/zend-stdlib"    : "2.2.*"
+        "zendframework/zend-stdlib"    : "2.2.*",
+        "respect/validation"           : "~0.9"
         
     },
     "autoload": {
         "psr-0": {
-            "IComeFromTheNet\\Ledger" : "src",
-            "Aura\\Marshal"           : "src"
+            "IComeFromTheNet\\Ledger" : "src"
         }
     }
 }

@@ -10,7 +10,7 @@ use IComeFromTheNet\Ledger\Voucher\Event\VoucherEvents;
 use IComeFromTheNet\Ledger\Voucher\Event\DriverFactoryEvent;
 
 /**
-  *  A Driver Factory for Drivers that power the UUID Sequence Strategy
+  *  A Driver Factory for Drivers that power the Sequence Strategy
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
@@ -44,6 +44,7 @@ class CommonDriverFactory implements SequenceDriverFactoryInterface
     public function __construct(Connection $database, EventDispatcherInterface $dispatcher)
     {
         $this->database         = $database;
+        
         $this->eventDispatcher  = $dispatcher;
 
         $this->registerDriver('mysql','IComeFromTheNet\\Ledger\\Voucher\\Driver\\MYSQLDriver');
@@ -107,7 +108,10 @@ class CommonDriverFactory implements SequenceDriverFactoryInterface
         
         $class = $this->factoryInstances[$platform];
         
-        $this->factoryInstances[$platform] = new $class($this->database,$table);
+        if(is_string($class)) {
+            $this->factoryInstances[$platform] = new $class($this->database,$table);    
+        }
+        
 
         $this->eventDispatcher->dispatch(VoucherEvents::SEQUNENCE_DRIVER_INSTANCED,
                                              new DriverFactoryEvent($this,

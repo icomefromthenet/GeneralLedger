@@ -18,7 +18,7 @@ class MockBuilder implements BuilderInterface, EntityBuilderInterface
   
     public function build($data)
     {
-        return $data
+        return $data;
         
     }
    

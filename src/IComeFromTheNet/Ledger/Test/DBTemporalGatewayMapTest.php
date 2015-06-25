@@ -4,9 +4,9 @@ namespace IComeFromTheNet\Ledger\Test;
 use DateTime;
 use DateInterval;
 use Doctrine\DBAL\Schema\Column;
-use IComeFromTheNet\Ledger\Entity\TemporalMap;
-use IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface;
-use IComeFromTheNet\Ledger\Entity\TemporalGatewayDecerator;
+use IComeFromTheNet\Ledger\DB\TemporalMap;
+use IComeFromTheNet\Ledger\DB\TemporalGatewayInterface;
+use IComeFromTheNet\Ledger\DB\TemporalGatewayDecerator;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
 use IComeFromTheNet\Ledger\Test\Base\TestWithContainer;
 
@@ -32,8 +32,9 @@ class DBTemporalGatewayTest extends TestWithContainer
       $slugColumn = $this->getMockBuilder('Doctrine\DBAL\Schema\Column')->disableOriginalConstructor()->getMock();
       $fromColumn = $this->getMockBuilder('Doctrine\DBAL\Schema\Column')->disableOriginalConstructor()->getMock();
       $toColumn   = $this->getMockBuilder('Doctrine\DBAL\Schema\Column')->disableOriginalConstructor()->getMock();
+      $postingDateColumn   = $this->getMockBuilder('Doctrine\DBAL\Schema\Column')->disableOriginalConstructor()->getMock();
       
-      $map = new TemporalMap($slugColumn,$fromColumn,$toColumn);
+      $map = new TemporalMap($slugColumn,$fromColumn,$toColumn,$postingDateColumn);
       
       //\Psy\Shell::debug(get_defined_vars());
       
@@ -46,7 +47,7 @@ class DBTemporalGatewayTest extends TestWithContainer
  
   public function testGatewayProperties()
   {
-    $tableGateway    = $this->getMock('\IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface');
+    $tableGateway    = $this->getMock('\IComeFromTheNet\Ledger\DB\TemporalGatewayInterface');
     $processingDate  = new DateTime('Yesterday');
     $maxDate         = new DateTime('3000-01-01 00:00:00');
     $minSlotInterval = new DateInterval('P0000-00-00T23:59:59');
@@ -68,7 +69,7 @@ class DBTemporalGatewayTest extends TestWithContainer
    */ 
   public function testValidationExceptionWhenDatesSwaped()
   {
-    $tableGateway    = $this->getMock('\IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface');
+    $tableGateway    = $this->getMock('\IComeFromTheNet\Ledger\DB\TemporalGatewayInterface');
     $processingDate  = new DateTime('Yesterday');
     $maxDate         = new DateTime('3000-01-01 00:00:00');
     $minSlotInterval = new DateInterval('P0000-00-00T23:59:59'); 
@@ -90,7 +91,7 @@ class DBTemporalGatewayTest extends TestWithContainer
    */ 
   public function testValidationExceptionWhenMinSlotNotMet()
   {
-    $tableGateway    = $this->getMock('\IComeFromTheNet\Ledger\Entity\TemporalGatewayInterface');
+    $tableGateway    = $this->getMock('\IComeFromTheNet\Ledger\DB\TemporalGatewayInterface');
     $processingDate  = new DateTime('Yesterday');
     $maxDate         = new DateTime('3000-01-01 00:00:00');
     $minSlotInterval = new DateInterval('P0000-00-00T23:59:59'); 

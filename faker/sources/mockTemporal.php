@@ -39,6 +39,24 @@ $composite = $builder
                             ->end()
                         ->end()
                     ->end()
+                    ->addColumn('posting_date')
+                        ->dbalType('date')
+                        ->addField()
+                            ->fieldClosure()
+                                ->execute(function($rows,$columns,$last){
+                                    
+                                    if(!isset($last['posting_date'])) {
+                                        return  new DateTime('today');
+                                
+                                    } else {
+                                        $n = clone $last['posting_date'];
+                                        return $n->modify('+1 days');    
+                                    }
+                                    
+                                })
+                            ->end()
+                        ->end()
+                    ->end()
                     ->addColumn('enabled_from')
                         ->dbalType('date')
                         ->addField()

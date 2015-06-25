@@ -6,7 +6,7 @@ use Zend\Stdlib\StringWrapper\StringWrapperInterface;
 /**
   *  The default voucher reference formatter.
   *
-  *  Will combine prefix with sequence and suffic and
+  *  Will combine prefix with sequence and suffix and
   *  will padd/truncate the max line difference
   *
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>

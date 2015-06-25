@@ -11,8 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
   *  An incrementing column / named sequence is not the only
   *  method that can be used to guarantee a unique identity.
   *
-  *  A uuid / guid can be used in some situations and will
-  *  not rely on database platform.
+  *  A uuid / guid can be used in some situations. 
   *
   *  The job to generate a sequence will be left to a Driver.
   *

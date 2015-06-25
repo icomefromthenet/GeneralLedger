@@ -30,10 +30,10 @@ class TestWithContainer extends TestWithFixture
         
         self::$container['mock_temportal_gateway'] = self::$container->share(function($c){
            
-           $meta    = \IComeFromTheNet\Ledger\Test\Base\MockGateway::getTableMetaData();
-           $builder = \IComeFromTheNet\Ledger\Test\Base\MockBuilder();
+           $meta    = \IComeFromTheNet\Ledger\Test\Base\Mock\MockGateway::getTableMetaData();
+           $builder = new \IComeFromTheNet\Ledger\Test\Base\Mock\MockBuilder();
            
-           return new \IComeFromTheNet\Ledger\Test\Base\MockGateway('mock_temportal',
+           return new \IComeFromTheNet\Ledger\Test\Base\Mock\MockGateway('mock_temportal',
                                                                 $c->getDoctrineDBAL(),
                                                                 $c->getEventDispatcher(),
                                                                 $meta,

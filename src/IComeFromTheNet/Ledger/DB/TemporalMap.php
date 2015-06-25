@@ -16,6 +16,7 @@ class TemporalMap
     protected $slugColumn;
     protected $fromColumn;
     protected $toColumn;
+    protected $postingDateColumn;
     
     /**
      * Class constructor
@@ -25,13 +26,15 @@ class TemporalMap
      * @param Column $slugColumn the slug (identity) name column
      * @param Column $fromColumn the opening date column
      * @param Column $toColumn to max date column
+     * @param Column $postingDateColumn the posting date of the entry
      * 
      */ 
-    public function __construct (Column $slugColumn, Column $fromColumn, Column $toColumn)
+    public function __construct (Column $slugColumn, Column $fromColumn, Column $toColumn, Column $postingDateColumn)
     {
-       $this->slugColumn = $slugColumn;
-       $this->fromColumn = $fromColumn;
-       $this->toColumn   = $toColumn;
+       $this->slugColumn        = $slugColumn;
+       $this->fromColumn        = $fromColumn;
+       $this->toColumn          = $toColumn;
+       $this->postingDateColumn = $postingDateColumn; 
     }
 
     /**
@@ -69,6 +72,17 @@ class TemporalMap
         return $this->toColumn;
     }
     
+    
+    /**
+     * Fetch the posting date column 
+     * 
+     * @access public
+     * @return Doctrine\DBAL\Schema\Column the posting date date column
+     */ 
+    public function getPostingDateColumn()
+    {
+        return $this->postingDateColumn;
+    }
     
 }
 /* End of file */
