@@ -12,12 +12,12 @@
 >
     
     <php>
-        <var name="DEMO_DATABASE_DSN" value="mysql:dbname=c9;host=127.11.219.129"/>
-        <var name="DEMO_DATABASE_USER" value="icomefromthenet"/>
-        <var name="DEMO_DATABASE_PASSWORD" value=""/>
-        <var name="DEMO_DATABASE_SCHEMA" value="c9"/>
+        <var name="DEMO_DATABASE_DSN" value="mysql:dbname=general_ledger;host=127.0.0.1;password=generalpwis?"/>
+        <var name="DEMO_DATABASE_USER" value="general"/>
+        <var name="DEMO_DATABASE_PASSWORD" value="genealpwis?"/>
+        <var name="DEMO_DATABASE_SCHEMA" value="general_ledger"/>
         <var name="DEMO_DATABASE_PORT" value="3306"/>
-        <var name="DEMO_DATABASE_HOST" value="127.11.219.129"/>
+        <var name="DEMO_DATABASE_HOST" value="127.0.0.1"/>
         <var name="DEMO_DATABASE_TYPE" value="pdo_mysql"/>
     </php>
     

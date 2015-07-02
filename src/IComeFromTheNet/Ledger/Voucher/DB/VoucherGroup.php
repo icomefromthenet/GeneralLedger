@@ -2,8 +2,7 @@
 namespace IComeFromTheNet\Ledger\Voucher\DB;
 
 use \DateTime;
-
-
+use Valitron\Validator;
 
 class VoucherGroup
 {
@@ -13,13 +12,14 @@ class VoucherGroup
     protected $dteCreated;
     protected $sortOrder;
     protected $isDisabled;
+    protected $slugName;
     
     /**
      * Fetch the vouchers group database id
      * 
      * @return integer the database id
      */ 
-    public function getID()
+    public function getVoucherGroupID()
     {
         return $this->voucherID;
     }
@@ -30,7 +30,7 @@ class VoucherGroup
      * @param   integer $id The database id
      * @return  void
      */ 
-    public function setID($id)
+    public function setVoucherGroupID($id)
     {
         $this->voucherID = (integer) $id;
     }
@@ -61,7 +61,7 @@ class VoucherGroup
      * 
      * @return   string the human name of group
      */ 
-    public function getName()
+    public function getVoucherGroupName()
     {
         return $this->name;
     }
@@ -72,9 +72,32 @@ class VoucherGroup
      * @param   string  $name   the human name
      * @return  void
      */ 
-    public function setName($name)
+    public function setVoucherGroupName($name)
     {
         $this->name = (string) $name;
+    }
+    
+    /**
+     * Returns a slug version of group name
+     * 
+     * @return string slug name
+     * 
+     */ 
+    public function getSlugName()
+    {
+        return $this->slugName;
+    }
+    
+    /**
+     * Sets the slug version of the name
+     * 
+     * @access public
+     * @param string    $slugName   The slug version of group name
+     * @return void
+     */ 
+    public function setSlugName($slugName)
+    {
+        $this->slugName = (string) $slugName;
     }
     
     
@@ -110,12 +133,40 @@ class VoucherGroup
         return $this->dteCreated;
     }
     
-
+    /**
+     * Sets the assigned time this group was created
+     * The value is assigned by the database
+     * 
+     * @param   DateTime  $created  The creation date assigne by database
+     */ 
+    public function setDateCreated(DateTime $created)
+    {
+        return $this->dteCreated = $created;
+    }
     
+    /**
+     * Validates if the assign properties are valid for a
+     * database insert
+     * 
+     * @return boolean true if 
+     * @throws 
+     */ 
     public function validate()
     {
         
+        $fields = array(
+          'voucherID'  => $this->getVoucherGroupID()
+          ,'name'       => $this->getVoucherGroupName()
+          ,'sortOrder'  => $this->getSortOrder()
+          ,'isDisabled' => $this->getDisabledStatus()
+          ,'slugName'   => $this->getSlugName()
+            
+        );
         
+        
+        
+       
+        return array(true,null);
     }
     
     

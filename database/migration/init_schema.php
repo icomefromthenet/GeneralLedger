@@ -15,23 +15,25 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("ledger_voucher_group");
         $table->addColumn('voucher_group_id','integer',array("unsigned" => true));
         $table->addColumn('voucher_group_name','string',array("length" => 100));
+        $table->addColumn('voucher_group_slug','string',array("length" => 100));
         $table->addColumn('is_disabled','boolean',array("default"=>false));
         $table->addColumn('sort_order','integer',array("unsigned" => true));
-        $table->addColumn('date_created','datatime',array());
+        $table->addColumn('date_created','datetime',array());
         
         $table->setPrimaryKey(array('voucher_group_id'));
-        $table->addUniqueIndex(array('voucher_group_name'),'gl_voucher_group_uiq1');
+        $table->addUniqueIndex(array('voucher_group_slug'),'gl_voucher_group_uiq1');
         
         
         # Voucher Rules
         $table = $sc->createTable("ledger_voucher_gen_rule");
         $table->addColumn('voucher_rule_name','string',array('length'=> 25));
-        $table->addColumn('voucher_gen_rule_id','integer',array('unsiged'=> true));
+        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_sequence_padding_char','string',array('legnth'=>'1'));
         $table->addColumn('voucher_prefix','string',array('length'=> 20));
         $table->addColumn('voucher_suffix','string',array('length'=>20));
-        $table->addColumn('voucher_maxlength','integer',array('unsiged'=> true));
+        $table->addColumn('voucher_maxlength','integer',array('unsigned'=> true));
         
+        $table->setPrimaryKey(array('voucher_gen_rule_id'));
         
         # Voucher Type Table
         $table = $sc->createTable("ledger_voucher_type");
@@ -42,15 +44,15 @@ class init_schema implements EntityInterface
         $table->addColumn('voucher_description','string',array('length'=>500));
         $table->addColumn('voucher_formatter','string',array('length'=> 100));
         $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
-        $table->addColumn('voucher_sequence_no','integer',array('unsiged'=> true));
-        $table->addColumn('voucher_group_id','integer',array('unsiged'=> true));
-        $table->addColumn('voucher_gen_rule_id','integer',array('unsiged'=> true));
+        $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_group_id','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         
         
         $table->setPrimaryKey(array('voucher_id'));
-        $table->addUniqueIndex(array('vouch_name'),'gl_voucher_type_uiq1');
-        $table->addForeignKeyConstraint('ledger_voucher_group',array('voucher_group_id'),array('voucher_group_id'),'gl_voucher_type_fk1');
-        $table->addForeignKeyConstraint('ledger_voucher_gen_rule',array('voucher_gen_rule_id'),array('voucher_gen_rule_id'),'gl_voucher_type_fk2');
+        $table->addUniqueIndex(array('voucher_name'),'gl_voucher_type_uiq1');
+        $table->addForeignKeyConstraint('ledger_voucher_group',array('voucher_group_id'),array('voucher_group_id'),array(),'gl_voucher_type_fk1');
+        $table->addForeignKeyConstraint('ledger_voucher_gen_rule',array('voucher_gen_rule_id'),array('voucher_gen_rule_id'),array(),'gl_voucher_type_fk2s');
         
         
         # Vouchers Table (Instance Table)
@@ -58,10 +60,10 @@ class init_schema implements EntityInterface
         $table->addColumn('voucher_instance_id','integer',array("unsigned" => true));
         $table->addColumn('voucher_id','integer',array("unsigned" => true));
         $table->addColumn('voucher_full_name','string',array("length"=> 255));
-        $table->addColumn('date_created','datatime',array());
+        $table->addColumn('date_created','datetime',array());
         
         $table->setPrimaryKey(array('voucher_instance_id'));
-        $table->addForeignKeyConstraint('ledger_voucher_type',array('voucher_id'),array('voucher_id'),'gl_voucher_instance_pk1');
+        $table->addForeignKeyConstraint('ledger_voucher_type',array('voucher_id'),array('voucher_id'),array(),'gl_voucher_instance_pk1');
         
         
     }
@@ -130,6 +132,8 @@ class init_schema implements EntityInterface
     
     public function up(Connection $db, Schema $sc)
     {
+        
+        
         $schema = $this->buildSchema($db,new ASchema());
         
         $queries = $schema->toSql($db->getDatabasePlatform()); // get queries to create this schema.
