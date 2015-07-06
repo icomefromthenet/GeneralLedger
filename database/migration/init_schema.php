@@ -27,11 +27,12 @@ class init_schema implements EntityInterface
         # Voucher Rules
         $table = $sc->createTable("ledger_voucher_gen_rule");
         $table->addColumn('voucher_rule_name','string',array('length'=> 25));
+        $table->addColumn('voucher_rule_slug','string',array("length" => 100));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
-        $table->addColumn('voucher_sequence_padding_char','string',array('legnth'=>'1'));
+        $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
         $table->addColumn('voucher_prefix','string',array('length'=> 20));
         $table->addColumn('voucher_suffix','string',array('length'=>20));
-        $table->addColumn('voucher_maxlength','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_num_length','integer',array('unsigned'=> true));
         
         $table->setPrimaryKey(array('voucher_gen_rule_id'));
         

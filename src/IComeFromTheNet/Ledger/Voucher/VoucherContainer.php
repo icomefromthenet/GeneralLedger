@@ -4,6 +4,7 @@ namespace IComeFromTheNet\Ledger\Voucher;
 use Pimple\Pimple;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Voucher Service Container
@@ -19,10 +20,10 @@ class VoucherContainer extends Pimple
      *  and are the key columns in the map
      */
      
-    const DB_TABLE_VOUCHER_TYPE     = 'voucher_type' ;
-    const DB_TABLE_VOUCHER_GROUP    = 'voucher_group' ;
-    const DB_TABLE_VOUCHER_INSTANCE = 'voucher_instance' ;
-    const DB_TABLE_VOUCHER_RULE     = 'voucher_gen_rule';
+    const DB_TABLE_VOUCHER_TYPE     = 'ledger_voucher_type' ;
+    const DB_TABLE_VOUCHER_GROUP    = 'ledger_voucher_group' ;
+    const DB_TABLE_VOUCHER_INSTANCE = 'ledger_voucher_instance' ;
+    const DB_TABLE_VOUCHER_RULE     = 'ledger_voucher_gen_rule';
     
     
     /**
@@ -31,17 +32,16 @@ class VoucherContainer extends Pimple
      * This not record FK or other indexes.
      * 
      * @return Doctrine\DBAL\Schema\Schema
-     * @param array $tableNameMap Map of internal names to configured names
      */ 
-    protected function createModuleDBMeta(array $tableNameMap)
+    protected function createModuleDBMeta()
     {
         $sc = new Schema();
         
         
-        $sGroupTableName    = $tableNameMap[self::DB_TABLE_VOUCHER_GROUP];
-        $sInstanceTableName = $tableNameMap[self::DB_TABLE_VOUCHER_INSTANCE];
-        $sRuleTableName     = $tableNameMap[self::DB_TABLE_VOUCHER_RULE];
-        $sTypeTableName     = $tableNameMap[self::DB_TABLE_VOUCHER_TYPE];
+        $sGroupTableName    = self::DB_TABLE_VOUCHER_GROUP;
+        $sInstanceTableName = self::DB_TABLE_VOUCHER_INSTANCE;
+        $sRuleTableName     = self::DB_TABLE_VOUCHER_RULE;
+        $sTypeTableName     = self::DB_TABLE_VOUCHER_TYPE;
         
         # Voucher Groups
         $table = $sc->createTable($sGroupTableName);
@@ -58,11 +58,12 @@ class VoucherContainer extends Pimple
         # Voucher Rules
         $table = $sc->createTable($sRuleTableName);
         $table->addColumn('voucher_rule_name','string',array('length'=> 25));
+        $table->addColumn('voucher_rule_slug','string',array("length" => 100));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
-        $table->addColumn('voucher_sequence_padding_char','string',array('legnth'=>'1'));
+        $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
         $table->addColumn('voucher_prefix','string',array('length'=> 20));
         $table->addColumn('voucher_suffix','string',array('length'=>20));
-        $table->addColumn('voucher_maxlength','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_num_length','integer',array('unsigned'=> true));
         
         $table->setPrimaryKey(array('voucher_gen_rule_id'));
         
@@ -101,13 +102,12 @@ class VoucherContainer extends Pimple
      * DI Container constrcutor
      * 
      * @param Doctrine\DBAL\Connection  $db The Database connection
-     * @param array $tableMap   a map of internal table names to actual names
-     * @param 
+     * @param Symfony\Component\EventDispatcher\EventDispatcherInterface $oEvent    The event dispatcher
      */ 
-    public function __construct(Connection $db ,array $tableMap) 
+    public function __construct(Connection $db, EventDispatcherInterface $oEvent) 
     {
         $this['database']    = $db;
-        $this['tableMap']    = $tableMap;
+        $this['event']       = $oEvent;
         
     }
     
@@ -120,6 +120,16 @@ class VoucherContainer extends Pimple
     public function getDatabaseAdapter()
     {
         return $this['database'];
+    }
+    
+    /**
+     * Return the assigned event dispatcher
+     * 
+     * @return Symfony\Component\EventDispatcher\EventDispatcherInterface
+     */ 
+    public function getEventDispatcher()
+    {
+        return $this['event'];
     }
     
     
@@ -174,13 +184,33 @@ class VoucherContainer extends Pimple
     {
         
         # build the table meta data using the map  
-        $this['dbMeta'] = $this->createModuleDBMeta($this['tableMap']);
+        $this['dbMeta'] = $this->createModuleDBMeta();
         
         
         # instance the gateways
         
         $this['gatewayVoucherGroup'] = $this->share(function($c) {
             
+            $sAlias = 'a';
+            
+            # connection
+            $oConnection = $this->getDatabaseAdapter();
+            
+            # metadata
+            $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_GROUP);
+            
+            # builder
+            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup();
+            $oBuilder->setTableQueryAlias($sAlias);
+            
+            
+            # event
+            $oEvent  = $this->getEventDispatcher();
+            
+            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGateway(self::DB_TABLE_VOUCHER_GROUP,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway->setTableQueryAlias($sAlias);
+            
+            return  $oGateway;
             
         });
         

@@ -6,3 +6,4 @@ database/config/*.php
 faker/dump/*.xml
 faker/dump/*.sql
 faker/config/*.php
+.c9
