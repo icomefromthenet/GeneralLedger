@@ -63,32 +63,33 @@ class VoucherContainer extends Pimple
         $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
         $table->addColumn('voucher_prefix','string',array('length'=> 20));
         $table->addColumn('voucher_suffix','string',array('length'=>20));
-        $table->addColumn('voucher_num_length','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_length','integer',array('unsigned'=> true));
+        $table->addColumn('date_created','datetime',array());
         
         $table->setPrimaryKey(array('voucher_gen_rule_id'));
         
         # Voucher Type Table
         $table = $sc->createTable($sTypeTableName);
-        $table->addColumn('voucher_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
         $table->addColumn("voucher_enabled_from", "datetime",array());
         $table->addColumn("voucher_enabled_to", "datetime",array());
         $table->addColumn('voucher_name','string',array('length'=>100));
+        $table->addColumn('voucher_name_slug','string',array('length'=>100));
         $table->addColumn('voucher_description','string',array('length'=>500));
-        $table->addColumn('voucher_formatter','string',array('length'=> 100));
         $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
         $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
         $table->addColumn('voucher_group_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         
         
-        $table->setPrimaryKey(array('voucher_id'));
+        $table->setPrimaryKey(array('voucher_type_id'));
         
         
         # Vouchers Table (Instance Table)
         $table = $sc->createTable($sInstanceTableName);
         $table->addColumn('voucher_instance_id','integer',array("unsigned" => true));
-        $table->addColumn('voucher_id','integer',array("unsigned" => true));
-        $table->addColumn('voucher_full_name','string',array("length"=> 255));
+        $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_code','string',array("length"=> 255));
         $table->addColumn('date_created','datetime',array());
         
         $table->setPrimaryKey(array('voucher_instance_id'));
@@ -200,14 +201,14 @@ class VoucherContainer extends Pimple
             $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_GROUP);
             
             # builder
-            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup();
+            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupBuilder();
             $oBuilder->setTableQueryAlias($sAlias);
             
             
             # event
             $oEvent  = $this->getEventDispatcher();
             
-            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGateway(self::DB_TABLE_VOUCHER_GROUP,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupGateway(self::DB_TABLE_VOUCHER_GROUP,$oConnection,$oEvent,$oTable,null,$oBuilder);
             $oGateway->setTableQueryAlias($sAlias);
             
             return  $oGateway;
@@ -215,18 +216,78 @@ class VoucherContainer extends Pimple
         });
         
         $this['gatewayVoucherType'] = $this->share(function($c) {
+             $sAlias = 'd';
             
+            # connection
+            $oConnection = $this->getDatabaseAdapter();
+            
+            # metadata
+            $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_TYPE);
+            
+            # builder
+            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeBuilder();
+            $oBuilder->setTableQueryAlias($sAlias);
+            
+            
+            # event
+            $oEvent  = $this->getEventDispatcher();
+            
+            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeGateway(self::DB_TABLE_VOUCHER_TYPE,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway->setTableQueryAlias($sAlias);
+            
+            return  $oGateway;
             
         });
         
         $this['gatewayVoucherInstance'] = $this->share(function($c) {
             
             
+            $sAlias = 'c';
+            
+            # connection
+            $oConnection = $this->getDatabaseAdapter();
+            
+            # metadata
+            $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_INSTANCE);
+            
+            # builder
+            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceBuilder();
+            $oBuilder->setTableQueryAlias($sAlias);
+            
+            
+            # event
+            $oEvent  = $this->getEventDispatcher();
+            
+            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceGateway(self::DB_TABLE_VOUCHER_INSTANCE,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway->setTableQueryAlias($sAlias);
+            
+            return  $oGateway;
+            
         });
         
         
         $this['gatewayVoucherRule'] = $this->share(function($c) {
             
+             $sAlias = 'b';
+            
+            # connection
+            $oConnection = $this->getDatabaseAdapter();
+            
+            # metadata
+            $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_RULE);
+            
+            # builder
+            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleBuilder();
+            $oBuilder->setTableQueryAlias($sAlias);
+            
+            
+            # event
+            $oEvent  = $this->getEventDispatcher();
+            
+            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleGateway(self::DB_TABLE_VOUCHER_RULE,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway->setTableQueryAlias($sAlias);
+            
+            return  $oGateway;
             
         });
         

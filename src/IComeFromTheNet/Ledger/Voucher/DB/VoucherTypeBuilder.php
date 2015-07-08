@@ -1,123 +1,79 @@
 <?php
-namespace IComeFromTheNet\Ledger\Voucher;
+namespace IComeFromTheNet\Ledger\Voucher\DB;
 
-use DBALGateway\Builder\BuilderInterface;
-use Aura\Marshal\Entity\BuilderInterface as EntityBuilderInterface;
-use IComeFromTheNet\Ledger\Voucher\VoucherEntity;
-use IComeFromTheNet\Ledger\Voucher\ValidationRuleBag;
-use IComeFromTheNet\Ledger\Voucher\Strategy\StrategyFactoryInterface;
-use IComeFromTheNet\Ledger\Voucher\Formatter\FormatterBagInterface;
+use DBALGateway\Builder\AliasBuilder;
 
 /**
-  *  Builds an Voucher Entity
-  *
-  *  @author Lewis Dyer <getintouch@icomefromthenet.com>
-  *  @since 1.0.0
-  */
-class VoucherBuilder implements BuilderInterface,EntityBuilderInterface
+ * Builds Voucher Types
+ * 
+ * @author Lewis Dyer <getintouch@icomefromthenet.com>
+ * @since 1.0
+ */ 
+class VoucherTypeBuilder extends AliasBuilder
 {
-    
-    
-    protected $strategyFactory;
-    
-    protected $formatterBag;
-    
-    protected $validationRuleBag;
-    
-    protected $databasePlatform;
-    
-    public function __construct(FormatterBagInterface $formatterBag,
-                                StrategyFactoryInterface $strategyFactory,
-                                ValidationRuleBag $ruleBag,
-                                $databasePlatform)
-    {
-        $this->strategyFactory   = $strategyFactory;
-        $this->formatterBag      = $formatterBag;
-        $this->validationRuleBag = $ruleBag;
-        $this->databasePlatform  = $databasePlatform;
-    }
-    
-    
-    /**
-     * 
-     * Creates a new entity object.
-     * 
-     * @param array $data Data to load into the entity.
-     * @return Account
-     * @access public
-     * 
-     */
-    public function newInstance(array $data)
-    {
-        return $this->build($data);
-    }
     
     /**
       *  Convert data array into entity
       *
-      *  @return Account
+      *  @return VoucherType
       *  @param array $data
       *  @access public
       */
     public function build($data)
     {
-        $voucher = new VoucherEntity();
         
-        $voucher->setSlug($data['voucher_slug']);
+        $oEntity           = new VoucherType();
+        $sAlias            = $this->getTableQueryAlias();
         
-        $voucher->setEnabledFrom($data["voucher_enabled_from"]);
-        $voucher->setEnabledTo($data["voucher_enabled_to"]);
-
-        $voucher->setName($data['voucher_name']);
-        $voucher->setDescription($data['voucher_description']);
-        $voucher->setPrefix($data['voucher_prefix']);
-        $voucher->setSuffix($data['voucher_suffix']);
-        $voucher->setMaxLength($data['voucher_maxlength']);
-        $voucher->setPaddingChar($data['voucher_sequence_padding_char']);
-        
-        # pull the formatter from the bag
-        $voucher->setVoucherFormatter($this->formatterBag->getFormatter($data['voucher_formatter']));
+        $iVoucherTypeId     = $this->getField($data,'voucher_type_id',$sAlias);
+        $sName              = $this->getField($data,'voucher_name',$sAlias);
+        $sDescription       = $this->getField($data,'voucher_description',$sAlias);
+        $oEnableFrom        = $this->getField($data,'voucher_enabled_from',$sAlias);
+        $oEnableTo          = $this->getField($data,'voucher_enabled_to',$sAlias);
+        $sSlugName          = $this->getField($data,'voucher_name_slug',$sAlias);
+        $sSequenceStrategy  = $this->getField($data,'voucher_sequence_strategy',$sAlias);
+        $iVoucherGroupId    = $this->getField($data,'voucher_group_id',$sAlias);
+        $iVoucherGenRuleId  = $this->getField($data,'voucher_gen_rule_id',$sAlias);
         
         
-        # pull sequence strategy from factory.
-        $voucher->setSequenceStrategy($this->strategyFactory->getInstance($data['voucher_sequence_strategy'],
-                                                                          $this->databasePlatform
-                                                                          )
-                                    );
+        $entity->setVoucherTypeId($iVoucherTypeId);
+        $entity->setEnabledFrom($oEnableFrom);
+        $entity->setEnabledTo($oEnableTo);
+        $entity->setName($sName);
+        $entity->setSlug($sSlugName);
+        $entity->setDescription($sDescription);
+        $entity->setSequenceStrategyName($sSequenceStrategy);
+        $entity->setVoucherGroupId($iVoucherGroupId);
+        $entity->setVoucherGenRuleId($iVoucherGenRuleId);
         
-        # assign the validation rule bag
-        $voucher->setValidationRuleBag($this->validationRuleBag);
-        
-        return $voucher;        
+        return $oEntity;
         
     }
     
     /**
-      *  Convert and entity into a data array
+      *  Convert and entity into a data array that match database columns in table
       *
       *  @return array
       *  @access public
+      *  @param VoucherType    $entity A voucher type entity
       */
     public function demolish($entity)
     {
-       $data = array(
-            'voucher_slug'              => $entity->getSlug(),
-            'voucher_enabled_from'      => $entity->getEnabledFrom(),
-            "voucher_enabled_to"        => $entity->getEnabledTo(),
-            'voucher_name'              => $entity->getName(),
-            'voucher_description'       => $entity->getDescription(),
-            'voucher_prefix'            => $entity->getPrefix(),
-            'voucher_suffix'            => $entity->getSuffix(),
-            'voucher_maxlength'         => $entity->getMaxLength(),
-            'voucher_formatter'         => $entity->getVoucherFormatter()->getName(),
-            'voucher_sequence_strategy' => $entity->getSequenceStrategy()->getStrategyName(),
-            'voucher_sequence_padding_char' => $entity->getPaddingChar()
-    
+        $aData = array(
+            'voucher_type_id'           => $entity->getVoucherTypeId()
+            ,'voucher_enabled_from'     => $entity->getEnabledFrom()
+            ,'voucher_enabled_to'       => $entity->getEnabledTo()
+            ,'voucher_name'             => $entity->getName()
+            ,'voucher_name_slug'        => $entity->getSlug()
+            ,'voucher_description'      => $entity->getDescription()
+            ,'voucher_sequence_strategy'=> $entity->getSequenceStrategyName()
+            ,'voucher_group_id'         => $entity->getVoucherGroupId()
+            ,'voucher_gen_rule_id'      => $entity->getVoucherGenRuleId()
         );
         
-        return $data;
+        
+        return $aData;
     }
     
-    
 }
-/* End of Class */
+/* End of class */

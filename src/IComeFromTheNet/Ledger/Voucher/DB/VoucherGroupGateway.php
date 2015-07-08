@@ -17,7 +17,7 @@ class VoucherGroupGateway extends AbstractTable
       *  Create a new instance of the querybuilder
       *
       *  @access public
-      *  @return QueryBuilder
+      *  @return VoucherGroupQuery
       */
     public function newQueryBuilder()
     {

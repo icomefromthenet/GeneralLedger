@@ -1,8 +1,14 @@
 <?php
 namespace IComeFromTheNet\Ledger\Voucher\DB;
 
+use Valitron\Validator;
 
-
+/**
+ * A Entity for the Voucher Generator Rule
+ * 
+ * @author Lewis Dyer <getintouch@icomefromthenet.com>
+ * @since 1.0.0
+ */ 
 class VoucherGenRule
 {
     
@@ -40,6 +46,11 @@ class VoucherGenRule
      * @var integer the length of a voucher number
      */ 
     protected $iVoucherLength;
+    
+    /**
+     * @var the date this rule was created
+     */ 
+    protected $oDateCreated;
     
     /**
      * Fetches the database rule id
@@ -186,7 +197,7 @@ class VoucherGenRule
      * @access public
      * @return integer the voucher number length
      */ 
-    public function getVoucherNumberLength()
+    public function getVoucherLength()
     {
         return $this->iVoucherLength;
     }
@@ -198,11 +209,33 @@ class VoucherGenRule
      * @access public
      * @return void
      */
-    public function setVoucherNumberLength($iLength)
+    public function setVoucherLength($iLength)
     {
         $this->iVoucherLength = (int) $iLength;
     }
     
+    /**
+     * Fetches the date this rule was added to db
+     * 
+     * @access public
+     * @return DateTime when rule was added to db
+     */ 
+    public function getDateCreated()
+    {
+        return $this->oDateCreated;
+    }
+    
+    /**
+     * Sets the created date of this rule (assigned by db)
+     * 
+     * @param DateTime  $oDateCreated   The create date
+     * @access public
+     * @return void
+     */
+    public function setDateCreated(DateTime $oDateCreated)
+    {
+        $this->oDateCreated = $oDateCreated;
+    }
     
 }
 /* End of class */
