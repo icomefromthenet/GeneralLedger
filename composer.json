@@ -14,7 +14,8 @@
         "phpunit/dbunit": ">=1.2",
         "symfony/console": "2.3.*",
         "symfony/finder" : "2.3.*",
-        "psy/psysh"             : "dev-master"
+        "psy/psysh"             : "dev-master",
+        "mrkrstphr/dbunit-fixture-arrays" : "@stable"
     },
     "require" : {
         "icomefromthenet/dbal-gateway" : "dev-master",
@@ -24,6 +25,7 @@
         "bluem/tree"                   : "dev-master",
         "zendframework/zend-stdlib"    : "2.2.*",
         "vlucas/valitron"              : "1.2.*"
+        
         
     },
     "autoload": {

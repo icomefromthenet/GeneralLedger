@@ -36,9 +36,24 @@ class VoucherService
     # Public API
     
     
-    public function lookupVoucher()
+    public function lookupType()
     {
         
+        
+    }
+    
+    
+    public function lookupGroup()
+    {
+    
+        
+    }
+    
+    
+    public function lookupRule()
+    {
+    
+    
         
     }
     
@@ -50,7 +65,7 @@ class VoucherService
     }
     
     
-    public function unexpireVoucher()
+    public function reverseExpireVoucher()
     {
         
         
@@ -62,6 +77,45 @@ class VoucherService
         
         
     }
+    
+    public function createGroup()
+    {
+    
+        
+    }
+    
+    
+    public function removeGroup()
+    {
+    
+        
+    }
+    
+    public function reviseGroup()
+    {
+    
+        
+    }
+    
+    public function createRule()
+    {
+    
+        
+    }
+    
+    
+    public function reviseRule()
+    {
+    
+        
+    }
+    
+    
+    
+    public function instanceVoucher()
+    {
+        
+    }    
     
     
     //--------------------------------------------------------------------------

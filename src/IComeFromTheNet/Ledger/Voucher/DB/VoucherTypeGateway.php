@@ -2,6 +2,7 @@
 namespace IComeFromTheNet\Ledger\Voucher\DB;
 
 use DBALGateway\Table\AbstractTable;
+use IComeFromTheNet\Ledger\SchemaAwareTable;
 
 
 /**
@@ -12,7 +13,7 @@ use DBALGateway\Table\AbstractTable;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class VoucherTypeGateway extends AbstractTable implements TableInterface
+class VoucherTypeGateway extends SchemaAwareTable
 {
     
     /**

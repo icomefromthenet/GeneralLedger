@@ -154,8 +154,8 @@ class VoucherGroup
     public function validate()
     {
         
-        $fields = array(
-          'voucherID'  => $this->getVoucherGroupID()
+        $aFields = array(
+           'voucherID'  => $this->getVoucherGroupID()
           ,'name'       => $this->getVoucherGroupName()
           ,'sortOrder'  => $this->getSortOrder()
           ,'isDisabled' => $this->getDisabledStatus()
@@ -163,10 +163,19 @@ class VoucherGroup
             
         );
         
+        $v = new Validator($aFields);
         
+        $v->rule('slug', 'slugName');
+        $v->rule('lengthBetween',array('slugName','name'),1,100);
+        $v->rule('required',array('slugName','name','isDisabled'));
+        $v->rule('min',array('voucherID'),1);
         
+        if($v->validate()) {
+            return true;
+        } else {
+            return $v->errors();
+        }
        
-        return array(true,null);
     }
     
     

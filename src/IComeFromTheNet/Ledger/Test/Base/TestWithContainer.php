@@ -3,14 +3,16 @@ namespace IComeFromTheNet\Ledger\Test\Base;
 
 use DateTime;
 use IComeFromTheNet\Ledger\Service\LedgerServiceProvider;
+use IComeFromTheNet\Ledger\GatewayProxyCollection;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Monolog\Logger;
 use Monolog\Handler\TestHandler;
+use Doctrine\DBAL\Schema\Schema;
 
 class TestWithContainer extends TestWithFixture
 {
     
-  static $container;
+  protected $oContainer;
   
   
   /**
@@ -22,28 +24,16 @@ class TestWithContainer extends TestWithFixture
   */
   public function getContainer()
   {
-    if(isset(self::$container) === false) {
-        self::$container = new LedgerServiceProvider($this->getEventDispatcher(),$this->getDoctrineConnection(),$this->getLogger());
-        self::$container->boot($this->getNow());
+    if(isset($this->oContainer) === false) {
+        $this->oContainer = new LedgerServiceProvider($this->getEventDispatcher(),$this->getDoctrineConnection(),$this->getLogger());
+        $this->oContainer->boot($this->getNow());
         
         # register test services
         
-        self::$container['mock_temportal_gateway'] = self::$container->share(function($c){
-           
-           $meta    = \IComeFromTheNet\Ledger\Test\Base\Mock\MockGateway::getTableMetaData();
-           $builder = new \IComeFromTheNet\Ledger\Test\Base\Mock\MockBuilder();
-           
-           return new \IComeFromTheNet\Ledger\Test\Base\Mock\MockGateway('mock_temportal',
-                                                                $c->getDoctrineDBAL(),
-                                                                $c->getEventDispatcher(),
-                                                                $meta,
-                                                                null,
-                                                                $builder
-                                                                );
-        });
+      
     }
    
-    return self::$container;
+    return $this->oContainer;
   }
   
   /**
@@ -83,6 +73,18 @@ class TestWithContainer extends TestWithFixture
   protected function getNow()
   {
     return new DateTime();
+  }
+  
+ /**
+  * Return the Gateway Proxy Collection
+  * 
+  * @return IComeFromTheNet\Ledger\GatewayProxyCollection
+  */ 
+  protected function getGatewayProxyCollection()
+  {
+    $schema = new Schema();
+    
+    return new GatewayProxyCollection($schema);
   }
 
 }

@@ -53,6 +53,11 @@ class VoucherGenRule
     protected $oDateCreated;
     
     /**
+     * @var string the method used to generate the unqiue part of voucher name
+     */ 
+    protected $sSequenceStrategy;
+    
+    /**
      * Fetches the database rule id
      * 
      * @return integer the database id
@@ -236,6 +241,33 @@ class VoucherGenRule
     {
         $this->oDateCreated = $oDateCreated;
     }
+    
+     /**
+     * Set the identifier of the sequence method to generate unique part
+     * of a voucher code
+     * 
+     * @return string the name of the strategy to use
+     * @access public
+     */ 
+    public function getSequenceStrategyName()
+    {
+       return $this->sSequenceStrategy;
+    }
+   
+    /**
+     * Set the identifier of the sequence method to generate unique part
+     * of a voucher code
+     * 
+     * @return void
+     * @param string    $sName  The name of the strategy to use
+     * @access public
+     */  
+    public function setSequenceStrategyName($sName)
+    {
+       $this->sSequenceStrategy = (string) $sName;
+    }
+    
+    
     
 }
 /* End of class */

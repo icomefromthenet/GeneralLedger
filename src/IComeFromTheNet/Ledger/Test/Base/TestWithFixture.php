@@ -56,7 +56,7 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
     
     public function getDataSet()
     {
-        return $this->createXMLDataSet(__DIR__ . DIRECTORY_SEPARATOR . 'Fixture'. DIRECTORY_SEPARATOR .'fixture.xml');
+       
     }
     
     

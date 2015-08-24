@@ -2,7 +2,6 @@
 namespace IComeFromTheNet\Ledger\Test\Voucher;
 
 use DateTime;
-
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup;
 
 /**
@@ -47,7 +46,7 @@ class VoucherEntityTest extends \PHPUnit_Framework_TestCase
         
     }
     
-    public function testVoucherValidateSucessful()
+    public function testVoucherGroupValidateSucessful()
     {
         $aGroup = new VoucherGroup();
         
@@ -67,8 +66,54 @@ class VoucherEntityTest extends \PHPUnit_Framework_TestCase
         $aGroup->setSlugName($sSlugName);
         
         $this->assertTrue($aGroup->validate());
+        
+        
+        // test valid without ID (need create)
+        $aGroup = new VoucherGroup();
+        
+        $sName = 'Sales Vouchers';
+        $bDisabled = false;
+        $iSort = 100;
+        $oCreated = new DateTime();
+        $sSlugName = 'sales_vouchers';
+        
+        
+        $aGroup->setDisabledStatus($bDisabled);
+        $aGroup->setVoucherGroupName($sName);
+        $aGroup->setSortOrder($iSort);
+        $aGroup->setDateCreated($oCreated);
+        $aGroup->setSlugName($sSlugName);
+        
+        $this->assertTrue($aGroup->validate());
     }
     
+     public function testVoucherGroupValidateFails()
+    {
+        $aGroup = new VoucherGroup();
+        
+        $sName = '';
+        $iID   = null;
+        $bDisabled = null;
+        $iSort = 100;
+        $oCreated = new DateTime();
+        $sSlugName = '';
+        
+        
+        $aGroup->setVoucherGroupID($iID);
+        //$aGroup->setDisabledStatus($bDisabled);
+        $aGroup->setVoucherGroupName($sName);
+        $aGroup->setSortOrder($iSort);
+        $aGroup->setDateCreated($oCreated);
+        $aGroup->setSlugName($sSlugName);
+        
+        $aValidateErrors = $aGroup->validate(); 
+        
+        $this->assertEquals(count($aValidateErrors['slugName']),3);
+        $this->assertEquals(count($aValidateErrors['name']),2);
+        $this->assertEquals(count($aValidateErrors['isDisabled']),1);
+        $this->assertEquals(count($aValidateErrors['voucherID']),1);
+        
+    }
     
     // public function testEntityProperties()
     // {

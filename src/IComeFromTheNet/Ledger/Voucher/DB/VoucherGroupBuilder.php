@@ -34,8 +34,17 @@ class VoucherGroupBuilder extends AliasBuilder
         $oDateCreated      = $this->getField($data,'date_created',$sAlias);
         
         
+        $oEntity->setVoucherGroupID($iVoucherGroupId);
+        $oEntity->setVoucherGroupName($sVoucherGroupName);
+        $oEntity->setSlugName($sVoucheGroupSlug);
+        $oEntity->setDisabledStatus($bIsDisabled);
+        $oEntity->setSortOrder($iSortOrder);
+        $oEntity->setDateCreated($oDateCreated);
+        
         return $oEntity;
         
+       
+	
     }
     
     /**

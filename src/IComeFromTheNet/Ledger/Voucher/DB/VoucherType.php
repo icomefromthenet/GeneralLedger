@@ -44,7 +44,6 @@ class VoucherEntity extends GenericEntity
     protected $oEnableFrom;
     protected $oEnableTo;
     protected $sSlugName;
-    protected $sSequenceStrategy;
     protected $iVoucherGroupId;
     protected $iVoucherGenRuleId;
     
@@ -203,30 +202,7 @@ class VoucherEntity extends GenericEntity
     }
     
     
-    /**
-     * Set the identifier of the sequence method to generate unique part
-     * of a voucher code
-     * 
-     * @return string the name of the strategy to use
-     * @access public
-     */ 
-    public function getSequenceStrategyName()
-    {
-       return $this->sSequenceStrategy;
-    }
    
-    /**
-     * Set the identifier of the sequence method to generate unique part
-     * of a voucher code
-     * 
-     * @return void
-     * @param string    $sName  The name of the strategy to use
-     * @access public
-     */  
-    public function setSequenceStrategyName($sName)
-    {
-       $this->sSequenceStrategy = (string) $sName;
-    }
     
     /**
      * Fetch the voucher group id that this type belongs too

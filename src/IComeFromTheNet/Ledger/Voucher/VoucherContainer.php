@@ -1,10 +1,22 @@
 <?php
 namespace IComeFromTheNet\Ledger\Voucher;
 
-use Pimple\Pimple;
+use DateTime;
+use Pimple; 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
+
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupBuilder;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupGateway;
+use IComeFromTheNet\Ledger\GatewayProxyCollection;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeGateway;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeBuilder;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceBuilder;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceGateway;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleBuilder;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleGateway;
 
 /**
  * Voucher Service Container
@@ -32,11 +44,10 @@ class VoucherContainer extends Pimple
      * This not record FK or other indexes.
      * 
      * @return Doctrine\DBAL\Schema\Schema
+     * @param Doctrine\DBAL\Schema\Schema $sc The schema to add new tables too
      */ 
-    protected function createModuleDBMeta()
+    protected function createModuleDBMeta(Schema $sc)
     {
-        $sc = new Schema();
-        
         
         $sGroupTableName    = self::DB_TABLE_VOUCHER_GROUP;
         $sInstanceTableName = self::DB_TABLE_VOUCHER_INSTANCE;
@@ -58,13 +69,15 @@ class VoucherContainer extends Pimple
         # Voucher Rules
         $table = $sc->createTable($sRuleTableName);
         $table->addColumn('voucher_rule_name','string',array('length'=> 25));
-        $table->addColumn('voucher_rule_slug','string',array("length" => 100));
+        $table->addColumn('voucher_rule_slug','string',array("length" => 25));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
         $table->addColumn('voucher_prefix','string',array('length'=> 20));
         $table->addColumn('voucher_suffix','string',array('length'=>20));
-        $table->addColumn('voucher_length','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_length','smallint',array('unsigned'=> true,'length'=>3));
         $table->addColumn('date_created','datetime',array());
+        $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
+        $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
         
         $table->setPrimaryKey(array('voucher_gen_rule_id'));
         
@@ -76,8 +89,7 @@ class VoucherContainer extends Pimple
         $table->addColumn('voucher_name','string',array('length'=>100));
         $table->addColumn('voucher_name_slug','string',array('length'=>100));
         $table->addColumn('voucher_description','string',array('length'=>500));
-        $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
-        $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
+      
         $table->addColumn('voucher_group_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         
@@ -104,12 +116,15 @@ class VoucherContainer extends Pimple
      * 
      * @param Doctrine\DBAL\Connection  $db The Database connection
      * @param Symfony\Component\EventDispatcher\EventDispatcherInterface $oEvent    The event dispatcher
+     * @param Psr\Log\LoggerInterface   $oLogger    The App Logger
+     * @param GatewayProxyCollection    $col    A collection to hold the gateways
      */ 
-    public function __construct(Connection $db, EventDispatcherInterface $oEvent) 
+    public function __construct(Connection $db, EventDispatcherInterface $oEvent, LoggerInterface $oLogger, GatewayProxyCollection $col) 
     {
         $this['database']    = $db;
         $this['event']       = $oEvent;
-        
+        $this['gatewayProxyCollection'] = $col;
+        $this['logger']      = $oLogger;
     }
     
     
@@ -133,6 +148,15 @@ class VoucherContainer extends Pimple
         return $this['event'];
     }
     
+    /**
+     * Return the assigned event dispatcher
+     * 
+     * @return Psr\Log\LoggerInterface
+     */ 
+    public function getAppLogger()
+    {
+        return $this['logger'];
+    }
     
     /**
      * 
@@ -171,6 +195,17 @@ class VoucherContainer extends Pimple
         return $this['gatewayVoucherRule'];
     }
     
+    /**
+     *  Return the proxy gateway collection
+     * 
+     * @access public
+     * @return IComeFromTheNet\Ledger\GatewayProxyCollection
+     */ 
+    public function getGatewayProxyCollection()
+    {
+        return $this['gatewayProxyCollection'];
+    }
+    
     
     //--------------------------------------------------------------------------
     # Service Bootstrap
@@ -181,11 +216,11 @@ class VoucherContainer extends Pimple
      *  
      * @return void
      */ 
-    public function bootstrap()
+    public function boot(DateTime $now)
     {
         
         # build the table meta data using the map  
-        $this['dbMeta'] = $this->createModuleDBMeta();
+        $this['dbMeta'] = $this->createModuleDBMeta($this->getGatewayProxyCollection()->getSchema());
         
         
         # instance the gateways
@@ -201,15 +236,16 @@ class VoucherContainer extends Pimple
             $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_GROUP);
             
             # builder
-            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupBuilder();
+            $oBuilder = new VoucherGroupBuilder();
             $oBuilder->setTableQueryAlias($sAlias);
             
             
             # event
             $oEvent  = $this->getEventDispatcher();
             
-            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupGateway(self::DB_TABLE_VOUCHER_GROUP,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway = new VoucherGroupGateway(self::DB_TABLE_VOUCHER_GROUP,$oConnection,$oEvent,$oTable,null,$oBuilder);
             $oGateway->setTableQueryAlias($sAlias);
+            $oGateway->setGatewayCollection($c->getGatewayProxyCollection());
             
             return  $oGateway;
             
@@ -225,15 +261,16 @@ class VoucherContainer extends Pimple
             $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_TYPE);
             
             # builder
-            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeBuilder();
+            $oBuilder = new VoucherTypeBuilder();
             $oBuilder->setTableQueryAlias($sAlias);
             
             
             # event
             $oEvent  = $this->getEventDispatcher();
             
-            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeGateway(self::DB_TABLE_VOUCHER_TYPE,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway = new VoucherTypeGateway(self::DB_TABLE_VOUCHER_TYPE,$oConnection,$oEvent,$oTable,null,$oBuilder);
             $oGateway->setTableQueryAlias($sAlias);
+             $oGateway->setGatewayCollection($c->getGatewayProxyCollection());
             
             return  $oGateway;
             
@@ -251,15 +288,16 @@ class VoucherContainer extends Pimple
             $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_INSTANCE);
             
             # builder
-            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceBuilder();
+            $oBuilder = new VoucherInstanceBuilder();
             $oBuilder->setTableQueryAlias($sAlias);
             
             
             # event
             $oEvent  = $this->getEventDispatcher();
             
-            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceGateway(self::DB_TABLE_VOUCHER_INSTANCE,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway = new VoucherInstanceGateway(self::DB_TABLE_VOUCHER_INSTANCE,$oConnection,$oEvent,$oTable,null,$oBuilder);
             $oGateway->setTableQueryAlias($sAlias);
+            $oGateway->setGatewayCollection($c->getGatewayProxyCollection());
             
             return  $oGateway;
             
@@ -277,26 +315,30 @@ class VoucherContainer extends Pimple
             $oTable = $c['dbMeta']->getTable(self::DB_TABLE_VOUCHER_RULE);
             
             # builder
-            $oBuilder = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleBuilder();
+            $oBuilder = new VoucherGenRuleBuilder();
             $oBuilder->setTableQueryAlias($sAlias);
             
             
             # event
             $oEvent  = $this->getEventDispatcher();
             
-            $oGateway = new IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleGateway(self::DB_TABLE_VOUCHER_RULE,$oConnection,$oEvent,$oTable,null,$oBuilder);
+            $oGateway = new VoucherGenRuleGateway(self::DB_TABLE_VOUCHER_RULE,$oConnection,$oEvent,$oTable,null,$oBuilder);
             $oGateway->setTableQueryAlias($sAlias);
+            $oGateway->setGatewayCollection($c->getGatewayProxyCollection());
             
             return  $oGateway;
             
         });
         
-        # instance the other
-        
-        
+        # Add gateways to proxy collection
+        $col = $this->getGatewayProxyCollection();
+        $col->addGateway(self::DB_TABLE_VOUCHER_RULE    , $this->raw('gatewayVoucherRule'));
+        $col->addGateway(self::DB_TABLE_VOUCHER_INSTANCE, $this->raw('gatewayVoucherInstance'));
+        $col->addGateway(self::DB_TABLE_VOUCHER_TYPE    , $this->raw('gatewayVoucherType'));
+        $col->addGateway(self::DB_TABLE_VOUCHER_GROUP   , $this->raw('gatewayVoucherGroup'));
      
         
     }
     
 }
-/* End of File /*
+/* End of File */

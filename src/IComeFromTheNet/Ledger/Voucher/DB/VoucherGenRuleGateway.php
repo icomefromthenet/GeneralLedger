@@ -2,6 +2,7 @@
 namespace IComeFromTheNet\Ledger\Voucher\DB;
 
 use DBALGateway\Table\AbstractTable;
+use IComeFromTheNet\Ledger\SchemaAwareTable;
 
 /**
  * Gateway to the voucher generator rules database table
@@ -9,7 +10,7 @@ use DBALGateway\Table\AbstractTable;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class VoucherGenRuleGateway extends AbstractTable
+class VoucherGenRuleGateway extends SchemaAwareTable
 {
     
     

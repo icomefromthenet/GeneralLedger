@@ -31,7 +31,6 @@ class VoucherTypeBuilder extends AliasBuilder
         $oEnableFrom        = $this->getField($data,'voucher_enabled_from',$sAlias);
         $oEnableTo          = $this->getField($data,'voucher_enabled_to',$sAlias);
         $sSlugName          = $this->getField($data,'voucher_name_slug',$sAlias);
-        $sSequenceStrategy  = $this->getField($data,'voucher_sequence_strategy',$sAlias);
         $iVoucherGroupId    = $this->getField($data,'voucher_group_id',$sAlias);
         $iVoucherGenRuleId  = $this->getField($data,'voucher_gen_rule_id',$sAlias);
         
@@ -42,7 +41,6 @@ class VoucherTypeBuilder extends AliasBuilder
         $entity->setName($sName);
         $entity->setSlug($sSlugName);
         $entity->setDescription($sDescription);
-        $entity->setSequenceStrategyName($sSequenceStrategy);
         $entity->setVoucherGroupId($iVoucherGroupId);
         $entity->setVoucherGenRuleId($iVoucherGenRuleId);
         
@@ -66,7 +64,6 @@ class VoucherTypeBuilder extends AliasBuilder
             ,'voucher_name'             => $entity->getName()
             ,'voucher_name_slug'        => $entity->getSlug()
             ,'voucher_description'      => $entity->getDescription()
-            ,'voucher_sequence_strategy'=> $entity->getSequenceStrategyName()
             ,'voucher_group_id'         => $entity->getVoucherGroupId()
             ,'voucher_gen_rule_id'      => $entity->getVoucherGenRuleId()
         );
