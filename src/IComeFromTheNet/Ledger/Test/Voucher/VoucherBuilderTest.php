@@ -59,7 +59,19 @@ class VoucherBuilderTest extends VoucherTestAbstract
     
     public function testVoucherRuleBuilder()
     {
+        $oContainer = $this->getContainer();
         
+        $oBuilder = $oContainer->getVoucherRuleGateway()->getEntityBuilder();
+        
+        $sAlias = $oBuilder->getTableQueryAlias();
+        
+        $aFields = array(
+            $sAlias.'_' => '',    
+            $sAlias.'_' => '',
+            $sAlias.'_' => '',
+            $sAlias.'_' => '',
+            $sAlias.'_' => '',
+        );
         
     }
     

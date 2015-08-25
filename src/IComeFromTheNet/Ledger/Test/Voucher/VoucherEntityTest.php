@@ -3,6 +3,7 @@ namespace IComeFromTheNet\Ledger\Test\Voucher;
 
 use DateTime;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRule;
 
 /**
   *  Test the Voucher Entity Object
@@ -113,6 +114,72 @@ class VoucherEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(count($aValidateErrors['isDisabled']),1);
         $this->assertEquals(count($aValidateErrors['voucherID']),1);
         
+    }
+    
+    
+    public function testVoucherRuleSuccess()
+    {
+        $oRule = new VoucherGenRule();
+        
+        $iVoucherGeneratorRuleId   = 1;
+        $sVoucherRuleNameSlug      = 'rule_1';
+        $sVoucherRuleName          = 'Rule 1';
+        $sVoucherPaddingCharacter  = 'A'; 
+        $sVoucherSuffix            = '###';
+        $sVoucherPrefix            = '@@@';
+        $iVoucherLength            = 10;
+        $oDateCreated              = new DateTime();    
+        $sSequenceStrategy         = 'UUID';
+        
+        
+        $oRule->setVoucherGenRuleId($iVoucherGeneratorRuleId);
+        $oRule->setSlugRuleName($sVoucherRuleNameSlug);
+        $oRule->setVoucherRuleName($sVoucherRuleName);
+        $oRule->setVoucherPaddingCharacter($sVoucherPaddingCharacter);
+        $oRule->setVoucherSuffix($sVoucherSuffix);
+        $oRule->setVoucherPrefix($sVoucherPrefix);
+        $oRule->setVoucherLength($iVoucherLength);
+        $oRule->setDateCreated($oDateCreated);
+        $oRule->setSequenceStrategyName($sSequenceStrategy);
+        
+        $this->assertEquals($iVoucherGeneratorRuleId ,$oRule->getVoucherGenRuleId());
+        $this->assertEquals($sVoucherRuleNameSlug,$oRule->getSlugRuleName());
+        $this->assertEquals($sVoucherRuleName  ,$oRule->getVoucherRuleName());
+        $this->assertEquals($sVoucherPaddingCharacter,$oRule->getVoucherPaddingCharacter());
+        $this->assertEquals($sVoucherSuffix ,$oRule->getVoucherSuffix());
+        $this->assertEquals($sVoucherPrefix ,$oRule->getVoucherPrefix());
+        $this->assertEquals($iVoucherLength ,$oRule->getVoucherLength());
+        $this->assertEquals($oDateCreated,$oRule->getDateCreated());
+        $this->assertEquals($sSequenceStrategy ,$oRule->getSequenceStrategyName());
+        
+        
+        $this->assertTrue($oRule->validate());
+        
+        # validate with no Database ID which be the case in INSERT
+        $oRule = new VoucherGenRule();
+        $oRule->setSlugRuleName($sVoucherRuleNameSlug);
+        $oRule->setVoucherRuleName($sVoucherRuleName);
+        $oRule->setVoucherPaddingCharacter($sVoucherPaddingCharacter);
+        $oRule->setVoucherSuffix($sVoucherSuffix);
+        $oRule->setVoucherPrefix($sVoucherPrefix);
+        $oRule->setVoucherLength($iVoucherLength);
+        $oRule->setDateCreated($oDateCreated);
+        $oRule->setSequenceStrategyName($sSequenceStrategy);
+     
+        $this->assertTrue($oRule->validate());
+        
+        # valdiate with empty padding, suffix, prefix
+        $oRule = new VoucherGenRule();
+        $oRule->setSlugRuleName($sVoucherRuleNameSlug);
+        $oRule->setVoucherRuleName($sVoucherRuleName);
+        $oRule->setVoucherPaddingCharacter('');
+        $oRule->setVoucherSuffix('');
+        $oRule->setVoucherPrefix('');
+        $oRule->setVoucherLength(100);
+        $oRule->setDateCreated($oDateCreated);
+        $oRule->setSequenceStrategyName($sSequenceStrategy);
+        
+        $this->assertTrue($oRule->validate());
     }
     
     // public function testEntityProperties()

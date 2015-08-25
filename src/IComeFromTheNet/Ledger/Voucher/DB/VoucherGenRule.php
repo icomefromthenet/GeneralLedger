@@ -1,6 +1,7 @@
 <?php
 namespace IComeFromTheNet\Ledger\Voucher\DB;
 
+use DateTime;
 use Valitron\Validator;
 
 /**
@@ -267,6 +268,51 @@ class VoucherGenRule
        $this->sSequenceStrategy = (string) $sName;
     }
     
+    
+   /**
+     * Validates if the assign properties are valid for a
+     * database insert
+     * 
+     * @return boolean true if 
+     */ 
+    public function validate()
+    {
+        
+        $aFields = array(
+           'voucherGenRuleID'  => $this->getVoucherGenRuleId()
+          ,'slugName'   => $this->getSlugRuleName()
+          ,'voucherRuleName' => $this->getVoucherRuleName()
+          ,'voucherPaddingChar' => $this->getVoucherPaddingCharacter()
+          ,'voucherSuffix' =>  $this->getVoucherSuffix()
+          ,'voucherPrefix'   => $this->getVoucherPrefix()
+          ,'voucherLength'   => $this->getVoucherLength()
+          ,'sequenceStrategy' => $this->getSequenceStrategyName()
+            
+        );
+        
+        $v = new Validator($aFields);
+        
+        $v->rule('slug', 'slugName');
+        
+        $v->rule('lengthBetween',array('slugName','name'),1,25);
+        $v->rule('length',array('voucherPaddingChar'),1);    
+        $v->rule('lengthBetween',array('voucherSuffix','voucherPrefix'),1,20);
+        
+        $v->rule('required',array('slugName','voucherRuleName','voucherLength'));
+        
+        $v->rule('min',array('voucherGenRuleID','voucherLength'),1);
+        $v->rule('max',array('voucherLength'),100);
+        
+        $v->rule('in',array('sequenceStrategy'),array('UUID','SEQUENCE'));
+        
+        
+        if($v->validate()) {
+            return true;
+        } else {
+            return $v->errors();
+        }
+       
+    } 
     
     
 }

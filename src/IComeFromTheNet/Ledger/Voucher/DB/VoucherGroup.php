@@ -149,7 +149,6 @@ class VoucherGroup
      * database insert
      * 
      * @return boolean true if 
-     * @throws 
      */ 
     public function validate()
     {
