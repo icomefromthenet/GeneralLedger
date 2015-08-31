@@ -18,6 +18,12 @@ use IComeFromTheNet\Ledger\Voucher\DB\VoucherInstanceGateway;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleBuilder;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleGateway;
 
+use IComeFromTheNet\Ledger\Voucher\Operations\GroupCreate;
+use IComeFromTheNet\Ledger\Voucher\Operations\GroupRemove;
+use IComeFromTheNet\Ledger\Voucher\Operations\GroupRevise;
+
+use IComeFromTheNet\Ledger\Voucher\Operations\VoucherCreate;
+
 /**
  * Voucher Service Container
  * 
@@ -206,6 +212,56 @@ class VoucherContainer extends Pimple
     }
     
     
+    /**
+     * Return array of operations used in VoucherGroup CRUD
+     * 
+     * @return array(
+     *  'create' => IComeFromTheNet\Ledger\Voucher\Operations\GroupCreate,
+     *  'delete' => IComeFromTheNet\Ledger\Voucher\Operations\GroupRemove,
+     *  'update' => IComeFromTheNet\Ledger\Voucher\Operations\GroupRevise,
+     * )
+     */ 
+    public function getVoucherGroupOperations()
+    {
+        return $this['voucherGroupOperations'];
+    }
+    
+    /**
+     * Return array of operations used in VoucherInstance CRUD
+     * 
+     * @return array(
+     *  'create' => IComeFromTheNet\Ledger\Voucher\Operations\VoucherCreate
+     * )
+     */
+    public function getVoucherInstanceOperations()
+    {
+        return $this['voucherInstanceOperations'];
+    }
+    
+    /**
+     * Return array of operations used in VoucherGenRule CRUD
+     * 
+     * @return array(
+     * 
+     * )
+     */
+    public function getVoucherRuleOperations()
+    {
+        return $this['voucherRuleOperations'];
+    }
+    
+    /**
+     * Return array of operations used in VoucherType CRUD
+     * 
+     * @return array(
+     * 
+     * )
+     */
+    public function getVoucherTypeOperations()
+    {
+        return $this['voucherTypeOperations'];
+    }
+    
     //--------------------------------------------------------------------------
     # Service Bootstrap
     
@@ -217,6 +273,8 @@ class VoucherContainer extends Pimple
      */ 
     public function boot(DateTime $now)
     {
+        
+        $this['now'] = $now;
         
         # build the table meta data using the map  
         $this['dbMeta'] = $this->createModuleDBMeta($this->getGatewayProxyCollection()->getSchema());
@@ -336,6 +394,53 @@ class VoucherContainer extends Pimple
         $col->addGateway(self::DB_TABLE_VOUCHER_TYPE    , $this->raw('gatewayVoucherType'));
         $col->addGateway(self::DB_TABLE_VOUCHER_GROUP   , $this->raw('gatewayVoucherGroup'));
      
+        
+        # Voucher Operations Setup These are not shared
+        
+        $this['voucherGroupOperations'] = function($c) use($now) {
+            
+            $oGroupGateway = $this->getVoucherGroupGateway();
+            
+            return array(
+                'create' => new GroupCreate($oGroupGateway,$now),
+                'delete' => new GroupRemove($oGroupGateway.$now),
+                'update' => new GroupRevise($oGroupGateway,$now),
+            ); 
+            
+        };
+        
+        
+        $this['voucherInstanceOperations'] = function($c) use($now) {
+          
+            $oInstanceGateway = $c->getVoucherInstanceGateway();
+          
+            return array(
+              'create' => new VoucherCreate($oInstanceGateway,$now)
+              
+            );  
+            
+        };
+        
+        
+        $this['voucherRuleOperations'] =  function($c) use($now) {
+            
+            
+            return array(
+              
+              
+            );  
+            
+        };
+        
+        $this['voucherTypeOperations'] = function($c) use($now) {
+            
+            
+            return array(
+              
+              
+            ); 
+            
+        };
         
     }
     

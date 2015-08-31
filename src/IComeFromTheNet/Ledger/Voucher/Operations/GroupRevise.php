@@ -8,12 +8,12 @@ use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGateway;
 
 /**
- * Operation will save a new voucher group, not be used to update existing
+ * Operation will save an existing voucher group
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class GroupCreate 
+class GroupRevise 
 {
     
     /**

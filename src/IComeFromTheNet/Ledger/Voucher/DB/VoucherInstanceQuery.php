@@ -13,6 +13,9 @@ use DateTime;
 class VoucherInstanceQuery extends AbstractQuery
 {
 
+
+
+    
    
 
 }
