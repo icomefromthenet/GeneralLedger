@@ -89,7 +89,6 @@ class VoucherContainer extends Pimple
         $table->addColumn('voucher_name','string',array('length'=>100));
         $table->addColumn('voucher_name_slug','string',array('length'=>100));
         $table->addColumn('voucher_description','string',array('length'=>500));
-      
         $table->addColumn('voucher_group_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         

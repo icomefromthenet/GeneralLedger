@@ -3,6 +3,7 @@ namespace IComeFromTheNet\Ledger\Voucher\DB;
 
 use DateTime;
 use IComeFromTheNet\Ledger\Exception\LedgerException;
+use Valitron\Validator;
 
 /**
   *  Represent a custom Ledger Entry type.
@@ -35,7 +36,7 @@ use IComeFromTheNet\Ledger\Exception\LedgerException;
   *  @author Lewis Dyer <getintouch@icomefromthenet.com>
   *  @since 1.0.0
   */
-class VoucherEntity extends GenericEntity
+class VoucherType 
 {
     
     protected $iVoucherTypeId;
@@ -251,7 +252,46 @@ class VoucherEntity extends GenericEntity
        $this->iVoucherGenRuleId = (int) $iRuleId;
     }
     
+    /**
+     * Validates if the assign properties are valid for a database insert
+     * 
+     * @return boolean true if 
+     */ 
+    public function validate()
+    {
+        
+        $aFields = array(
+            'voucherTypeId'      => $this->getVoucherTypeId(),
+            'voucherGenRuleId'   => $this->getVoucherGenRuleID(),
+            'voucherGroupId'     => $this->getVoucherGroupId(),
+            'voucherEnabledFrom' => $this->getEnabledFrom(),
+            'voucherEnabledTo'   => $this->getEnabledTo(),
+            'voucherDescription' => $this->getDescription(),
+            'voucherName'        => $this->getName(),
+            'voucherNameSlug'    => $this->getSlug()
+            
+        );
+        
+        $v = new Validator($aFields);
+        
+
+        
+        $v->rule('lengthBetween',array('voucherNameSlug','voucherName'),1,100);
+        $v->rule('lengthBetween',array('voucherDescription'),1,500);
+        $v->rule('required',array('voucherNameSlug','voucherNameSlug','voucherGenRuleId','voucherGroupId','voucherEnabledFrom','voucherEnabledTo'));
+        $v->rule('min',array('voucherTypeId','voucherGroupId','voucherGenRuleId'),1);
+        $v->rule('slug',array('voucherNameSlug'));
     
+        $v->rule('dateBefore',array('voucherEnabledFrom'),$this->getEnabledTo());
+        
+        
+        if($v->validate()) {
+            return true;
+        } else {
+            return $v->errors();
+        }
+       
+    } 
  
 }
 /* End of Class */

@@ -4,6 +4,8 @@ namespace IComeFromTheNet\Ledger\Test\Voucher;
 use DateTime;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRule;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherInstance;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherType;
 
 /**
   *  Test the Voucher Entity Object
@@ -180,6 +182,153 @@ class VoucherEntityTest extends \PHPUnit_Framework_TestCase
         $oRule->setSequenceStrategyName($sSequenceStrategy);
         
         $this->assertTrue($oRule->validate());
+    }
+    
+    
+    public function testVoucherEntityFailure()
+    {
+        
+         $oRule = new VoucherGenRule();
+        
+        $iVoucherGeneratorRuleId   = 1;
+        $sVoucherRuleNameSlug      = '';
+        $sVoucherRuleName          = '';
+        $sVoucherPaddingCharacter  = 'A'; 
+        $sVoucherSuffix            = str_repeat('a',100);
+        $sVoucherPrefix            = str_repeat('a',100);
+        $iVoucherLength            = 101;
+        $oDateCreated              = new DateTime();    
+        $sSequenceStrategy         = 'BAD';
+        
+        
+        $oRule->setVoucherGenRuleId($iVoucherGeneratorRuleId);
+        $oRule->setSlugRuleName($sVoucherRuleNameSlug);
+        $oRule->setVoucherRuleName($sVoucherRuleName);
+        $oRule->setVoucherPaddingCharacter($sVoucherPaddingCharacter);
+        $oRule->setVoucherSuffix($sVoucherSuffix);
+        $oRule->setVoucherPrefix($sVoucherPrefix);
+        $oRule->setVoucherLength($iVoucherLength);
+        $oRule->setDateCreated($oDateCreated);
+        $oRule->setSequenceStrategyName($sSequenceStrategy);
+        
+        $oResults = $oRule->validate();
+        
+        $this->assertInternalType('array',$oResults);
+        
+        $this->assertEquals(count($oResults['voucherSuffix']),1);
+        $this->assertEquals(count($oResults['voucherPrefix']),1);
+        $this->assertEquals(count($oResults['sequenceStrategy']),1);
+        $this->assertEquals(count($oResults['voucherRuleName']),1);
+        $this->assertEquals(count($oResults['slugName']),3);
+        $this->assertEquals(count($oResults['voucherLength']),1);
+       
+    }
+    
+    public function testVoucherInstance()
+    {
+        $oInstance = new VoucherInstance();
+        
+        $iVoucherInstanceId = 1;
+        $iVoucherTypeId  =  1;
+        $sVoucherCode    = '00_111_00';
+        $oDateCreated    = new DateTime();
+        
+        $oInstance->setVoucherInstanceId($iVoucherInstanceId);
+        $oInstance->setVoucherTypeId($iVoucherTypeId);
+        $oInstance->setVoucherCode($sVoucherCode);
+        $oInstance->setDateCreated($oDateCreated);
+        
+        
+        $this->assertEquals($iVoucherInstanceId,$oInstance->getVoucherInstanceId());
+        $this->assertEquals($iVoucherTypeId,$oInstance->getVoucherTypeId());
+        $this->assertEquals($sVoucherCode,$oInstance->getVoucherCode());
+        $this->assertEquals($oDateCreated,$oInstance->getDateCreated());
+        
+        
+    }
+    
+    public function testVoucherTypeSuccess()
+    {
+        $oVoucher = new VoucherType();
+        
+        $iVoucherTypeId = 1;
+        $sName          ='test voucher';
+        $sSlugName      ='test_voucher';
+        $sDescription   = 'A sucessful test voucher';
+        $oEnableFrom    = new DateTime();
+        $oEnableTo      = new DateTime('NOW + 5 days');
+        $iVoucherGroupId = 1;
+        $iVoucherGenRuleId =1;
+        
+        $oVoucher->setVoucherTypeId($iVoucherTypeId);
+        $oVoucher->setSlug($sSlugName);
+        $oVoucher->setName($sName);
+        $oVoucher->setDescription($sDescription);
+        $oVoucher->setEnabledFrom($oEnableFrom);
+        $oVoucher->setEnabledTo($oEnableTo);
+        $oVoucher->setVoucherGroupId($iVoucherGroupId);
+        $oVoucher->setVoucherGenruleId($iVoucherGenRuleId);
+        
+        $this->assertEquals($iVoucherTypeId,$oVoucher->getVoucherTypeId());
+        $this->assertEquals($sName,$oVoucher->getName());
+        $this->assertEquals($sSlugName,$oVoucher->getSlug());
+        $this->assertEquals($sDescription,$oVoucher->getDescription());
+        $this->assertEquals($oEnableFrom,$oVoucher->getEnabledFrom());
+        $this->assertEquals($oEnableTo,$oVoucher->getEnabledTo());
+        $this->assertEquals($iVoucherGroupId,$oVoucher->getVoucherGroupID());
+        $this->assertEquals($iVoucherGenRuleId,$oVoucher->getVoucherGenRuleId());
+        
+        $this->assertTrue($oVoucher->validate());
+        
+        # id not required to validate
+        $oVoucher = new VoucherType();
+       
+        $oVoucher->setSlug($sSlugName);
+        $oVoucher->setName($sName);
+        $oVoucher->setDescription($sDescription);
+        $oVoucher->setEnabledFrom($oEnableFrom);
+        $oVoucher->setEnabledTo($oEnableTo);
+        $oVoucher->setVoucherGroupId($iVoucherGroupId);
+        $oVoucher->setVoucherGenruleId($iVoucherGenRuleId);
+        
+        $this->assertTrue($oVoucher->validate());
+        
+    }
+    
+    public function testVoucherTypeValidationFailed()
+    {
+        $oVoucher = new VoucherType();
+        
+        $iVoucherTypeId = null;
+        $sName          = str_repeat('a',101);
+        $sSlugName      = str_repeat('a',101);;
+        $sDescription   = 'A sucessful test voucher';
+        $oEnableFrom    = new DateTime();
+        $oEnableTo      = new DateTime('NOW - 5 days');
+        $iVoucherGroupId = 0;
+        $iVoucherGenRuleId =0;
+        
+        $oVoucher->setVoucherTypeId($iVoucherTypeId);
+        $oVoucher->setSlug($sSlugName);
+        $oVoucher->setName($sName);
+        $oVoucher->setDescription($sDescription);
+        $oVoucher->setEnabledFrom($oEnableFrom);
+        $oVoucher->setEnabledTo($oEnableTo);
+        $oVoucher->setVoucherGroupId($iVoucherGroupId);
+        $oVoucher->setVoucherGenruleId($iVoucherGenRuleId);
+        
+      
+        $oResults = $oVoucher->validate();
+          
+        $this->assertInternalType('array',$oResults);
+        
+        $this->assertEquals(count($oResults['voucherGroupId']),1);
+        $this->assertEquals(count($oResults['voucherGenRuleId']),1);
+        $this->assertEquals(count($oResults['voucherTypeId']),1);
+        $this->assertEquals(count($oResults['voucherName']),1);
+        $this->assertEquals(count($oResults['voucherNameSlug']),1);
+        $this->assertEquals(count($oResults['voucherEnabledFrom']),1);
+        
     }
     
     // public function testEntityProperties()

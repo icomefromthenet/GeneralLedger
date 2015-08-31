@@ -126,6 +126,35 @@ class VoucherInstance
     
     
     
+    /**
+     * Validates if the assign properties are valid for a database insert
+     * 
+     * @return boolean true if 
+     */ 
+    public function validate()
+    {
+        
+        $aFields = array(
+            'voucherCode' =>  $this->getVoucherCode(),
+            'voucherTypeId' =>  $this->getVoucherTypeId(),
+            'voucherInstanceId' => $this->getVoucherInstanceId()
+        );
+        
+        $v = new Validator($aFields);
+        
+        $v->rule('lengthBetween',array('voucherCode'),1,255);
+        $v->rule('required',array('voucherCode','voucherTypeId'));
+        $v->rule('min',array('voucherInstanceId'),1);
+        
+        
+        if($v->validate()) {
+            return true;
+        } else {
+            return $v->errors();
+        }
+       
+    } 
+    
     
 }
 /* End of Class */

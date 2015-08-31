@@ -35,14 +35,14 @@ class VoucherTypeBuilder extends AliasBuilder
         $iVoucherGenRuleId  = $this->getField($data,'voucher_gen_rule_id',$sAlias);
         
         
-        $entity->setVoucherTypeId($iVoucherTypeId);
-        $entity->setEnabledFrom($oEnableFrom);
-        $entity->setEnabledTo($oEnableTo);
-        $entity->setName($sName);
-        $entity->setSlug($sSlugName);
-        $entity->setDescription($sDescription);
-        $entity->setVoucherGroupId($iVoucherGroupId);
-        $entity->setVoucherGenRuleId($iVoucherGenRuleId);
+        $oEntity->setVoucherTypeId($iVoucherTypeId);
+        $oEntity->setEnabledFrom($oEnableFrom);
+        $oEntity->setEnabledTo($oEnableTo);
+        $oEntity->setName($sName);
+        $oEntity->setSlug($sSlugName);
+        $oEntity->setDescription($sDescription);
+        $oEntity->setVoucherGroupId($iVoucherGroupId);
+        $oEntity->setVoucherGenRuleId($iVoucherGenRuleId);
         
         return $oEntity;
         

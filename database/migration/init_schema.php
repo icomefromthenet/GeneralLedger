@@ -30,8 +30,8 @@ class init_schema implements EntityInterface
         $table->addColumn('voucher_rule_slug','string',array("length" => 25));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
-        $table->addColumn('voucher_prefix','string',array('length'=> 20));
-        $table->addColumn('voucher_suffix','string',array('length'=>20));
+        $table->addColumn('voucher_prefix','string',array('length'=> 50));
+        $table->addColumn('voucher_suffix','string',array('length'=>50));
         $table->addColumn('voucher_length','smallint',array('unsigned'=> true,'length'=>3));
         $table->addColumn('date_created','datetime',array());
         $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
@@ -46,6 +46,7 @@ class init_schema implements EntityInterface
         $table->addColumn("voucher_enabled_from", "datetime",array());
         $table->addColumn("voucher_enabled_to", "datetime",array());
         $table->addColumn('voucher_name','string',array('length'=>100));
+        $table->addColumn('voucher_name_slug','string',array('length'=>100));
         $table->addColumn('voucher_description','string',array('length'=>500));
         $table->addColumn('voucher_group_id','integer',array('unsigned'=> true));
         $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));

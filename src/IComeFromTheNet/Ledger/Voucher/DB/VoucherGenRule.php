@@ -200,6 +200,8 @@ class VoucherGenRule
     /**
      * Gets the assigned length of voucher number
      * 
+     * This number of characters in unique number not max possible number
+     * 
      * @access public
      * @return integer the voucher number length
      */ 
@@ -210,6 +212,8 @@ class VoucherGenRule
     
     /**
      * Sets the voucher numbers length 
+     * 
+     * This number of characters in unique number not max possible number
      * 
      * @param integer   $iLength    The voucher number length
      * @access public
@@ -290,21 +294,32 @@ class VoucherGenRule
             
         );
         
+        // ensure total length < 255 column size for the voucher code
+        // generated with the current db schema and size of padding,suffix
+        $iTotalLength  = (int)$this->getVoucherLength();
+        $iTotalLength += mb_strlen((string)$this->getVoucherSuffix());
+        $iTotalLength += mb_strlen((string)$this->getVoucherPrefix());
+        
+        $aFields['totalLength'] = $iTotalLength;
+        
+        
         $v = new Validator($aFields);
         
         $v->rule('slug', 'slugName');
         
-        $v->rule('lengthBetween',array('slugName','name'),1,25);
         $v->rule('length',array('voucherPaddingChar'),1);    
-        $v->rule('lengthBetween',array('voucherSuffix','voucherPrefix'),1,20);
+        $v->rule('lengthBetween',array('slugName','name'),1,25);
+        $v->rule('lengthBetween',array('voucherSuffix','voucherPrefix'),0,50);
+        $v->rule('lengthBetween',array('totalLength'),1,255);
         
         $v->rule('required',array('slugName','voucherRuleName','voucherLength'));
         
         $v->rule('min',array('voucherGenRuleID','voucherLength'),1);
-        $v->rule('max',array('voucherLength'),100);
+        
+        $v->rule('max',array('voucherLength'),100); // this number of characters in unique number not max possible number
         
         $v->rule('in',array('sequenceStrategy'),array('UUID','SEQUENCE'));
-        
+    
         
         if($v->validate()) {
             return true;
