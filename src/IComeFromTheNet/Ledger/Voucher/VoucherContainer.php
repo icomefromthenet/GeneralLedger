@@ -403,7 +403,7 @@ class VoucherContainer extends Pimple
             
             return array(
                 'create' => new GroupCreate($oGroupGateway,$now),
-                'delete' => new GroupRemove($oGroupGateway.$now),
+                'delete' => new GroupRemove($oGroupGateway,$now),
                 'update' => new GroupRevise($oGroupGateway,$now),
             ); 
             

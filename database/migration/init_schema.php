@@ -13,7 +13,7 @@ class init_schema implements EntityInterface
     {
         # Voucher Groups
         $table = $sc->createTable("ledger_voucher_group");
-        $table->addColumn('voucher_group_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_group_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('voucher_group_name','string',array("length" => 100));
         $table->addColumn('voucher_group_slug','string',array("length" => 100));
         $table->addColumn('is_disabled','boolean',array("default"=>false));
@@ -28,7 +28,7 @@ class init_schema implements EntityInterface
         $table = $sc->createTable("ledger_voucher_gen_rule");
         $table->addColumn('voucher_rule_name','string',array('length'=> 25));
         $table->addColumn('voucher_rule_slug','string',array("length" => 25));
-        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true,'autoincrement' => true));
         $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
         $table->addColumn('voucher_prefix','string',array('length'=> 50));
         $table->addColumn('voucher_suffix','string',array('length'=>50));
@@ -42,7 +42,7 @@ class init_schema implements EntityInterface
         
         # Voucher Type Table
         $table = $sc->createTable("ledger_voucher_type");
-        $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_type_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn("voucher_enabled_from", "datetime",array());
         $table->addColumn("voucher_enabled_to", "datetime",array());
         $table->addColumn('voucher_name','string',array('length'=>100));
@@ -59,7 +59,7 @@ class init_schema implements EntityInterface
         
         # Vouchers Table (Instance Table)
         $table = $sc->createTable("ledger_voucher_instance");
-        $table->addColumn('voucher_instance_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_instance_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
         $table->addColumn('voucher_code','string',array("length"=> 255));
         $table->addColumn('date_created','datetime',array());

@@ -5,7 +5,7 @@ use DateTime;
 use DBALGateway\Exception as DBALGatewayException;
 use IComeFromTheNet\Ledger\Voucher\VoucherException;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup;
-use IComeFromTheNet\Ledger\Voucher\DB\VoucherGateway;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupGateway;
 
 /**
  * Operation will remove a voucher groug.
@@ -32,10 +32,10 @@ class GroupRemove
      * 
      * @access public
      * @return void
-     * @param VoucherGateway    $oGateway   The Database Table Gateway
-     * @param DateTime          $oNow       The current datetime.
+     * @param VoucherGroupGateway    $oGateway   The Database Table Gateway
+     * @param DateTime               $oNow       The current datetime.
      */ 
-    public function __construct(VoucherGateway $oGateway, DateTime $oNow)
+    public function __construct(VoucherGroupGateway $oGateway, DateTime $oNow)
     {
         $this->oGateway = $oGateway;
         $this->oNow     = $oNow;
@@ -54,8 +54,8 @@ class GroupRemove
     {
         $oGateway        = $this->oGateway;
         $oVoucherBuilder = $oGateway->getEntityBuilder();
-       
-        if(true === empty($oVoucherGroup->getVoucherGroupID())) {
+        $bSuccess        = false;
+        if(true === empty($oVoucherGroup->getVoucherGroupId())) {
             throw new VoucherException('Unable to remove a voucher group the Entity does not have a database id');
         }
     
@@ -63,7 +63,7 @@ class GroupRemove
             // Note: the FK will stop voucher groups from being removed if they are used. 
             $bSuccess = $oGateway->deleteQuery()
                                 ->start()
-                                    ->filterByGroup($oVoucherGroup->getVoucherGroupID())
+                                    ->filterByGroup($oVoucherGroup->getVoucherGroupId())
                                 ->end()
                             ->delete(); 
             
@@ -77,7 +77,7 @@ class GroupRemove
         }
         
         
-        return $success;    
+        return $bSuccess;    
     }
     
 }

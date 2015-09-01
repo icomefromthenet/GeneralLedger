@@ -34,7 +34,7 @@ class VoucherGroupBuilder extends AliasBuilder
         $oDateCreated      = $this->getField($data,'date_created',$sAlias);
         
         
-        $oEntity->setVoucherGroupID($iVoucherGroupId);
+        $oEntity->setVoucherGroupId($iVoucherGroupId);
         $oEntity->setVoucherGroupName($sVoucherGroupName);
         $oEntity->setSlugName($sVoucheGroupSlug);
         $oEntity->setDisabledStatus($bIsDisabled);
@@ -57,7 +57,7 @@ class VoucherGroupBuilder extends AliasBuilder
     public function demolish($entity)
     {
         $aData = array(
-            'voucher_group_id'   => $entity->getVoucherGroupID()            
+            'voucher_group_id'   => $entity->getVoucherGroupId()            
             ,'voucher_group_name' => $entity->getVoucherGroupName()
             ,'voucher_group_slug' => $entity->getSlugName()
             ,'is_disabled'        => $entity->getDisabledStatus()

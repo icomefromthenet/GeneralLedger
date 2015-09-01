@@ -19,7 +19,7 @@ class VoucherGroup
      * 
      * @return integer the database id
      */ 
-    public function getVoucherGroupID()
+    public function getVoucherGroupId()
     {
         return $this->voucherID;
     }
@@ -30,7 +30,7 @@ class VoucherGroup
      * @param   integer $id The database id
      * @return  void
      */ 
-    public function setVoucherGroupID($id)
+    public function setVoucherGroupId($id)
     {
         $this->voucherID = (integer) $id;
     }
@@ -154,7 +154,7 @@ class VoucherGroup
     {
         
         $aFields = array(
-           'voucherID'  => $this->getVoucherGroupID()
+           'voucherID'  => $this->getVoucherGroupId()
           ,'name'       => $this->getVoucherGroupName()
           ,'sortOrder'  => $this->getSortOrder()
           ,'isDisabled' => $this->getDisabledStatus()

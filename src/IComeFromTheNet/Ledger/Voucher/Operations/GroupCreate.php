@@ -5,7 +5,7 @@ use DateTime;
 use DBALGateway\Exception as DBALGatewayException;
 use IComeFromTheNet\Ledger\Voucher\VoucherException;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroup;
-use IComeFromTheNet\Ledger\Voucher\DB\VoucherGateway;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherGroupGateway;
 
 /**
  * Operation will save a new voucher group, not be used to update existing
@@ -32,10 +32,10 @@ class GroupCreate
      * 
      * @access public
      * @return void
-     * @param VoucherGateway    $oGateway   The Database Table Gateway
+     * @param VoucherGroupGateway    $oGateway   The Database Table Gateway
      * @param DateTime          $oNow       The current datetime.
      */ 
-    public function __construct(VoucherGateway $oGateway, DateTime $oNow)
+    public function __construct(VoucherGroupGateway $oGateway, DateTime $oNow)
     {
         $this->oGateway = $oGateway;
         $this->oNow     = $oNow;
@@ -54,8 +54,9 @@ class GroupCreate
     {
         $oGateway        = $this->oGateway;
         $oVoucherBuilder = $oGateway->getEntityBuilder();
-       
-        if(false === empty($oVoucherGroup->getVoucherGroupID())) {
+        $bSuccess        = false;
+        
+        if(false === empty($oVoucherGroup->getVoucherGroupId())) {
             throw new VoucherException('Unable to create new voucher group the Entity has a database id assigned already');
         }
     
@@ -78,11 +79,10 @@ class GroupCreate
             }
             
             $bSuccess = $oQuery->end()->insert(); 
-    
             
     
-            if($success) {
-                $oVoucherGroup->setVoucherGroupID($gateway->lastInsertId());
+            if($bSuccess) {
+                $oVoucherGroup->setVoucherGroupId($oGateway->lastInsertId());
             }
         
         }
@@ -91,7 +91,8 @@ class GroupCreate
         }
         
         
-        return $success;    
+        
+        return $bSuccess;    
     }
     
 }
