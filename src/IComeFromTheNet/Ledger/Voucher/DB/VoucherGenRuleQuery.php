@@ -22,10 +22,14 @@ class VoucherGenRuleQuery extends AbstractQuery
     public function filterByRule($id)
     {
         $oGateway = $this->getGateway();
-        $oAlias   = $oGateway->getTableQueryAlias();
-        $paramTypse = $oGateway->getMetaData()->getColumn('voucher_gen_rule_id')->getType();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
         
-        return $this->andWhere("$oAlias.voucher_gen_rule_id = ".$this->createNamedParameter($id,$paramType));
+        $paramType = $oGateway->getMetaData()->getColumn('voucher_gen_rule_id')->getType();
+        
+        return $this->andWhere($sAlias."voucher_gen_rule_id = ".$this->createNamedParameter($id,$paramType));
         
     }
    
@@ -39,42 +43,57 @@ class VoucherGenRuleQuery extends AbstractQuery
     public function filterByRuleName($sRuleSlug)
     {
         $oGateway = $this->getGateway();
-        $oAlias   = $oGateway->getTableQueryAlias();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+
         $paramTye = $oGateway->getMetaData()->getColumn('voucher_rule_slug')->getType();
         
-        return $this->andWhere("$oAlias.voucher_rule_slug = ".$this->createNamedParameter($sRuleSlug,$paramType));
+        return $this->andWhere($sAlias."voucher_rule_slug = ".$this->createNamedParameter($sRuleSlug,$paramType));
     }
     
     
     public function filterByCreatedBefore(DateTime $oDate)
     {
         $oGateway = $this->getGateway();
-        $oAlias   = $oGateway->getTableQueryAlias();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+        
         $paramType = $oGateway->getMetaData()->getColumn('date_created')->getType();
         
         
-        return $this->andWhere("$oAlias.date_created < ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($sAlias."date_created < ".$this->createNamedParameter($oDate,$paramType));
     }
     
     public function filterByCreatedAfter(DateTime $oDate)
     {
         $oGateway = $this->getGateway();
-        $oAlias   = $oGateway->getTableQueryAlias();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+        
         $paramType = $oGateway->getMetaData()->getColumn('date_created')->getType();
         
         
-        return $this->andWhere("$oAlias.date_created > ".$this->createNamedParameter($oDate,$paramType));
+        return $this->andWhere($sAlias."date_created > ".$this->createNamedParameter($oDate,$paramType));
     }
     
     
     public function filterBySequenceStrategy($sSequenceStrategy)
     {
         $oGateway = $this->getGateway();
-        $oAlias   = $oGateway->getTableQueryAlias();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
         $paramType = $oGateway->getMetaData()->getColumn('voucher_sequence_strategy')->getType();
         
         
-        return $this->andWhere("$oAlias.voucher_sequence_strategy = ".$this->createNamedParameter($id,$paramType));
+        return $this->andWhere($sAlias."voucher_sequence_strategy = ".$this->createNamedParameter($id,$paramType));
     }
 
 }

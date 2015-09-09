@@ -82,7 +82,7 @@ class VoucherCreate
             
     
             if($success) {
-                $oVoucherGroup->setVoucherGroupID($gateway->lastInsertId());
+                $oVoucherInstance->setVoucherInstanceId($gateway->lastInsertId());
             }
         
         }

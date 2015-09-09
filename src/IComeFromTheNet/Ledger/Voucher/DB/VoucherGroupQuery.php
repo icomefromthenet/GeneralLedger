@@ -24,10 +24,14 @@ class VoucherGroupQuery extends AbstractQuery
     public function filterByGroup($id)
     {
         $oGateway = $this->getGateway();
-        $oAlias   = $oGateway->getTableQueryAlias();
+        $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+        
         $paramType = $oGateway->getMetaData()->getColumn('voucher_group_id')->getType();
         
-        return $this->andWhere("$oAlias.voucher_group_id = ".$this->createNamedParameter($id,$paramType));
+        return $this->andWhere($sAlias."voucher_group_id = ".$this->createNamedParameter($id,$paramType));
         
     }
    

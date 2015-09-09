@@ -50,12 +50,12 @@ class RuleCreate
      * @throws VoucherException if the database query fails or entity has id assigned.
      * @returns boolean true if the insert operation was successful
      */ 
-    public function execute(VoucherGenRule $oVoucheRule)
+    public function execute(VoucherGenRule $oVoucherRule)
     {
         $oGateway        = $this->oGateway;
         $oBuilder = $oGateway->getEntityBuilder();
        
-        if(false === empty($oVoucherGroup->getVoucherGenRuleId())) {
+        if(false === empty($oVoucherRule->getVoucherGenRuleId())) {
             throw new VoucherException('Unable to create new voucher rule the Entity has a database id assigned already');
         }
     
@@ -81,8 +81,8 @@ class RuleCreate
     
             
     
-            if($success) {
-                $oVoucherGroup->setVoucherGroupID($gateway->lastInsertId());
+            if($bSuccess) {
+                $oVoucherRule->setVoucherGenRuleId($oGateway->lastInsertId());
             }
         
         }
@@ -91,7 +91,7 @@ class RuleCreate
         }
         
         
-        return $success;    
+        return $bSuccess;    
     }
     
 }

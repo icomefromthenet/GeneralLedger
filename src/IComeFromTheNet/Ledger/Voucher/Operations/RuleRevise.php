@@ -8,12 +8,12 @@ use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRule;
 use IComeFromTheNet\Ledger\Voucher\DB\VoucherGenRuleGateway;
 
 /**
- * Operation will save a new voucher rule, not be used to update existing
+ * Operation will save a existing voucher rule
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class RuleCreate 
+class RuleRevise
 {
     
     /**
@@ -44,19 +44,19 @@ class RuleCreate
     
     
     /**
-     * Create a Voucher Rule
+     * Update a Voucher Rule
      * 
      * @param VoucherGenRule  $oVoucherRule  The Voucher Gen Rule
      * @throws VoucherException if the database query fails or entity has id assigned.
      * @returns boolean true if the insert operation was successful
      */ 
-    public function execute(VoucherGenRule $oVoucheRule)
+    public function execute(VoucherGenRule $oVoucherRule)
     {
         $oGateway        = $this->oGateway;
         $oBuilder = $oGateway->getEntityBuilder();
        
-        if(true === empty($oVoucherGroup->getVoucherGenRuleId())) {
-            throw new VoucherException('Unable to create new voucher rule the Entity requires a database id be assigned');
+        if(true === empty($oVoucherRule->getVoucherGenRuleId())) {
+            throw new VoucherException('Unable to update voucher rule the Entity requires a database id be assigned');
         }
     
         try {
@@ -69,29 +69,22 @@ class RuleCreate
                     
                     $oQuery->addColumn($sColumn,$mValue);
                     
-                } elseif($sColumn === 'date_created') {
-                  
-                    $oQuery->addColumn('date_created',$this->oNow);
-                    
-                }
+                } 
                 
             }
             
-            $bSuccess = $oQuery>where()
-                    ->filterByRule($oVoucherGroup->getVoucherGenRuleId())
+            $bSuccess = $oQuery->where()
+                    ->filterByRule($oVoucherRule->getVoucherGenRuleId())
                 ->end()
                 ->update(); 
     
-            if($success) {
-                $oVoucherGroup->setVoucherGenRuleI($gateway->lastInsertId());
-            }
         
         }
         catch(DBALGatewayException $e) {
             throw new VoucherException($e->getMessage(),0,$e);
         }
         
-        return $success;    
+        return $bSuccess;    
     }
     
 }

@@ -61,14 +61,26 @@ class GroupRevise
     
         try {
         
-             $bSuccess = $oGateway->deleteQuery()
-                    ->start()
-                        ->filterByGroup($oVoucherGroup->getVoucherGroupId())
-                    ->end()
-                ->delete(); 
+            $oQuery = $oGateway->updateQuery()->start();
+            
+            foreach($oVoucherBuilder->demolish($oVoucherGroup) as $sColumn => $mValue) {
+                
+                if($sColumn !== 'voucher_group_id' && $sColumn !== 'date_created') {
+                    
+                    $oQuery->addColumn($sColumn,$mValue);
+                    
+                } 
+                
+            }
+            
+            $bSuccess = $oQuery->where()
+                                    ->filterByGroup($oVoucherGroup->getVoucherGroupId())
+                                ->end()
+                            ->update(); 
+    
     
             if($bSuccess) {
-                $oVoucherGroup->setVoucherGroupId(null);
+                $oVoucherGroup->setVoucherGroupID($oGateway->lastInsertId());
             }
         
         }
@@ -76,7 +88,8 @@ class GroupRevise
             throw new VoucherException($e->getMessage(),0,$e);
         }
         
-        return $success;    
+        
+        return $bSuccess;    
     }
     
 }

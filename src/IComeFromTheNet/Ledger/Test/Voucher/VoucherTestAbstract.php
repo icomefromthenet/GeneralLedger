@@ -4,6 +4,8 @@ namespace IComeFromTheNet\Ledger\Test\Voucher;
 use DateTime;
 use IComeFromTheNet\Ledger\Test\Base\TestWithContainer;
 use IComeFromTheNet\Ledger\Voucher\VoucherContainer;
+use DBALGateway\Feature\BufferedQueryLogger;
+
 
 abstract class VoucherTestAbstract extends TestWithContainer
 {
@@ -22,7 +24,9 @@ abstract class VoucherTestAbstract extends TestWithContainer
         $this->oContainer->boot($this->getNow());
         
         # register test services
+        $this->oContainer['TestQueryLog'] = new BufferedQueryLogger();
         
+        $this->oContainer->getEventDispatcher()->addSubscriber($this->oContainer['TestQueryLog']);
       
     }
    

@@ -15,100 +15,77 @@ class VoucherTypeQuery extends AbstractQuery implements QueryInterface
 {
     
     /**
-     * Filter to slug with given name
+     * Find those voucher type that are currently enabled.
      * 
-     * @param string $slug the slug id field
+     * Those that have a valid date <= max and >=
      */ 
-    public function filterBySlugKey($slug)
+    public function filterCurrent(DateTime $oFrom)
     {
-        $this->where('account_number = :account_number')
-             ->setParameter('account_number',
-                            $accountNumber,
-                            $this->getGateway()->getMetaData()->getColumn('account_number')->getType());
-        return $this;
-    }
-    
-    
-    public function filterByEnabledOn(DateTime $enabled)
-    {
+        $oGateway = $this->getGateway();
+        $sAlias   = $this->getDefaultAlias();
+        $oTo      = date_create_from_format('Y-m-d','3000-01-01');
         
-        return $this;
-    }
-    
-    
-    public function filterByDisabledOn(DateTime $disabled)
-    {
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+  
         
-        
-        return $this;
-    }
-   
-   
-    /**
-     * Filter to voucher enabled between these dates 
-     * 
-     * @access public
-     * @param DateTime $start
-     * @param DateTime $finish
-     */ 
-    public function filterByEnabledBetween(DateTime $start, DateTime $finish)
-    {
-    
-        return $this;
-    }
-    
-    /**
-     * Filter to vouchers where enabledFrom after date x
-     * 
-     * @access public
-     * @param DateTime $after
-     */ 
-    public function filterByEnabledAfter(DateTime $after)
-    {
-            $this->where('voucher_enabled_from = :voucher_enabled_after')
-             ->setParameter('voucher_enabled_after',
-                            $after,
-                            $this->getGateway()->getMetaData()->getColumn('voucher_enabled_from')->getType());
+        $paramTypeFrom = $oGateway->getMetaData()->getColumn('voucher_enabled_from')->getType();
+        $paramTypeTo   = $oGateway->getMetaData()->getColumn('voucher_enabled_to')->getType();
+
+
+        $this->andWhere($this->expr()->gte($sAlias.'voucher_enabled_from',$this->createNamedParameter($oFrom,$paramTypeFrom)))
+             ->andWhere($this->expr()->lte($sAlias.'voucher_enabled_to',$this->createNamedParameter($oFrom,$paramTypeTo)));
 
         return $this;
-    
-        
     }
     
+    
+    
     /**
-     * Filter to vouchers where enabedTo before date x
+     * Filter the vouchers by the type database id
      * 
-     * @access public
-     * @param DateTime $before
-     */
-    public function filterByEnabledBefore(DateTime $before)
+     * @return this
+     * @param integer   $iVoucherTypeId The database id of this voucher type
+     */ 
+    public function filterByVoucherType($iVoucherTypeId)
     {
-            $this->where('account_date_opened = :account_date_opened')
-             ->setParameter('account_date_opened',
-                            $opened,
-                            $this->getGateway()->getMetaData()->getColumn('account_date_opened')->getType());
-
+        $oGateway = $this->getGateway();
+        $sAlias   = $this->getDefaultAlias();
+        
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
+  
+        $paramType = $oGateway->getMetaData()->getColumn('voucher_type_id')->getType();
+        
+        $this->andWhere($sAlias.'voucher_type_id = '.$this->createNamedParameter($iVoucherTypeId,$paramType));
+        
         return $this;
-    
-        
     }
+    
+    
+    
     
     /**
-     * Applies a Like query to the name column 
+     * Filter a voucher type by name (use the slug version)
      * 
-     * @access public
-     * @param string $name the name part to search
-     */
-    public function filterLikeVoucherName($name)
+     * @param string $sSlugName the slug name for this voucher
+     */ 
+    public function filterByVoucherTypeName($sSlugName)
     {
-         $this->where($this->expr()->like('account_name','%:account_name%'))
-            ->setParameter('account_name',
-                           $name,
-                           $this->getGateway()->getMetaData()->getColumn('account_name')->getType());
-        
-        return $this;    
-    }
+       $oGateway = $this->getGateway();
+       $sAlias   = $this->getDefaultAlias();
+        if(false === empty($sAlias)) {
+            $sAlias = $sAlias .'.';
+        }
     
+        $paramType = $oGateway->getMetaData()->getColumn('voucher_name_slug')->getType();
+        
+        $this->andWhere($sAlias. 'voucher_name_slug = '.$this->createNamedParameter($sSlugName,$paramType));
+             
+        return $this;
+    }
     
     
 }

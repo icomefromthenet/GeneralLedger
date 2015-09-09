@@ -24,6 +24,13 @@ use IComeFromTheNet\Ledger\Voucher\Operations\GroupRevise;
 
 use IComeFromTheNet\Ledger\Voucher\Operations\VoucherCreate;
 
+use IComeFromTheNet\Ledger\Voucher\Operations\RuleCreate;
+use IComeFromTheNet\Ledger\Voucher\Operations\RuleRevise;
+
+use IComeFromTheNet\Ledger\Voucher\Operations\TypeCreate;
+use IComeFromTheNet\Ledger\Voucher\Operations\TypeRevise;
+use IComeFromTheNet\Ledger\Voucher\Operations\TypeExpire;
+
 /**
  * Voucher Service Container
  * 
@@ -62,7 +69,7 @@ class VoucherContainer extends Pimple
         
         # Voucher Groups
         $table = $sc->createTable($sGroupTableName);
-        $table->addColumn('voucher_group_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_group_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('voucher_group_name','string',array("length" => 100));
         $table->addColumn('voucher_group_slug','string',array("length" => 100));
         $table->addColumn('is_disabled','boolean',array("default"=>false));
@@ -70,26 +77,29 @@ class VoucherContainer extends Pimple
         $table->addColumn('date_created','datetime',array());
         
         $table->setPrimaryKey(array('voucher_group_id'));
-        
+        $table->addUniqueIndex(array('voucher_group_slug'),'gl_voucher_group_uiq1');
+            
         
         # Voucher Rules
         $table = $sc->createTable($sRuleTableName);
         $table->addColumn('voucher_rule_name','string',array('length'=> 25));
         $table->addColumn('voucher_rule_slug','string',array("length" => 25));
-        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true,'autoincrement' => true));
         $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
-        $table->addColumn('voucher_prefix','string',array('length'=> 20));
-        $table->addColumn('voucher_suffix','string',array('length'=>20));
+        $table->addColumn('voucher_prefix','string',array('length'=> 50));
+        $table->addColumn('voucher_suffix','string',array('length'=>50));
         $table->addColumn('voucher_length','smallint',array('unsigned'=> true,'length'=>3));
         $table->addColumn('date_created','datetime',array());
-        $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
         $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
+        $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
+        
         
         $table->setPrimaryKey(array('voucher_gen_rule_id'));
         
+        
         # Voucher Type Table
         $table = $sc->createTable($sTypeTableName);
-        $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
+         $table->addColumn('voucher_type_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn("voucher_enabled_from", "datetime",array());
         $table->addColumn("voucher_enabled_to", "datetime",array());
         $table->addColumn('voucher_name','string',array('length'=>100));
@@ -100,16 +110,21 @@ class VoucherContainer extends Pimple
         
         
         $table->setPrimaryKey(array('voucher_type_id'));
+        $table->addForeignKeyConstraint('ledger_voucher_group',array('voucher_group_id'),array('voucher_group_id'),array(),'gl_voucher_type_fk1');
+        $table->addForeignKeyConstraint('ledger_voucher_gen_rule',array('voucher_gen_rule_id'),array('voucher_gen_rule_id'),array(),'gl_voucher_type_fk2s');
+        $table->addUniqueIndex(array('voucher_name','voucher_enabled_from'),'gl_voucher_type_uiq1');
         
         
         # Vouchers Table (Instance Table)
         $table = $sc->createTable($sInstanceTableName);
-        $table->addColumn('voucher_instance_id','integer',array("unsigned" => true));
+        $table->addColumn('voucher_instance_id','integer',array("unsigned" => true,'autoincrement' => true));
         $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
         $table->addColumn('voucher_code','string',array("length"=> 255));
         $table->addColumn('date_created','datetime',array());
         
         $table->setPrimaryKey(array('voucher_instance_id'));
+        $table->addForeignKeyConstraint('ledger_voucher_type',array('voucher_type_id'),array('voucher_type_id'),array(),'gl_voucher_instance_fk1');
+        $table->addUniqueIndex(array('voucher_code'),'gl_voucher_instance_uiq1');
         
         return $sc;
         
@@ -242,7 +257,8 @@ class VoucherContainer extends Pimple
      * Return array of operations used in VoucherGenRule CRUD
      * 
      * @return array(
-     * 
+     *  'create' = IComeFromTheNet\Ledger\Voucher\Operations\RuleCreate
+     *  'update' => IComeFromTheNet\Ledger\Voucher\Operations\RuleRevise
      * )
      */
     public function getVoucherRuleOperations()
@@ -254,7 +270,9 @@ class VoucherContainer extends Pimple
      * Return array of operations used in VoucherType CRUD
      * 
      * @return array(
-     * 
+     *  'create' => IComeFromTheNet\Ledger\Voucher\Operations\TypeCreate
+     *  'update' => IComeFromTheNet\Ledger\Voucher\Operations\TypeRevise
+     *  'delete' => IComeFromTheNet\Ledger\Voucher\Operations\TypeExpire
      * )
      */
     public function getVoucherTypeOperations()
@@ -424,19 +442,23 @@ class VoucherContainer extends Pimple
         
         $this['voucherRuleOperations'] =  function($c) use($now) {
             
+            $oInstanceGateway = $c->getVoucherRuleGateway();
             
             return array(
-              
-              
+               'create' => new RuleCreate($oInstanceGateway, $now)
+              ,'update' => new RuleRevise($oInstanceGateway, $now)
             );  
             
         };
         
         $this['voucherTypeOperations'] = function($c) use($now) {
             
+            $oInstanceGateway = $c->getVoucherTypeGateway();
             
             return array(
-              
+               'create'  => new TypeCreate($oInstanceGateway, $now)
+              ,'update'  => new TypeRevise($oInstanceGateway, $now)
+              ,'delete'  => new TypeExpire($oInstanceGateway, $now)
               
             ); 
             

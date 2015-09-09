@@ -1,100 +1,95 @@
-<?php
-namespace IComeFromTheNet\Ledger\Voucher;
+<?php 
+namespace IComeFromTheNet\Ledger\Voucher\Operations;
 
-use IComeFromTheNet\Ledger\Entity\VoucherType;
-use IComeFromTheNet\Ledger\Service\VoucherService;
+use DateTime;
+use DBALGateway\Exception as DBALGatewayException;
+use IComeFromTheNet\Ledger\Voucher\VoucherException;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherType;
+use IComeFromTheNet\Ledger\Voucher\DB\VoucherTypeGateway;
 
 /**
-  *  Represent a change to voucher properties. Facade is used to
-  *  hide properties that can not be changed by a user.
-  *
-  *  Because: Voucher is a temporal object, changes to properties
-  *  require a new entity be registered and the existing
-  *  current voucher be closed.
-  *
-  *  You can only change current Vouchers if vouchers open
-  *  as of the known processing date.
-  *
-  *  only the following properties can be updated by user
-  *
-  *  1. Description
-  *  2. Suffix
-  *  3. Prefix.
-  *  4. Sequence Strategy.
-  *
-  *  The service will load the current entity for editing
-  *
-  *  @author Lewis Dyer <getintouch@icomefromthenet.com>
-  *  @since 1.0.0
-  */
-class VoucherUpdate
+ * Operation will save an existing voucher type
+ * 
+ * Will allow only changes to non temporal columns
+ * 
+ * @author Lewis Dyer <getintouch@icomefromthenet.com>
+ * @since 1.0
+ */ 
+class TypeRevise
 {
-    protected $processingDate;
-    
-    protected $voucher;
-    
-    protected $voucherService;
     
     /**
-     *  Class Constructor
-     *
-     *  @access public
-     *  @return void
-     *  @param DateTime $processingDate
-     *  @param VoucherType $voucher
-     *  @param VoucherService $service
-     *
-    */
-    public function __construct(DateTime $processingDate,VoucherType $voucher,$voucher,VoucherService $service)
-    {
-        $this->voucher        = $voucher;
-        $this->processingDate = $processingDate;
-        $this->voucherService = $voucherService;
-        
-    }
-    
-    
-    public function setDescription($description)
-    {
-        $this->voucher->setDescription($description);
-        return $this;
-    }
-    
-    
-    public function setSuffix($suffix)
-    {
-        $this->voucher->setSuffix($suffix);
-        return $this;
-    }
-    
-    
-    public function setPrefix($prefix)
-    {
-        $this->voucher->setPrefix($prefix);
-        return $this;
-    }
-    
-    
-    public function setSequenceStrategy()
-    {
-        
-        return $this;
-    }
-    
-    //-------------------------------------------------------
+     * @var VoucherGateway
+     */ 
+    protected $oGateway;
     
     /**
-     *  Calls the service to update this voucher
-     *
-     *  @access public
-     *  @return VoucherService
-     *
-    */
-    public function commit()
+     * @var DateTime
+     */ 
+    protected $oNow;
+    
+    
+    /**
+     * Class Constructor
+     * 
+     * @access public
+     * @return void
+     * @param VoucherTypeGateway    $oGateway   The Database Table Gateway
+     * @param DateTime              $oNow       The current datetime.
+     */ 
+    public function __construct(VoucherTypeGateway $oGateway, DateTime $oNow)
     {
-        $this->voucherService->addVoucher($this->voucher);
+        $this->oGateway = $oGateway;
+        $this->oNow     = $oNow;
+    }
+    
+    
+    
+    /**
+     * Create a Voucher Type
+     * 
+     * @param VoucherType  $oVoucherType  The Voucher Group Entity
+     * @throws VoucherException if the database query fails or entity has id assigned.
+     * @returns boolean true if the insert operation was successful
+     */ 
+    public function execute(VoucherType $oVoucherType)
+    {
+        $oGateway        = $this->oGateway;
+        $oVoucherBuilder = $oGateway->getEntityBuilder();
+        $bSuccess        = false;
         
+        if(true === empty($oVoucherGroup->getVoucherTypeId())) {
+            throw new VoucherException('Unable to update voucher type the Entity requires a database id assigned already');
+        }
+    
+        try {
+        
+            $oQuery = $oGateway->updateQuery()->start();
+            
+            foreach($oVoucherBuilder->demolish($oVoucherType) as $sColumn => $mValue) {
+                
+                if($sColumn !== 'voucher_type_id' 
+                    && $sColumn !== 'voucher_enabled_to'
+                    && $sColumn !== 'voucher_enabled_from') {
+                    
+                    $oQuery->addColumn($sColumn,$mValue);
+                }
+                    
+            }
+            
+            $bSuccess = $oQuery->where()
+                            ->filterByVoucherType($oVoucherType->getVoucherTypeId())
+                        ->end()
+                        ->update(); 
+        
+        }
+        catch(DBALGatewayException $e) {
+            throw new VoucherException($e->getMessage(),0,$e);
+        }
+        
+        
+        return $bSuccess;    
     }
     
 }
-/* End of File */
+/* End of Class */
