@@ -58,7 +58,7 @@ class TypeRevise
         $oVoucherBuilder = $oGateway->getEntityBuilder();
         $bSuccess        = false;
         
-        if(true === empty($oVoucherGroup->getVoucherTypeId())) {
+        if(true === empty($oVoucherType->getVoucherTypeId())) {
             throw new VoucherException('Unable to update voucher type the Entity requires a database id assigned already');
         }
     

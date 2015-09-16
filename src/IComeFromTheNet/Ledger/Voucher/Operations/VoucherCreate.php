@@ -81,8 +81,8 @@ class VoucherCreate
     
             
     
-            if($success) {
-                $oVoucherInstance->setVoucherInstanceId($gateway->lastInsertId());
+            if($bSuccess) {
+                $oVoucherInstance->setVoucherInstanceId($oGateway->lastInsertId());
             }
         
         }
@@ -91,7 +91,7 @@ class VoucherCreate
         }
         
         
-        return $success;    
+        return $bSuccess;    
     }
     
 }

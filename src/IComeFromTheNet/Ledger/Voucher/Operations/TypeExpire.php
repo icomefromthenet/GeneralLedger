@@ -58,22 +58,24 @@ class TypeExpire
         $oVoucherBuilder = $oGateway->getEntityBuilder();
         $bSuccess        = false;
         
-        if(true === empty($oVoucherGroup->getVoucherTypeId())) {
+        if(true === empty($oVoucherType->getVoucherTypeId())) {
             throw new VoucherException('Unable to update voucher type the Entity requires a database id assigned already');
         }
     
         try {
         
             $oQuery = $oGateway->updateQuery()->start();
-            
+            $oEnabledTo = null;
             foreach($oVoucherBuilder->demolish($oVoucherType) as $sColumn => $mValue) {
                 
                 if ($sColumn === 'voucher_enabled_to') {
                     
                     if($mValue !== null) {
                         $oQuery->addColumn($sColumn,$mValue);
+                        $oEnabledTo = $mValue;
                     } else {
                         $oQuery->addColumn($sColumn,$this->oNow);
+                        $oEnabledTo = $this->oNow;
                     }
                     
                 }
@@ -84,6 +86,10 @@ class TypeExpire
                             ->filterByVoucherType($oVoucherType->getVoucherTypeId())
                         ->end()
                         ->update(); 
+        
+            if($bSuccess) {
+                $oVoucherType->setEnabledTo($oEnabledTo);
+            }
         
         }
         catch(DBALGatewayException $e) {

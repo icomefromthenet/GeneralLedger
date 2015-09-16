@@ -56,13 +56,14 @@ class TypeCreate
         $oVoucherBuilder = $oGateway->getEntityBuilder();
         $bSuccess        = false;
         
-        if(false === empty($oVoucherGroup->getVoucherTypeId())) {
+        if(false === empty($oVoucherType->getVoucherTypeId())) {
             throw new VoucherException('Unable to create new voucher type the Entity has a database id assigned already');
         }
     
         try {
         
             $oQuery = $oGateway->insertQuery()->start();
+            $oEnabledToDate = date_create_from_format('Y-m-d','3000-01-01');
             
             foreach($oVoucherBuilder->demolish($oVoucherType) as $sColumn => $mValue) {
                 
@@ -72,7 +73,7 @@ class TypeCreate
                     
                 } elseif($sColumn === 'voucher_enabled_to') {
                     // making the new copy the currrent              
-                    $oQuery->addColumn('voucher_enabled_to',date_create_from_format('Y-m-d','3000-01-01'));
+                    $oQuery->addColumn('voucher_enabled_to',$oEnabledToDate);
                 }
                 
             }
@@ -81,7 +82,8 @@ class TypeCreate
             
     
             if($bSuccess) {
-                $oVoucherGroup->setVoucherGroupId($oGateway->lastInsertId());
+                $oVoucherType->setVoucherTypeId($oGateway->lastInsertId());
+                $oVoucherType->setEnabledTo($oEnabledToDate);
             }
         
         }

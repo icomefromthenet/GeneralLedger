@@ -54,6 +54,7 @@ class GroupRevise
     {
         $oGateway        = $this->oGateway;
         $oVoucherBuilder = $oGateway->getEntityBuilder();
+       $bSuccess         = false;
        
         if(true === empty($oVoucherGroup->getVoucherGroupId())) {
             throw new VoucherException('Unable to save voucher group the Entity has no database id assigned');
@@ -87,7 +88,7 @@ class GroupRevise
         catch(DBALGatewayException $e) {
             throw new VoucherException($e->getMessage(),0,$e);
         }
-        
+       
         
         return $bSuccess;    
     }

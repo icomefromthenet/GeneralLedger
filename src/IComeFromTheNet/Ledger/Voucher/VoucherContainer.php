@@ -280,6 +280,17 @@ class VoucherContainer extends Pimple
         return $this['voucherTypeOperations'];
     }
     
+    /**
+     * Fetch the assigned now date
+     * 
+     * return DateTime
+     */ 
+    public function getNow()
+    {
+        return  $this['now'];
+    }
+    
+    
     //--------------------------------------------------------------------------
     # Service Bootstrap
     

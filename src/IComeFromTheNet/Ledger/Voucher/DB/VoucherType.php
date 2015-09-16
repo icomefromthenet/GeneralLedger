@@ -197,7 +197,7 @@ class VoucherType
      *  @param DateTime $oTo 
      *
     */    
-    public function setEnabledTo(DateTime $oTo)
+    public function setEnabledTo(DateTime $oTo = null)
     {
         $this->oEnableTo = $oTo;
     }
