@@ -9,125 +9,122 @@ use Doctrine\DBAL\Connection,
 class init_schema implements EntityInterface
 {
 
-    protected function buildVoucherTable(Connection $db, ASchema $sc)
-    {
-        # Voucher Groups
-        $table = $sc->createTable("ledger_voucher_group");
-        $table->addColumn('voucher_group_id','integer',array("unsigned" => true,'autoincrement' => true));
-        $table->addColumn('voucher_group_name','string',array("length" => 100));
-        $table->addColumn('voucher_group_slug','string',array("length" => 100));
-        $table->addColumn('is_disabled','boolean',array("default"=>false));
-        $table->addColumn('sort_order','integer',array("unsigned" => true));
-        $table->addColumn('date_created','datetime',array());
-        
-        $table->setPrimaryKey(array('voucher_group_id'));
-        $table->addUniqueIndex(array('voucher_group_slug'),'gl_voucher_group_uiq1');
-        
-        
-        # Voucher Rules
-        $table = $sc->createTable("ledger_voucher_gen_rule");
-        $table->addColumn('voucher_rule_name','string',array('length'=> 25));
-        $table->addColumn('voucher_rule_slug','string',array("length" => 25));
-        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true,'autoincrement' => true));
-        $table->addColumn('voucher_padding_char','string',array('legnth'=>'1'));
-        $table->addColumn('voucher_prefix','string',array('length'=> 50));
-        $table->addColumn('voucher_suffix','string',array('length'=>50));
-        $table->addColumn('voucher_length','smallint',array('unsigned'=> true,'length'=>3));
-        $table->addColumn('date_created','datetime',array());
-        $table->addColumn('voucher_sequence_no','integer',array('unsigned'=> true));
-        $table->addColumn('voucher_sequence_strategy','string',array('length'=> 20));
-        
-        
-        $table->setPrimaryKey(array('voucher_gen_rule_id'));
-        
-        # Voucher Type Table
-        $table = $sc->createTable("ledger_voucher_type");
-        $table->addColumn('voucher_type_id','integer',array("unsigned" => true,'autoincrement' => true));
-        $table->addColumn("voucher_enabled_from", "datetime",array());
-        $table->addColumn("voucher_enabled_to", "datetime",array());
-        $table->addColumn('voucher_name','string',array('length'=>100));
-        $table->addColumn('voucher_name_slug','string',array('length'=>100));
-        $table->addColumn('voucher_description','string',array('length'=>500));
-        $table->addColumn('voucher_group_id','integer',array('unsigned'=> true));
-        $table->addColumn('voucher_gen_rule_id','integer',array('unsigned'=> true));
-        
-        
-        $table->setPrimaryKey(array('voucher_type_id'));
-        $table->addForeignKeyConstraint('ledger_voucher_group',array('voucher_group_id'),array('voucher_group_id'),array(),'gl_voucher_type_fk1');
-        $table->addForeignKeyConstraint('ledger_voucher_gen_rule',array('voucher_gen_rule_id'),array('voucher_gen_rule_id'),array(),'gl_voucher_type_fk2s');
-        $table->addUniqueIndex(array('voucher_name','voucher_enabled_from'),'gl_voucher_type_uiq1');
-        
-        # Vouchers Table (Instance Table)
-        $table = $sc->createTable("ledger_voucher_instance");
-        $table->addColumn('voucher_instance_id','integer',array("unsigned" => true,'autoincrement' => true));
-        $table->addColumn('voucher_type_id','integer',array("unsigned" => true));
-        $table->addColumn('voucher_code','string',array("length"=> 255));
-        $table->addColumn('date_created','datetime',array());
-        
-        $table->setPrimaryKey(array('voucher_instance_id'));
-        $table->addForeignKeyConstraint('ledger_voucher_type',array('voucher_type_id'),array('voucher_type_id'),array(),'gl_voucher_instance_fk1');
-        $table->addUniqueIndex(array('voucher_code'),'gl_voucher_instance_uiq1');
-        
-    }
-
-    
-    protected function buildAccountsGroupTable(Connection $db, ASchema $sc)
-    {
-        # Account Group Table
-       
-        $accountGroupTable = $sc->createTable("ledger_account_group");
-        $accountGroupTable->addColumn("group_id", "integer", array("unsigned" => true));
-        $accountGroupTable->addColumn("group_name", "string", array("length" => 150));
-        $accountGroupTable->addColumn("group_description", "string", array("length" => 500));
-        $accountGroupTable->addColumn("group_date_added", "date",array());
-        $accountGroupTable->addColumn("group_date_removed", "date",array());
-        $accountGroupTable->addColumn("parent_group_id", "integer", array("unsigned" => true,'notnull'=> false));
-        $accountGroupTable->setPrimaryKey(array("group_id"));
-        $accountGroupTable->addForeignKeyConstraint($accountGroupTable,array("parent_group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
-        
-        
-    }
-    
-    protected function buildAccountsTable(Connection $db, ASchema $sc)
-    {
-        # Account Table
-        $accountTable = $sc->createTable("ledger_account");
-        $accountTable->addColumn("account_number", "integer", array("unsigned" => true));
-        $accountTable->addColumn("account_name","string",array('length' => 50));
-        $accountTable->addColumn("account_date_opened", "date",array());
-        $accountTable->addColumn("account_date_closed", "date",array());
-        $accountTable->addColumn("account_group_id", "integer", array("unsigned" => true));
-        $accountTable->setPrimaryKey(array("account_number"));
-        $accountTable->addForeignKeyConstraint($sc->getTable('ledger_account_group'), array("account_group_id"), array("group_id"), array("onUpdate" => "CASCADE"));
-
-    }
-
-    
-    public function buildUtilityTables(Connection $db, ASchema $sc)
-    {
-        $mockTemporalTable = $sc->createTable('mock_temporal');
-        $mockTemporalTable->addColumn('slug_name',"string", array("length" => 150));
-        $mockTemporalTable->addColumn('enabled_from',"date",array());
-        $mockTemporalTable->addColumn('enabled_to',"date",array());
-        $mockTemporalTable->addColumn('posting_date',"date",array());
-        $mockTemporalTable->setPrimaryKey(array("slug_name",'enabled_from'));
-        $mockTemporalTable->addIndex(array('enabled_to'));
-    }
-    
     
     public function buildSchema(Connection $db, ASchema $schema)
     {
-        # Accounts Group Tables
-        //$this->buildAccountsGroupTable($db,$schema);
+        # Account Group Table
+        $accountGroupTable = $schema->createTable("ledger_account_group");
+        $accountGroupTable->addColumn("child_account_id", "integer", array("unsigned" => true));
+        $accountGroupTable->addColumn("parent_account_id", "integer", array("unsigned" => true,'notnull'=> false));
+        
+        $accountGroupTable->setPrimaryKey(array("child_account_id","parent_account_id"));
+        $accountGroupTable->addForeignKeyConstraint('ledger_account',array("parent_account_id"), array("account_id"), array("onUpdate" => "CASCADE"));
+        $accountGroupTable->addForeignKeyConstraint('ledger_account',array("child_account_id"), array("account_id"), array("onUpdate" => "CASCADE"));
         
         # Account Table
-        //$this->buildAccountsTable($db,$schema);
+        $accountTable = $schema->createTable("ledger_account");
+        $accountTable->addColumn("account_id", "integer", array("unsigned" => true,"autoincrement"=>true));
+        $accountTable->addColumn("account_number", "string", array("length" => 25));
+        $accountTable->addColumn("account_name","string",array('length' => 50));
+        $accountTable->addColumn("account_name_slug","string",array('length' => 50));
+        $accountTable->addColumn('hide_ui',"boolean",array("default" => false));
+        $accountTable->addColumn("is_left", "boolean", array('notnull'=> true));
+        $accountTable->addColumn("is_right", "boolean", array('notnull'=> true));
+
+        $accountTable->setPrimaryKey(array("account_id"));
+        $accountTable->addUniqueIndex(array("account_number"));
+
+
+        # Org Unit
+        $orgTable = $schema->createTable("ledger_org_unit");
+        $orgTable->addColumn('org_unit_id',"integer",array("unsigned" => true, "autoincrement" => true));
+        $orgTable->addColumn('org_unit_name',"string",array("length" => 50));
+        $orgTable->addColumn('org_unit_name_slug',"string",array("length" => 50));
+        $orgTable->addColumn('account_name',"boolean",array("default" => false));
         
-        # Voucher Table
-        $this->buildVoucherTable($db,$schema);
+        $orgTable->setPrimaryKey(array("org_unit_id"));
+    
+        # Ledger Users
+        $userTable = $schema->createTable("ledger_user");
+        $userTable->addColumn('user_id',"integer",array("unsigned" => true, "autoincrement" => true));
+        $userTable->addColumn('external_guid',"guid",array());
+        $userTable->addColumn('rego_date','datetime',array('notnull' => true));
+       
+        $userTable->setPrimaryKey(array("user_id"));
+    
         
-        # utility tables
-        //$this->buildUtilityTables($db,$schema);
+        # Transaction Source
+        $journalTable = $schema->createTable("ledger_journal_type");
+        $journalTable->addColumn('journal_type_id',"integer",array("unsigned" => true, "autoincrement" => true));
+        $journalTable->addColumn('journal_name',"string",array("length" => 50));
+        $journalTable->addColumn('journal_name_slug',"string",array("length" => 50));
+        $journalTable->addColumn('hide_ui',"boolean",array("default" => false));
+        
+        $journalTable->setPrimaryKey(array("journal_type_id"));
+        
+        
+        # Transaction Header Table
+        $transactionTable = $schema->createTable("ledger_transaction");
+        $transactionTable->addColumn('transaction_id',"integer",array("unsigned" => true, "autoincrement" => true));
+        $transactionTable->addColumn('org_unit_id',"integer",array("notnull" => false,"unsigned" => true));
+        $transactionTable->addColumn('process_dt',"datetime",array("notnull" => true));
+        $transactionTable->addColumn('occured_dt',"date",array("notnull" => true));
+        $transactionTable->addColumn('vouchernum',"string",array("length" => 100));
+        $transactionTable->addColumn('journal_type_id',"integer",array("notnull"=> true,"unsigned" => true));
+        $transactionTable->addColumn('adjustment_id',"integer",array("notnull"=> false,"unsigned" => true));
+        $transactionTable->addColumn('user_id',"integer",array("notnull"=> false,"unsigned" => true));
+        
+        
+        $transactionTable->setPrimaryKey(array("transaction_id"));
+        $transactionTable->addForeignKeyConstraint('ledger_journal_type', array("journal_type_id"), array("journal_type_id"));
+        $transactionTable->addForeignKeyConstraint('ledger_transaction',array("adjustment_id"),array("transaction_id"));
+        $transactionTable->addForeignKeyConstraint('ledger_org_unit', array("org_unit_id"), array("org_unit_id"));
+        $transactionTable->addForeignKeyConstraint('ledger_user', array("user_id"), array("user_id"));
+        
+    
+        # Account Movements
+        $entryTable = $schema->createTable('ledger_entry');
+        $entryTable->addColumn('entry_id',"integer",array("unsigned" => true, "autoincrement" => true)); 
+        $entryTable->addColumn('transaction_id',"integer",array("notnull" => true,"unsigned" => true));
+        $entryTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
+        $entryTable->addColumn('movement',"float",array("notnull" => true));
+        
+        $entryTable->setPrimaryKey(array("entry_id"));
+        $entryTable->addForeignKeyConstraint('ledger_transaction', array("transaction_id"), array("transaction_id"));
+        $entryTable->addForeignKeyConstraint('ledger_account', array("account_id"), array("account_id"));
+    
+        # Agg table Value Table
+        $dailyTable = $schema->createTable('ledger_daily');
+        $dailyTable->addColumn('process_dt',"integer",array("notnull" => true));
+        $dailyTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
+        $dailyTable->addColumn('balance',"float",array("notnull" => true));
+        
+        $dailyTable->setPrimaryKey(array("process_dt","account_id"));
+        $dailyTable->addForeignKeyConstraint('ledger_account', array("account_id"), array("account_id"));
+        
+
+
+        $orgAggTable = $schema->createTable('ledger_daily_org');
+        $orgAggTable->addColumn('org_unit_id',"integer",array("notnull" => true,"unsigned" => true));
+        $orgAggTable->addColumn('process_dt',"integer",array("notnull" => true));
+        $orgAggTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
+        $orgAggTable->addColumn('balance',"float",array("notnull" => true));
+      
+        $orgAggTable->setPrimaryKey(array("process_dt","account_id"));
+        $orgAggTable->addForeignKeyConstraint('ledger_account', array("account_id"), array("account_id"));
+        $orgAggTable->addForeignKeyConstraint('ledger_org_unit', array("org_unit_id"), array("org_unit_id"));
+        
+
+        $userAggTable = $schema->createTable('ledger_daily_user');
+        $userAggTable->addColumn('user_id',"integer",array("notnull" => true,"unsigned" => true));
+        $userAggTable->addColumn('process_dt',"integer",array("notnull" => true));
+        $userAggTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
+        $userAggTable->addColumn('balance',"float",array("notnull" => true));
+
+        $userAggTable->setPrimaryKey(array("process_dt","account_id"));
+        $userAggTable->addForeignKeyConstraint('ledger_account', array("account_id"), array("account_id"));
+        $userAggTable->addForeignKeyConstraint('ledger_user', array("user_id"), array("user_id"));
+
         
         return $schema;
     }
@@ -146,6 +143,40 @@ class init_schema implements EntityInterface
             echo $query . PHP_EOL;
             $db->exec($query);    
         }
+        
+        $db->exec("
+CREATE PROCEDURE `gl_generic_tree`(edgeTable CHAR(64), edgeIDcol CHAR(64), edgeParentIDcol CHAR(64), ancestorID INT )
+BEGIN
+-- --------------------------------------------------------------------------------
+-- Routine gl_generic_tree
+-- Note: Inspired Get It Done With MySQL 5&6, Chapter 20. Walking an edge list subtree
+-- --------------------------------------------------------------------------------
+	DECLARE r INT DEFAULT 0;
+	DROP TABLE IF EXISTS gl_subtree;
+	
+	SET @sql = Concat( 'CREATE TABLE gl_subtree ENGINE=MyISAM SELECT ',
+						edgeIDcol,' AS childID, ',
+						edgeParentIDcol, ' AS parentID,',
+						'0 AS level FROM ',
+						edgeTable, ' WHERE ', edgeParentIDcol, '=', ancestorID );
+	
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	DROP PREPARE stmt;
+	
+	ALTER TABLE gl_subtree ADD PRIMARY KEY(childID,parentID);
+	REPEAT
+	SET @sql = Concat( 'INSERT IGNORE INTO gl_subtree SELECT a.', edgeIDcol,
+						',a.',edgeparentIDcol, ',b.level+1 FROM ',
+						edgeTable, ' AS a JOIN gl_subtree AS b ON a.',edgeParentIDcol, '=b.childID' );
+	PREPARE stmt FROM @sql;
+	EXECUTE stmt;
+	SET r = Row_Count(); -- save row_count() result before DROP PREPARE loses the value
+	DROP PREPARE stmt;
+	
+	UNTIL r < 1 END REPEAT;
+END;");
+    
         
     }
 
