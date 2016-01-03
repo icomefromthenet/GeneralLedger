@@ -13,6 +13,10 @@ use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 use IComeFromTheNet\GeneralLedger\Entity\CommonBuilder;
 use IComeFromTheNet\GeneralLedger\Gateway\CommonGateway;
 
+use IComeFromTheNet\GeneralLedger\Step\AggAllStep;
+use IComeFromTheNet\GeneralLedger\Step\AggOrgUnitStep;
+use IComeFromTheNet\GeneralLedger\Step\AggUserStep;
+
 
 
 class LedgerContainer extends Pimple
@@ -88,6 +92,25 @@ class LedgerContainer extends Pimple
         return $this['table_map'];
     }
     
+    /**
+     * Return a new instance of a transaction builder
+     * 
+     * @return TransactionBuilder.php
+     */ 
+    public function newTransactionBuilder()
+    {
+        return $this['transaction_builder'];
+    }
+    
+    /**
+     * Return a shared transaction processor
+     * 
+     * @return TransactionProcessor
+     */ 
+    public function newTransactionProcessor()
+    {
+        return $this['transaction_processor'];
+    }
     
     
     public function boot(DateTime $oProcessingDate, $aTableMap = null)
@@ -176,6 +199,7 @@ class LedgerContainer extends Pimple
 
             $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
     
+          
             $oGateway->setTableQueryAlias('acc');
             $oGateway->setGatewayCollection($oGatewayCol);
             
@@ -197,9 +221,13 @@ class LedgerContainer extends Pimple
             $table->addColumn('account_name',"boolean",array("default" => false));
             
             $table->setPrimaryKey(array("org_unit_id"));
+        
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_ORGUNIT);
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
-    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
             $oGateway->setTableQueryAlias('lou');
             $oGateway->setGatewayCollection($oGatewayCol);
             
@@ -220,9 +248,13 @@ class LedgerContainer extends Pimple
             $table->addColumn('rego_date','datetime',array('notnull' => true));
             
             $table->setPrimaryKey(array("user_id"));
+            
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_USER);    
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
-    
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
             $oGateway->setTableQueryAlias('lu');
             $oGateway->setGatewayCollection($oGatewayCol);
             
@@ -245,8 +277,12 @@ class LedgerContainer extends Pimple
             
             $table->setPrimaryKey(array("journal_type_id"));
         
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_JTYPE);
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
             $oGateway->setTableQueryAlias('ljt');
             $oGateway->setGatewayCollection($oGatewayCol);
             
@@ -278,8 +314,12 @@ class LedgerContainer extends Pimple
             $table->addForeignKeyConstraint($aTableMap['ledger_org_unit'], array("org_unit_id"), array("org_unit_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_user'], array("user_id"), array("user_id"));
 
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_TRANSACTION);    
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
     
             $oGateway->setTableQueryAlias('lt');
             $oGateway->setGatewayCollection($oGatewayCol);
@@ -305,8 +345,12 @@ class LedgerContainer extends Pimple
             $table->addForeignKeyConstraint($aTableMap['ledger_transaction'], array("transaction_id"), array("transaction_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
 
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_ENTRY);
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
     
             $oGateway->setTableQueryAlias('le');
             $oGateway->setGatewayCollection($oGatewayCol);
@@ -330,8 +374,12 @@ class LedgerContainer extends Pimple
             $table->setPrimaryKey(array("process_dt","account_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
 
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_ORGUNIT);
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
     
             $oGateway->setTableQueryAlias('la');
             $oGateway->setGatewayCollection($oGatewayCol);
@@ -358,8 +406,12 @@ class LedgerContainer extends Pimple
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_user'], array("user_id"), array("user_id"));
 
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_AGG_USER);
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
     
             $oGateway->setTableQueryAlias('lau');
             $oGateway->setGatewayCollection($oGatewayCol);
@@ -385,13 +437,41 @@ class LedgerContainer extends Pimple
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_org_unit'], array("org_unit_id"), array("org_unit_id"));
 
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_AGG_ORG);
+            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
-            $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, null);
     
+            $oBuilder->setGateway($oGateway);
+            $oBuilder->setLogger($oLogger);
+
             $oGateway->setTableQueryAlias('lao');
             $oGateway->setGatewayCollection($oGatewayCol);
             
             return $oGateway;
+        });
+        
+        
+        $this['transaction_builder'] = function($c) {
+            return new TransactionBuilder($c);
+        };
+        
+        $this['transaction_processor'] = $this->share(function($c) {
+            $oLogger   = $c->getAppLogger();
+            $oDatabase = $c->getDatabaseAdaper();
+            $aTableMap = $c->getTableMap();
+            
+            $aSteps = array(
+               new AggAllStep($oLogger,$oDatabase,$aTableMap)
+              ,new AggOrgUnitStep($oLogger,$oDatabase,$aTableMap)
+              ,new AggUserStep($oLogger,$oDatabase,$aTableMap)
+            );
+            
+            return new TransactionDBDecorator(
+                        new TransactionStepsDecorator(
+                                new TransactionProcessor($oDatabase,$oLogger)
+                                ,$aSteps)
+                        );    
+            
         });
         
         

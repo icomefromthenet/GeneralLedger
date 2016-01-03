@@ -229,7 +229,7 @@ abstract class CommonEntity implements ActiveRecordInterface
      * 
      * @return boolean true if valid false otherwise
      */ 
-    protected function validate($aData,$aRules)
+    public function validate($aData,$aRules)
     {
         $oValidator = new Validator($aData);
         

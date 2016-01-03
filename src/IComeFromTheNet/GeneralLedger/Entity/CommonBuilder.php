@@ -72,11 +72,25 @@ class CommonBuilder implements BuilderInterface
                 $oEntity->bIsRight          = $aData['is_right'];
             break;
             case self::MODE_TRANSACTION:
-                 $oEntity = new LedgerTransaction($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerTransaction($this->oGateway,$this->oLogger);
+                $oEntity->iTransactionID   = $aData['transaction_id'];
+                $oEntity->iOrgUnitID       = $aData['org_unit_id'];
+                $oEntity->oProcessingDate  = $aData['process_dt'];
+                $oEntity->oOccuredDate     = $aData['occured_dt'];
+                $oEntity->sVoucherNumber   = $aData['vouchernum'];
+                $oEntity->iJournalTypeID   = $aData['journal_type_id'];
+                $oEntity->iAdjustmentID    = $aData['adjustment_id'];
+                $oEntity->iUserId          = $aData['user_id']; 
+                
                 
             break;
             case self::MODE_ENTRY:
-                 $oEntity = new LedgerEntry($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerEntry($this->oGateway,$this->oLogger);
+                $oEntity->iEntryID        = $aData['entry_id'];
+                $oEntity->iTransactionID  = $aData['transaction_id'];
+                $oEntity->iAccountID      = $aData['account_id'];
+                $oEntity->fMovement       = $aData['movement'];
+            
             
             break;
             case self::MODE_ORGUNIT:
@@ -134,9 +148,23 @@ class CommonBuilder implements BuilderInterface
             break;
              case self::MODE_TRANSACTION:
             
+                $aData['transaction_id']  = $oEntity->iTransactionID;
+                $aData['org_unit_id']     = $oEntity->iOrgUnitID;
+                $aData['process_dt']      = $oEntity->oProcessingDate;
+                $aData['occured_dt']      = $oEntity->oOccuredDate;
+                $aData['vouchernum']      = $oEntity->sVoucherNumber;
+                $aData['journal_type_id'] = $oEntity->iJournalTypeID;
+                $aData['adjustment_id']   = $oEntity->iAdjustmentID;
+                $aData['user_id']         = $oEntity->iUserId; 
+            
             break;
             case self::MODE_ENTRY:
-            
+                
+                $aData['entry_id']        = $oEntity->iEntryID;
+                $aData['transaction_id']  = $oEntity->iTransactionID;
+                $aData['account_id']      = $oEntity->iAccountID;
+                $aData['movement']        = $oEntity->fMovement;
+                
             break;
             case self::MODE_ORGUNIT:
             

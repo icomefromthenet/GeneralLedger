@@ -1,5 +1,5 @@
 <?php
-namespace IComeFromTheNet\Ledger\Entity;
+namespace IComeFromTheNet\GeneralLedger\Entity;
 
 use DateTime;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;

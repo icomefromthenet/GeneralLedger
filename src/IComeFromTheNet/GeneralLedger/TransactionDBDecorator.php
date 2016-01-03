@@ -16,7 +16,7 @@ use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class TransactionDecorator implements TransactionProcessInterface, UnitOfWork
+class TransactionDBDecorator implements TransactionProcessInterface, UnitOfWork
 {
     
     /**

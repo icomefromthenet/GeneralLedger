@@ -29,29 +29,13 @@ abstract class CommonStep implements TransactionProcessInterface
      */ 
     protected $aTableMap;
     
-    /**
-     * @var DateTime 
-     */ 
-    protected $oProcessingDate;
-    
-    /**
-     *  Return the database connection  
-     *
-     *  @access public
-     *  @return  Doctrine\DBAL\Connection
-     *
-    */
+   
     public function getDatabaseAdapter()
     {
         return $this->oDatabaseAdapter;
     }
     
-    /**
-     * Return the app logger
-     * 
-     * @access public
-     * @return use Psr\Log\LoggerInterface;
-     */ 
+   
     public function getLogger()
     {
         return $this->oLogger;

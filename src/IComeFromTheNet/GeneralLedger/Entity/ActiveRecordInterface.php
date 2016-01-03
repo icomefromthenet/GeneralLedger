@@ -16,7 +16,7 @@ interface ActiveRecordInterface
     public function remove();
     
     
-    public function validate();
+    public function validate($aData,$aRules);
     
 }
 /* End of Interface */
