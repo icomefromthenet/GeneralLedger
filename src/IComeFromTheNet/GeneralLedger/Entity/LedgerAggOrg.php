@@ -11,7 +11,7 @@ use DateTime;
  */ 
 class LedgerAggOrg extends LedgerAggEntry
 {
-    public $iOrgUnitId;
+    public $iOrgUnitID;
     
 }
 /* End of Class */

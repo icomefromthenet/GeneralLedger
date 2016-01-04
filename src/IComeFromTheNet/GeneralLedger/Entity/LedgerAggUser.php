@@ -11,7 +11,7 @@ use DateTime;
  */ 
 class LedgerAggUser extends LedgerAggEntry
 {
-    public $iUserId;
+    public $iUserID;
     
 }
 /* End of Class */

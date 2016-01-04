@@ -218,7 +218,7 @@ class LedgerContainer extends Pimple
             $table->addColumn('org_unit_id',"integer",array("unsigned" => true, "autoincrement" => true));
             $table->addColumn('org_unit_name',"string",array("length" => 50));
             $table->addColumn('org_unit_name_slug',"string",array("length" => 50));
-            $table->addColumn('account_name',"boolean",array("default" => false));
+            $table->addColumn('hide_ui',"boolean",array("default" => false));
             
             $table->setPrimaryKey(array("org_unit_id"));
         
@@ -374,7 +374,7 @@ class LedgerContainer extends Pimple
             $table->setPrimaryKey(array("process_dt","account_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
 
-            $oBuilder = new CommonBuilder(CommonBuilder::MODE_ORGUNIT);
+            $oBuilder = new CommonBuilder(CommonBuilder::MODE_AGG_ENTRY);
             $oGateway = new CommonGateway($sActualTableName, $oDatabase, $oEvent, $table , null, $oBuilder);
     
             $oBuilder->setGateway($oGateway);

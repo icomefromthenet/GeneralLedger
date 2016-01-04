@@ -5,7 +5,7 @@ use DateTime;
 
 use IComeFromTheNet\GeneralLedger\Entity\LedgerTransaction;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
-use IComeFromTheNet\GeneralLedger\Entity\Account;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerAccount;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 
 class TransactionBuilder
@@ -134,7 +134,7 @@ class TransactionBuilder
     public function addAccountMovement($mAccountNumber,$fBalance)
     {
         
-        if(!$mAccountNumber instanceof Account) {
+        if(!$mAccountNumber instanceof LedgerAccount) {
             $sAccountNumber = (string) $mAccountNumber;
             
             // lookup the account number

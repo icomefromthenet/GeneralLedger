@@ -12,9 +12,9 @@ use DateTime;
  */ 
 class LedgerAggEntry
 {
-    public $oProcessDate;
+    public $oProcessingDate;
     
-    public $iAccountId;
+    public $iAccountID;
     
     public $fBalance;
     

@@ -5,9 +5,15 @@ use DateTime;
 use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 use IComeFromTheNet\GeneralLedger\Entity\CommonBuilder;
-use IComeFromTheNet\GeneralLedger\Entity\Account;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerAccount;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerTransaction;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerOrganisationUnit;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerUser;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerJournalType;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerAggEntry;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerAggOrg;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerAggUser;
 
 
 class BuilderTest extends TestWithContainer
@@ -50,7 +56,7 @@ class BuilderTest extends TestWithContainer
             ,'is_right' => $bIsRight
         );
         
-        $oEntity = new Account($oGateway,$oLogger);
+        $oEntity = new LedgerAccount($oGateway,$oLogger);
         
         $oEntity->iAccountID = $iAccountId;
         $oEntity->sAccountNumber = $sAccountNumber;
@@ -206,7 +212,284 @@ class BuilderTest extends TestWithContainer
         
     }
     
+    public function testOrgUnitEntity()
+    {
+        $oContainer = $this->getContainer();
+        $oLogger    = $oContainer->getAppLogger();
+        $oGateway   = $oContainer->getGatewayCollection()
+                                 ->getGateway('ledger_org_unit');
+      
+        $oBuilder   = $oGateway->getEntityBuilder();
+        
+        $iOrgUnitId = 1;
+        $sOrgUnitName = 'example org unit';
+        $sOrgUnitNameSlug = 'example_org_unit';
+        $bHideUi = true;
+        
+        $aDatabase = array(
+             'org_unit_id'    => $iOrgUnitId
+            ,'org_unit_name'  => $sOrgUnitName
+            ,'org_unit_name_slug' => $sOrgUnitNameSlug
+            ,'hide_ui'  => $bHideUi
+            
+        );
+        
+        $oEntity = new LedgerOrganisationUnit($oGateway,$oLogger);
+        
+        $oEntity->iOrgUnitID       = $iOrgUnitId;
+        $oEntity->sOrgUnitName     = $sOrgUnitName;
+        $oEntity->sOrgunitNameSlug = $sOrgUnitNameSlug;
+        $oEntity->bHideUI          = $bHideUi;
+        
+        # test database to Entity Mapper        
+        $oNewEntity = $oBuilder->build($aDatabase);
+        
+        $this->assertEquals($oNewEntity->iOrgUnitID,$iOrgUnitId);
+        $this->assertEquals($oNewEntity->sOrgUnitName,$sOrgUnitName);
+        $this->assertEquals($oNewEntity->sOrgunitNameSlug,$sOrgUnitNameSlug);
+        $this->assertEquals($oNewEntity->bHideUI,$bHideUi);
+        
+        
+        # test entity to database mapper
+        $aNewDatabase = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($aNewDatabase['org_unit_id'], $iOrgUnitId);
+        $this->assertEquals($aNewDatabase['org_unit_name'], $sOrgUnitName);
+        $this->assertEquals($aNewDatabase['org_unit_name_slug'], $sOrgUnitNameSlug);
+        $this->assertEquals($aNewDatabase['hide_ui'], $bHideUi);
+        
+    }
     
+    public function testUserEntity()
+    {
+        $oContainer = $this->getContainer();
+        $oLogger    = $oContainer->getAppLogger();
+        $oGateway   = $oContainer->getGatewayCollection()
+                                 ->getGateway('ledger_user');
+      
+        $oBuilder   = $oGateway->getEntityBuilder();
+        
+        $iUserId = 1;
+        $sExternalGUID = '1111-1111-1111-1111';
+        $oRegoDate   = new DateTime();
+        
+        $aDatabase = array(
+             'user_id'       => $iUserId
+            ,'external_guid' => $sExternalGUID
+            ,'rego_date'     => $oRegoDate
+        );
+        
+        $oEntity = new LedgerUser($oGateway,$oLogger);
+        
+        $oEntity->iUserID        = $iUserId;
+        $oEntity->sExternalGUID  = $sExternalGUID;
+        $oEntity->oRegoDate      = $oRegoDate;
+        
+        # test database to Entity Mapper        
+        $oNewEntity = $oBuilder->build($aDatabase);
+        
+        $this->assertEquals($oNewEntity->iUserID,$iUserId);
+        $this->assertEquals($oNewEntity->sExternalGUID,$sExternalGUID);
+        $this->assertEquals($oNewEntity->oRegoDate,$oRegoDate);
+    
+        
+        # test entity to database mapper
+        $aNewDatabase = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($aNewDatabase['user_id'], $iUserId);
+        $this->assertEquals($aNewDatabase['external_guid'], $sExternalGUID);
+        $this->assertEquals($aNewDatabase['rego_date'], $oRegoDate);
+       
+    }
+    
+    public function testJournalTypeEntity()
+    {
+        $oContainer = $this->getContainer();
+        $oLogger    = $oContainer->getAppLogger();
+        $oGateway   = $oContainer->getGatewayCollection()
+                                 ->getGateway('ledger_journal_type');
+      
+        $oBuilder   = $oGateway->getEntityBuilder();
+        
+        $iJournalTypeId = 1;
+        $sJournalName = 'example journal';
+        $sJournalNameSlug = 'example_journal';
+        $bHideUI = true;
+        
+        $aDatabase = array(
+             'journal_type_id'   => $iJournalTypeId
+            ,'journal_name'      => $sJournalName     
+            ,'journal_name_slug' => $sJournalNameSlug
+            ,'hide_ui'           => $bHideUI
+        );
+        
+        $oEntity = new LedgerJournalType($oGateway,$oLogger);
+        
+        $oEntity->iJournalTypeID    = $iJournalTypeId;
+        $oEntity->sJournalName      = $sJournalName;
+        $oEntity->sJournalNameSlug  = $sJournalNameSlug;
+        $oEntity->bHideUI           = $bHideUI;
+        
+        
+        # test database to Entity Mapper        
+        $oNewEntity = $oBuilder->build($aDatabase);
+        
+        $this->assertEquals($oNewEntity->iJournalTypeID,$iJournalTypeId);
+        $this->assertEquals($oNewEntity->sJournalName,$sJournalName);
+        $this->assertEquals($oNewEntity->sJournalNameSlug,$sJournalNameSlug);
+        $this->assertEquals($oNewEntity->bHideUI,$bHideUI);
+    
+        
+        # test entity to database mapper
+        $aNewDatabase = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($aNewDatabase['journal_type_id'], $iJournalTypeId);
+        $this->assertEquals($aNewDatabase['journal_name'], $sJournalName);
+        $this->assertEquals($aNewDatabase['journal_name_slug'], $sJournalNameSlug);
+        $this->assertEquals($aNewDatabase['hide_ui'], $bHideUI);
+    }
+    
+    public function testAggEntryEntity()
+    {
+        $oContainer = $this->getContainer();
+        $oLogger    = $oContainer->getAppLogger();
+        $oGateway   = $oContainer->getGatewayCollection()
+                                 ->getGateway('ledger_daily');
+      
+        $oBuilder   = $oGateway->getEntityBuilder();
+        
+        $iAccountId     = 200;
+        $oProcessingDate = new DateTime('now - 5 day');
+        $fBalance       = 587.69;
+        
+        $aDatabase = array(
+            'process_dt'  => $oProcessingDate
+            ,'account_id' => $iAccountId
+            ,'balance'    => $fBalance
+        );
+        
+        $oEntity = new LedgerAggEntry($oGateway,$oLogger);
+        
+        $oEntity->oProcessingDate   = $oProcessingDate;
+        $oEntity->iAccountID        = $iAccountId;
+        $oEntity->fBalance          = $fBalance;
+        
+        
+        # test database to Entity Mapper        
+        $oNewEntity = $oBuilder->build($aDatabase);
+        
+        $this->assertEquals($oNewEntity->oProcessingDate,$oProcessingDate);
+        $this->assertEquals($oNewEntity->iAccountID,$iAccountId);
+        $this->assertEquals($oNewEntity->fBalance,$fBalance);
+     
+    
+        
+        # test entity to database mapper
+        $aNewDatabase = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($aNewDatabase['process_dt'], $oProcessingDate);
+        $this->assertEquals($aNewDatabase['account_id'], $iAccountId);
+        $this->assertEquals($aNewDatabase['balance'], $fBalance);
+       
+        
+    }
+    
+    public function testAggUserEntity()
+    {
+        $oContainer = $this->getContainer();
+        $oLogger    = $oContainer->getAppLogger();
+        $oGateway   = $oContainer->getGatewayCollection()
+                                 ->getGateway('ledger_daily_user');
+      
+        $oBuilder   = $oGateway->getEntityBuilder();
+        
+        $iAccountId      = 200;
+        $oProcessingDate = new DateTime('now - 5 day');
+        $fBalance        = 587.69;
+        $iUserId         = 1;
+        
+        $aDatabase = array(
+            'process_dt'  => $oProcessingDate
+            ,'account_id' => $iAccountId
+            ,'balance'    => $fBalance
+            ,'user_id'    => $iUserId
+        );
+        
+        $oEntity = new LedgerAggUser($oGateway,$oLogger);
+        
+        $oEntity->oProcessingDate   = $oProcessingDate;
+        $oEntity->iAccountID        = $iAccountId;
+        $oEntity->fBalance          = $fBalance;
+        $oEntity->iUserID           = $iUserId;
+        
+        
+        # test database to Entity Mapper        
+        $oNewEntity = $oBuilder->build($aDatabase);
+        
+        $this->assertEquals($oNewEntity->oProcessingDate,$oProcessingDate);
+        $this->assertEquals($oNewEntity->iAccountID,$iAccountId);
+        $this->assertEquals($oNewEntity->fBalance,$fBalance);
+        $this->assertEquals($oNewEntity->iUserID,$iUserId);
+     
+    
+        
+        # test entity to database mapper
+        $aNewDatabase = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($aNewDatabase['process_dt'], $oProcessingDate);
+        $this->assertEquals($aNewDatabase['account_id'], $iAccountId);
+        $this->assertEquals($aNewDatabase['balance'], $fBalance);
+        $this->assertEquals($aNewDatabase['user_id'], $iUserId);
+        
+    }
+    
+    public function testAggOrgUnitEntity()
+    {
+        $oContainer = $this->getContainer();
+        $oLogger    = $oContainer->getAppLogger();
+        $oGateway   = $oContainer->getGatewayCollection()
+                                 ->getGateway('ledger_daily_org');
+      
+        $oBuilder   = $oGateway->getEntityBuilder();
+        
+        $iAccountId      = 200;
+        $oProcessingDate = new DateTime('now - 5 day');
+        $fBalance        = 587.69;
+        $iOrgUnitId     = 1;
+        
+        $aDatabase = array(
+            'process_dt'    => $oProcessingDate
+            ,'account_id'   => $iAccountId
+            ,'balance'      => $fBalance
+            ,'org_unit_id'  => $iOrgUnitId
+        );
+        
+        $oEntity = new LedgerAggUser($oGateway,$oLogger);
+        
+        $oEntity->oProcessingDate   = $oProcessingDate;
+        $oEntity->iAccountID        = $iAccountId;
+        $oEntity->fBalance          = $fBalance;
+        $oEntity->iOrgUnitID        = $iOrgUnitId;
+        
+        
+        # test database to Entity Mapper        
+        $oNewEntity = $oBuilder->build($aDatabase);
+        
+        $this->assertEquals($oNewEntity->oProcessingDate,$oProcessingDate);
+        $this->assertEquals($oNewEntity->iAccountID,$iAccountId);
+        $this->assertEquals($oNewEntity->fBalance,$fBalance);
+        $this->assertEquals($oNewEntity->iOrgUnitID,$iOrgUnitId);
+     
+        
+        # test entity to database mapper
+        $aNewDatabase = $oBuilder->demolish($oEntity);
+        
+        $this->assertEquals($aNewDatabase['process_dt'], $oProcessingDate);
+        $this->assertEquals($aNewDatabase['account_id'], $iAccountId);
+        $this->assertEquals($aNewDatabase['balance'], $fBalance);
+        $this->assertEquals($aNewDatabase['org_unit_id'], $iOrgUnitId);
+        
+    }
     
     
 }

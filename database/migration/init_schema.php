@@ -40,7 +40,7 @@ class init_schema implements EntityInterface
         $orgTable->addColumn('org_unit_id',"integer",array("unsigned" => true, "autoincrement" => true));
         $orgTable->addColumn('org_unit_name',"string",array("length" => 50));
         $orgTable->addColumn('org_unit_name_slug',"string",array("length" => 50));
-        $orgTable->addColumn('account_name',"boolean",array("default" => false));
+        $orgTable->addColumn('hide_ui',"boolean",array("default" => false));
         
         $orgTable->setPrimaryKey(array("org_unit_id"));
     

@@ -6,7 +6,7 @@ use Psr\Log\LoggerInterface;
 use DBALGateway\Builder\BuilderInterface;
 use DBALGateway\Table\TableInterface;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
-use IComeFromTheNet\GeneralLedger\Entity\Account;
+
 
 class CommonBuilder implements BuilderInterface
 {
@@ -62,7 +62,7 @@ class CommonBuilder implements BuilderInterface
        
         switch($this->sMode) {
             case self::MODE_ACCOUNT:
-                $oEntity = new Account($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerAccount($this->oGateway,$this->oLogger);
                 $oEntity->iAccountID        = $aData['account_id'];
                 $oEntity->sAccountNumber    = $aData['account_number'];
                 $oEntity->sAccountName      = $aData['account_name'];
@@ -94,27 +94,55 @@ class CommonBuilder implements BuilderInterface
             
             break;
             case self::MODE_ORGUNIT:
-                 $oEntity = new LedgerOrganisationUnit($this->oGateway,$this->oLogger);
-            
+                $oEntity = new LedgerOrganisationUnit($this->oGateway,$this->oLogger);
+                $oEntity->iOrgUnitID        = $aData['org_unit_id'];
+                $oEntity->sOrgUnitName      = $aData['org_unit_name'];
+                $oEntity->sOrgunitNameSlug  = $aData['org_unit_name_slug'];
+                $oEntity->bHideUI           = $aData['hide_ui'];
+                
             break;
             case self::MODE_USER:
-                 $oEntity = new LedgerUser($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerUser($this->oGateway,$this->oLogger);
+            
+                $oEntity->iUserID       =  $aData['user_id'];
+                $oEntity->sExternalGUID =  $aData['external_guid'];
+                $oEntity->oRegoDate     =  $aData['rego_date'];
             
             break;
             case self::MODE_JTYPE:
-                 $oEntity = new LedgerJournalType($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerJournalType($this->oGateway,$this->oLogger);
+            
+                $oEntity->iJournalTypeID    = $aData['journal_type_id'];
+                $oEntity->sJournalName      = $aData['journal_name'];
+                $oEntity->sJournalNameSlug  = $aData['journal_name_slug'];
+                $oEntity->bHideUI           = $aData['hide_ui'];
             
             break;
             case self::MODE_AGG_ENTRY:
-                 $oEntity = new LedgerAggEntry($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerAggEntry($this->oGateway,$this->oLogger);
+                 
+                $oEntity->oProcessingDate = $aData['process_dt'];
+                $oEntity->iAccountID      = $aData['account_id'];
+                $oEntity->fBalance        = $aData['balance'];
+                 
                 
             break;
             case self::MODE_AGG_ORG:
-                 $oEntity = new LedgerAggOrg($this->oGateway,$this->oLogger);
-            
+                $oEntity = new LedgerAggOrg($this->oGateway,$this->oLogger);
+                
+                $oEntity->oProcessingDate = $aData['process_dt'];
+                $oEntity->iAccountID      = $aData['account_id'];
+                $oEntity->fBalance        = $aData['balance'];
+                $oEntity->iOrgUnitID      = $aData['org_unit_id'];
+                
             break;
             case self::MODE_AGG_USER:
-                 $oEntity = new LedgerAggUser($this->oGateway,$this->oLogger);
+                $oEntity = new LedgerAggUser($this->oGateway,$this->oLogger);
+                 
+                $oEntity->oProcessingDate = $aData['process_dt'];
+                $oEntity->iAccountID      = $aData['account_id'];
+                $oEntity->fBalance        = $aData['balance'];
+                $oEntity->iUserID         = $aData['user_id'];
                  
             break;
             default : throw new LedgerException($this->sMode." is not supported");
@@ -168,20 +196,49 @@ class CommonBuilder implements BuilderInterface
             break;
             case self::MODE_ORGUNIT:
             
-            break;
-            case self::MODE_USER:
+                $aData['org_unit_id']           = $oEntity->iOrgUnitID;
+                $aData['org_unit_name']         = $oEntity->sOrgUnitName;
+                $aData['org_unit_name_slug']    = $oEntity->sOrgunitNameSlug;
+                $aData['hide_ui']               = $oEntity->bHideUI;
             
             break;
+            case self::MODE_USER:
+                
+                $aData['user_id']           = $oEntity->iUserID;
+                $aData['external_guid']     = $oEntity->sExternalGUID;
+                $aData['rego_date']         = $oEntity->oRegoDate;
+                
+            break;
             case self::MODE_JTYPE:
+            
+                $aData['journal_type_id']   = $oEntity->iJournalTypeID;
+                $aData['journal_name']      = $oEntity->sJournalName;
+                $aData['journal_name_slug'] = $oEntity->sJournalNameSlug;
+                $aData['hide_ui']           = $oEntity->bHideUI;
             
             break;
             case self::MODE_AGG_ENTRY:
             
+                $aData['process_dt']   = $oEntity->oProcessingDate;
+                $aData['account_id']   = $oEntity->iAccountID;
+                $aData['balance']      = $oEntity->fBalance;
+            
             break;
             case self::MODE_AGG_ORG:
+                
+                $aData['process_dt']   = $oEntity->oProcessingDate;
+                $aData['account_id']   = $oEntity->iAccountID;
+                $aData['balance']      = $oEntity->fBalance;
+                $aData['org_unit_id']  = $oEntity->iOrgUnitID;
+            
             
             break;
             case self::MODE_AGG_USER:
+            
+                $aData['process_dt']   = $oEntity->oProcessingDate;
+                $aData['account_id']   = $oEntity->iAccountID;
+                $aData['balance']      = $oEntity->fBalance;
+                $aData['user_id']      = $oEntity->iUserID;
             
             break;
             default : throw new LedgerException($this->sMode." is not supported");
@@ -205,3 +262,4 @@ class CommonBuilder implements BuilderInterface
 }
 
 /* End of Class */
+
