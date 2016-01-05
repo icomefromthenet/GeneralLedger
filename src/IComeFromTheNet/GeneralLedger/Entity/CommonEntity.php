@@ -144,7 +144,7 @@ abstract class CommonEntity implements ActiveRecordInterface
             $aDatabaseData = $oBuilder->demolish($this);            
             $bResult       = false;
         
-            if(true === $this->validate($aDatabaseData,$this->aValidationRules)) {
+            if(true === $this->validate($aDatabaseData,$this->aValidators)) {
         
                 if(true === empty($this->getEntityId())) {
                     $bResult = $this->createNew($aDatabaseData);
@@ -189,7 +189,7 @@ abstract class CommonEntity implements ActiveRecordInterface
             $aDatabaseData = $oBuilder->demolish($this);            
             $bResult       = false;
         
-            if(true === $this->validate($aDatabaseData,$this->aValidationRules)) {
+            if(true === $this->validate($aDatabaseData,$this->aValidators)) {
         
                 if(true === empty($this->getEntityId())) {
                     

@@ -92,7 +92,7 @@ class CommonGateway extends SchemaAwareTable implements TableInterface
       */
     public function newQueryBuilder()
     {
-        $this->head = new AdjustmentGroupQuery($this->adapter,$this);
+        $this->head = new CommonQuery($this->adapter,$this);
         $this->head->setDefaultAlias($this->getTableQueryAlias());
         
        return $this->head;
