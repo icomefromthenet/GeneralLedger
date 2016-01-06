@@ -14,11 +14,11 @@ class LedgerTransaction extends CommonEntity
 {
     
     protected $aValidators = [
-        'required'   => ['process_dt'],['occured_dt'],['user_id'],['org_unit_id'],['is_right']
-        ,'length'    => ['vouchernum',0,100]
-        ,'alphaNum'  => ['vouchernum']
-        ,'integer'   => ['transaction_id'],['org_unit_id'],['journal_type_id'],['adjustment_id'],['user_id']
-        ,'instanceOf' => ['process_dt','DateTime'],['occured_dt','DateTime']
+        'required'   => [['process_dt'],['occured_dt'],['user_id'],['org_unit_id'],['is_right']]
+        ,'length'    => [['vouchernum',0,100]]
+        ,'alphaNum'  => [['vouchernum']]
+        ,'integer'   => [['transaction_id'],['org_unit_id'],['journal_type_id'],['adjustment_id'],['user_id']]
+        ,'instanceOf' => [['process_dt','DateTime'],['occured_dt','DateTime']]
     ];
    
     //--------------------------------------------------------------------
@@ -50,7 +50,7 @@ class LedgerTransaction extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->insertQuery()
+        $bSuccess = $oGateway->insertQuery()
              ->start()
                 ->addColumn('org_unit_id',$aDatabaseData['org_unit_id'])
                 ->addColumn('process_dt',$aDatabaseData['process_dt'])
@@ -63,7 +63,7 @@ class LedgerTransaction extends CommonEntity
            ->insert(); 
 
         if($bSuccess) {
-            $this->iAccountID = $gateway->lastInsertId();
+            $this->iTransactionID = $oGateway->lastInsertId();
             
             $sMsg    = sprintf('Created new ledger transaction at voucher %s',$aDatabaseData['vouchernum']);
         } else {
@@ -86,11 +86,12 @@ class LedgerTransaction extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->updateQuery()
+        $bSuccess = $oGateway->updateQuery()
              ->start()
                  >addColumn('adjustment_id',$aDatabaseData['adjustment_id'])
             ->where()
-                ->where('transaction_id',$aDatabaseData['transaction_id'])
+                ->where('transaction_id= :iTransactionID')
+                ->setParameter(':iTransactionID',$aDatabaseData['transaction_id'])
              ->end()
            ->update(); 
 

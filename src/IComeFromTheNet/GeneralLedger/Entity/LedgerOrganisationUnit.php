@@ -17,10 +17,10 @@ class LedgerOrganisationUnit extends CommonEntity
 {
     
     protected $aValidators = [
-        'required'      => ['org_unit_name'],['org_unit_name_slug'],['hide_ui']
-        ,'slug'         => ['org_unit_name_slug']
-        ,'lengthBetween'=> ['org_unit_name',1,50],['org_unit_name_slug',1,50]
-        ,'boolean'      => ['hide_ui']
+        'required'      => [['org_unit_name'],['org_unit_name_slug'],['hide_ui']]
+        ,'slug'         => [['org_unit_name_slug']]
+        ,'lengthBetween'=> [['org_unit_name',1,50],['org_unit_name_slug',1,50]]
+        ,'boolean'      => [['hide_ui']]
     ];
    
     //--------------------------------------------------------------------
@@ -45,7 +45,7 @@ class LedgerOrganisationUnit extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->insertQuery()
+        $bSuccess = $oGateway->insertQuery()
             ->start()
                 ->addColumn('org_unit_name',$aDatabaseData['org_unit_name'])
                 ->addColumn('org_unit_name_slug',$aDatabaseData['account_name'])
@@ -54,7 +54,7 @@ class LedgerOrganisationUnit extends CommonEntity
            ->insert(); 
 
         if($bSuccess) {
-            $this->iAccountID = $gateway->lastInsertId();
+            $this->iOrgUnitID = $oGateway->lastInsertId();
             
             $sMsg    = sprintf('Created new organisation unit %s',$aDatabaseData['org_unit_name']);
         } else {
@@ -77,13 +77,14 @@ class LedgerOrganisationUnit extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->updateQuery()
+        $bSuccess = $oGateway->updateQuery()
             ->start()
                 ->addColumn('org_unit_name',$aDatabaseData['org_unit_name'])
                 ->addColumn('org_unit_name_slug',$aDatabaseData['account_name'])
                 ->addColumn('hide_ui',$aDatabaseData['hide_ui'])
             ->where()
-                ->andWhere('org_unit_id',$aDatabaseData['org_unit_id'])
+                ->andWhere('org_unit_id = :iOrgUnitID')
+                ->setParameter(':iOrgUnitID',$aDatabaseData['org_unit_id'])
              ->end()
            ->update(); 
 
@@ -108,9 +109,10 @@ class LedgerOrganisationUnit extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->deleteQuery()
+        $bSuccess = $oGateway->deleteQuery()
             ->start()
-                ->where('org_unit_id',$aDatabaseData['org_unit_id'])
+                ->where('org_unit_id = :iOrgUnitID')
+                ->setParameter(':iOrgUnitID',$aDatabaseData['org_unit_id'])
              ->end()
            ->delete(); 
 

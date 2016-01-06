@@ -21,10 +21,10 @@ class LedgerJournalType extends CommonEntity
 {
     
     protected $aValidators = [
-        'required'       => ['journal_name'],['journal_name_slug'],['hide_ui']
-        ,'slug'          => ['journal_name_slug']
-        ,'lengthBetween' => ['journal_name',1,50],['journal_name_slug',1,50]
-        ,'boolean'       => ['hide_ui']
+        'required'       => [['journal_name'],['journal_name_slug'],['hide_ui']]
+        ,'slug'          => [['journal_name_slug']]
+        ,'lengthBetween' => [['journal_name',1,50],['journal_name_slug',1,50]]
+        ,'boolean'       => [['hide_ui']]
         
     ];
    
@@ -50,7 +50,7 @@ class LedgerJournalType extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->insertQuery()
+        $bSuccess = $oGateway->insertQuery()
              ->start()
                 ->addColumn('journal_name',$aDatabaseData['journal_name'])
                 ->addColumn('journal_name_slug',$aDatabaseData['journal_name_slug'])
@@ -59,7 +59,7 @@ class LedgerJournalType extends CommonEntity
            ->insert(); 
 
         if($bSuccess) {
-            $this->iAccountID = $gateway->lastInsertId();
+            $this->iJournalTypeID = $oGateway->lastInsertId();
             
             $sMsg    = sprintf('Created new ledger journal type %s',$aDatabaseData['journal_name']);
         } else {
@@ -82,13 +82,14 @@ class LedgerJournalType extends CommonEntity
        $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->updateQuery()
+        $bSuccess = $oGateway->updateQuery()
              ->start()
                 ->addColumn('journal_name',$aDatabaseData['journal_name'])
                 ->addColumn('journal_name_slug',$aDatabaseData['journal_name_slug'])
                 ->addColumn('hide_ui',$aDatabaseData['hide_ui'])
             ->where()
-                ->andWhere('journal_type_id',$aDatabaseData['journal_type_id'])
+                ->andWhere('journal_type_id = :iJournalTypeID')
+                ->setParameter(':iJournalTypeID',$aDatabaseData['journal_type_id'])
              ->end()
            ->update(); 
 
@@ -113,9 +114,10 @@ class LedgerJournalType extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->deleteQuery()
+        $bSuccess = $oGateway->deleteQuery()
              ->start()
-                ->where('journal_type_id',$aDatabaseData['journal_type_id'])
+                ->where('journal_type_id = :iJournalTypeID')
+                ->setParameter(':iJournalTypeID',$aDatabaseData['journal_type_id'])
              ->end()
            ->delete(); 
 

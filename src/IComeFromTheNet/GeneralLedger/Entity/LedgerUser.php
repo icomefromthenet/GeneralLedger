@@ -17,9 +17,9 @@ class LedgerUser extends CommonEntity
 {
     
     protected $aValidators = [
-        'required'       => ['external_guid'],['rego_date']
-        ,'instanceof'    => ['rego_date','DateTime']
-        ,'lengthBetween' => ['external_guid',1,32] 
+        'required'       => [['external_guid'],['rego_date']]
+        ,'instanceof'    => [['rego_date','DateTime']]
+        ,'lengthBetween' => [['external_guid',1,32]]
     ];
    
     //--------------------------------------------------------------------
@@ -42,7 +42,7 @@ class LedgerUser extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->insertQuery()
+        $bSuccess = $oGateway->insertQuery()
             ->start()
                 ->addColumn('external_guid',$aDatabaseData['org_unit_name'])
                 ->addColumn('rego_date',$aDatabaseData['rego_date'])
@@ -50,7 +50,7 @@ class LedgerUser extends CommonEntity
            ->insert(); 
 
         if($bSuccess) {
-            $this->iAccountID = $gateway->lastInsertId();
+            $this->iUserID = $oGateway->lastInsertId();
             
             $sMsg    = sprintf('Created new ledger user %s',$aDatabaseData['external_guid']);
         } else {
@@ -79,9 +79,10 @@ class LedgerUser extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->deleteQuery()
+        $bSuccess = $oGateway->deleteQuery()
             ->start()
-                ->where('user_id',$aDatabaseData['user_id'])
+                ->where('user_id = :iUserID')
+                ->setPatameter(':iUserID',$aDatabaseData['user_id'])
              ->end()
            ->delete(); 
 

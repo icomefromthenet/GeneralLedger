@@ -16,9 +16,9 @@ class LedgerEntry extends CommonEntity
 {
    
    protected $aValidators = [
-        'required'   => ['transaction_id'],['account_id'],['movement']
-        ,'integer'   => ['entry_id'],['transaction_id'],['account_id']
-        ,'numeric'   => ['movement']
+        'required'   => [['transaction_id'],['account_id'],['movement']]
+        ,'integer'   => [['entry_id'],['transaction_id'],['account_id']]
+        ,'numeric'   => [['movement']]
         
     ];
    
@@ -44,7 +44,7 @@ class LedgerEntry extends CommonEntity
         $oGateway = $this->getTableGateway();
         $oLogger  = $this->getAppLogger();
         
-        $bSuccess = $gateway->insertQuery()
+        $bSuccess = $oGateway->insertQuery()
              ->start()
                 ->addColumn('transaction_id',$aDatabaseData['org_unit_id'])
                 ->addColumn('account_id',$aDatabaseData['account_id'])
@@ -53,7 +53,7 @@ class LedgerEntry extends CommonEntity
            ->insert(); 
 
         if($bSuccess) {
-            $this->iAccountID = $gateway->lastInsertId();
+            $this->iEntryID = $oGateway->lastInsertId();
             
             $sMsg    = sprintf('Created new ledger entry for transaction at id %s for account at id %s',$aDatabaseData['transaction_id'],$aDatabaseData['account_id']);
         } else {
