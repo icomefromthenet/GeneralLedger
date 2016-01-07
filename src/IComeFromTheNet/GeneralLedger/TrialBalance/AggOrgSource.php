@@ -45,9 +45,9 @@ class AggOrgSource extends AggAllSource
         $sTableName = $oTableMap['ledger_daily'];
         $sSql       = '';
         
-        $sSql .=' SELECT sum(balance) as BALANCE, account_id as ACCOUNT_ID';
+        $sSql .=' SELECT sum(balance) as balance, account_id as account_id';
         $sSql .=" FROM $sTableName ";
-        $sSql .=' WHERE process_date <= :toDate AND org_unit_id = :iOrgID ';
+        $sSql .=' WHERE process_dt <= :toDate AND org_unit_id = :iOrgID ';
         $sSql .=' GROUP BY account_id';
         
         $oSTH = $oDatabase->executeQuery($sSql
