@@ -65,6 +65,7 @@ class EntryUserSource implements DatasourceInterface
         $oTrialDate = $this->getTrialDate();
         $oTableMap  = $this->getTableMap();
         $iUserID    = $this->getLedgerUser();
+        
        
         $sEntryTableName       = $oTableMap['ledger_transaction'];
         $sTransactionTableName = $oTableMap['ledger_entry'];
@@ -81,10 +82,12 @@ class EntryUserSource implements DatasourceInterface
         $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate,':iOrgUnitID' => $iUserID)
                                               ,array(DoctineType::getType('date'),DoctineType::getType('integer')));
         
-        
+        $aResults = array();
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
-            $aResult['account_id'] =  DoctineType::getType('integer')->convertToPHPValue($aResult['account_id']);
-            $aResult['balance']    =  DoctineType::getType('float')->convertToPHPValue($aResult['balance']);
+            $aResults[] = array(
+                 'balance'    => DoctineType::getType('float')->convertToPHPValue($aResult['balance'])
+                ,'account_id' => DoctineType::getType('integer')->convertToPHPValue($aResult['account_id'])
+            ); 
         }
         
         

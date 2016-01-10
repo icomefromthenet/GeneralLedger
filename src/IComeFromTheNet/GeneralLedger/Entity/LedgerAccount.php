@@ -96,7 +96,8 @@ class LedgerAccount extends CommonEntity
                 ->addColumn('is_left',$aDatabaseData['is_left'])
                 ->addColumn('is_right',$aDatabaseData['is_right'])
             ->where()
-                ->andWhere('account_id',$aDatabaseData['account_id'])
+                ->andWhere('account_id = :iAccountId')
+                ->setParameter(':iAccountId',$aDatabaseData['account_id'])
              ->end()
            ->update(); 
 

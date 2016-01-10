@@ -38,14 +38,14 @@ return [
         ]
         
          /* Account that cannot be removed */
-        ,[
+         ,[
             'account_id'        => 4    
             ,'account_number'   => '1-0003'
             ,'account_name'     => 'Account to Cant Remove'
             ,'account_name_slug'=> 'account_to_cant_remove'
             ,'hide_ui'          => 0
-            ,'is_left'          => 0
-            ,'is_right'         => 1
+            ,'is_left'          => 1
+            ,'is_right'         => 0
         ]
         
     ] 
@@ -53,6 +53,35 @@ return [
     ,'ledger_account_group' => [
           ['child_account_id'  => 2,'parent_account_id' => 1]
          ,['child_account_id'  => 4,'parent_account_id' => 1]
+    ]
+    
+    
+    ,'ledger_journal_type' => [
+        
+        /* A normal Journal */
+        [
+            'journal_type_id' =>  1
+            ,'journal_name'  => 'Basic Journal'
+            ,'journal_name_slug' => 'basic_journal'
+            ,'hide_ui' => 0
+        ]
+        
+        /* A journal to be removed */
+       , [
+             'journal_type_id' =>  2
+            ,'journal_name'  => 'To Be Removed'
+            ,'journal_name_slug' => 'to_be_removed'
+            ,'hide_ui' => 0 
+        ]
+        
+        /* A journal to be updated */
+       , [
+             'journal_type_id' =>  3
+            ,'journal_name'  => 'To Be Updated'
+            ,'journal_name_slug' => 'to_be_updated'
+            ,'hide_ui' => 0 
+        ]
+        
     ]
     
 ];

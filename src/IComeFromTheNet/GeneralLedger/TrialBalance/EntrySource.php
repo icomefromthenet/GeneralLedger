@@ -72,12 +72,13 @@ class EntrySource implements DatasourceInterface
         
         $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate),array(DoctineType::getType('date')));
         
-        
+        $aResults = array();
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
-            $aResult['account_id'] =  DoctineType::getType('integer')->convertToPHPValue($aResult['account_id']);
-            $aResult['balance']    =  DoctineType::getType('float')->convertToPHPValue($aResult['balance']);
+            $aResults[] = array(
+                 'balance'    => DoctineType::getType('float')->convertToPHPValue($aResult['balance'])
+                ,'account_id' => DoctineType::getType('integer')->convertToPHPValue($aResult['account_id'])
+            ); 
         }
-        
         
         return $aResults;
         
