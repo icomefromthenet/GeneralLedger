@@ -46,7 +46,7 @@ class LedgerEntry extends CommonEntity
         
         $bSuccess = $oGateway->insertQuery()
              ->start()
-                ->addColumn('transaction_id',$aDatabaseData['org_unit_id'])
+                ->addColumn('transaction_id',$aDatabaseData['transaction_id'])
                 ->addColumn('account_id',$aDatabaseData['account_id'])
                 ->addColumn('movement',$aDatabaseData['movement'])
              ->end()

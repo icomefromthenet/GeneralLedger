@@ -183,7 +183,8 @@ abstract class CommonEntity implements ActiveRecordInterface
         $oGateway = $this->getTableGateway();
         $oBuilder = $this->getTableGateway()->getEntityBuilder();
         $this->aLastResult = array('result' => false, 'msg' =>'');
-    
+        $bResult = false;
+        
         try {
         
             $aDatabaseData = $oBuilder->demolish($this);            

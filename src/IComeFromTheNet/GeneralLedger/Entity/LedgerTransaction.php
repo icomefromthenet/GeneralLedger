@@ -14,7 +14,7 @@ class LedgerTransaction extends CommonEntity
 {
     
     protected $aValidators = [
-        'required'   => [['process_dt'],['occured_dt'],['user_id'],['org_unit_id'],['is_right']]
+        'required'   => [['process_dt'],['occured_dt'],['user_id'],['org_unit_id']]
         ,'length'    => [['vouchernum',0,100]]
         ,'alphaNum'  => [['vouchernum']]
         ,'integer'   => [['transaction_id'],['org_unit_id'],['journal_type_id'],['adjustment_id'],['user_id']]
@@ -88,7 +88,7 @@ class LedgerTransaction extends CommonEntity
         
         $bSuccess = $oGateway->updateQuery()
              ->start()
-                 >addColumn('adjustment_id',$aDatabaseData['adjustment_id'])
+                 ->addColumn('adjustment_id',$aDatabaseData['adjustment_id'])
             ->where()
                 ->where('transaction_id= :iTransactionID')
                 ->setParameter(':iTransactionID',$aDatabaseData['transaction_id'])

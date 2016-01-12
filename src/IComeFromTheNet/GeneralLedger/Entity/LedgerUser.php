@@ -19,7 +19,7 @@ class LedgerUser extends CommonEntity
     protected $aValidators = [
         'required'       => [['external_guid'],['rego_date']]
         ,'instanceof'    => [['rego_date','DateTime']]
-        ,'lengthBetween' => [['external_guid',1,32]]
+        ,'lengthBetween' => [['external_guid',1,36]]
     ];
    
     //--------------------------------------------------------------------
@@ -44,7 +44,7 @@ class LedgerUser extends CommonEntity
         
         $bSuccess = $oGateway->insertQuery()
             ->start()
-                ->addColumn('external_guid',$aDatabaseData['org_unit_name'])
+                ->addColumn('external_guid',$aDatabaseData['external_guid'])
                 ->addColumn('rego_date',$aDatabaseData['rego_date'])
             ->end()
            ->insert(); 
@@ -82,7 +82,7 @@ class LedgerUser extends CommonEntity
         $bSuccess = $oGateway->deleteQuery()
             ->start()
                 ->where('user_id = :iUserID')
-                ->setPatameter(':iUserID',$aDatabaseData['user_id'])
+                ->setParameter(':iUserID',$aDatabaseData['user_id'])
              ->end()
            ->delete(); 
 

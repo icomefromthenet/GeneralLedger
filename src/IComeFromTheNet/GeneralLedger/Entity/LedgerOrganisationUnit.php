@@ -48,7 +48,7 @@ class LedgerOrganisationUnit extends CommonEntity
         $bSuccess = $oGateway->insertQuery()
             ->start()
                 ->addColumn('org_unit_name',$aDatabaseData['org_unit_name'])
-                ->addColumn('org_unit_name_slug',$aDatabaseData['account_name'])
+                ->addColumn('org_unit_name_slug',$aDatabaseData['org_unit_name_slug'])
                 ->addColumn('hide_ui',$aDatabaseData['hide_ui'])
             ->end()
            ->insert(); 
@@ -80,7 +80,7 @@ class LedgerOrganisationUnit extends CommonEntity
         $bSuccess = $oGateway->updateQuery()
             ->start()
                 ->addColumn('org_unit_name',$aDatabaseData['org_unit_name'])
-                ->addColumn('org_unit_name_slug',$aDatabaseData['account_name'])
+                ->addColumn('org_unit_name_slug',$aDatabaseData['org_unit_name_slug'])
                 ->addColumn('hide_ui',$aDatabaseData['hide_ui'])
             ->where()
                 ->andWhere('org_unit_id = :iOrgUnitID')

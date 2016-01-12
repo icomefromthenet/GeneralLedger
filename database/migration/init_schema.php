@@ -67,7 +67,7 @@ class init_schema implements EntityInterface
         $transactionTable = $schema->createTable("ledger_transaction");
         $transactionTable->addColumn('transaction_id',"integer",array("unsigned" => true, "autoincrement" => true));
         $transactionTable->addColumn('org_unit_id',"integer",array("notnull" => false,"unsigned" => true));
-        $transactionTable->addColumn('process_dt',"datetime",array("notnull" => true));
+        $transactionTable->addColumn('process_dt',"date",array("notnull" => true));
         $transactionTable->addColumn('occured_dt',"date",array("notnull" => true));
         $transactionTable->addColumn('vouchernum',"string",array("length" => 100));
         $transactionTable->addColumn('journal_type_id',"integer",array("notnull"=> true,"unsigned" => true));
