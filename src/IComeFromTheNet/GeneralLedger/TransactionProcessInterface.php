@@ -57,10 +57,10 @@ interface TransactionProcessInterface
      * 
      * @param LedgerTransaction $oLedgerTrans       the transaction to save should not transaction id
      * @param array             $aLedgerEntries     a struct with the entries (account movements to save)
-     * @param LedgerTransaction $oAdjLedgerTrans    an existing transaction that is being adjusted and requires id of the new.
+     * @param LedgerTransaction $oAdjustedLedgerTrans    an existing transaction that is being adjusted and requires id of the new.
      * @return void
      */ 
-    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjLedgerTrans = null);
+    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null);
 
 }
 /* End of Class */

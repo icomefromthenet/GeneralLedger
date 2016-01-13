@@ -91,7 +91,7 @@ class TransactionStepsDecorator implements TransactionProcessInterface, UnitOfWo
         return $this->oProcessor->getLogger();
     }
     
-    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjLedgerTrans = null)
+    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         # execute the parent process this ensure the basic transction is saved
         $bSuccess = $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjLedgerTrans);

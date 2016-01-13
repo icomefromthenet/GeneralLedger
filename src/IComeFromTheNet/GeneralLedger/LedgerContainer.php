@@ -92,15 +92,6 @@ class LedgerContainer extends Pimple
         return $this['table_map'];
     }
     
-    /**
-     * Return a new instance of a transaction builder
-     * 
-     * @return TransactionBuilder.php
-     */ 
-    public function newTransactionBuilder()
-    {
-        return $this['transaction_builder'];
-    }
     
     /**
      * Return a shared transaction processor
@@ -367,7 +358,7 @@ class LedgerContainer extends Pimple
             
             # Systems Table
             $table = $oSchema->createTable($sActualTableName);
-            $table->addColumn('process_dt',"integer",array("notnull" => true));
+            $table->addColumn('process_dt',"date",array("notnull" => true));
             $table->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
             $table->addColumn('balance',"float",array("notnull" => true));
             
@@ -398,7 +389,7 @@ class LedgerContainer extends Pimple
             # Systems Table
             $table = $oSchema->createTable($sActualTableName);
             $table->addColumn('user_id',"integer",array("notnull" => true,"unsigned" => true));
-            $table->addColumn('process_dt',"integer",array("notnull" => true));
+            $table->addColumn('process_dt',"date",array("notnull" => true));
             $table->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
             $table->addColumn('balance',"float",array("notnull" => true));
             
@@ -429,7 +420,7 @@ class LedgerContainer extends Pimple
             # Systems Table
             $table = $oSchema->createTable($sActualTableName);
             $table->addColumn('org_unit_id',"integer",array("notnull" => true,"unsigned" => true));
-            $table->addColumn('process_dt',"integer",array("notnull" => true));
+            $table->addColumn('process_dt',"date",array("notnull" => true));
             $table->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
             $table->addColumn('balance',"float",array("notnull" => true));
             
@@ -450,10 +441,6 @@ class LedgerContainer extends Pimple
             return $oGateway;
         });
         
-        
-        $this['transaction_builder'] = function($c) {
-            return new TransactionBuilder($c);
-        };
         
         $this['transaction_processor'] = $this->share(function($c) {
             $oLogger   = $c->getAppLogger();

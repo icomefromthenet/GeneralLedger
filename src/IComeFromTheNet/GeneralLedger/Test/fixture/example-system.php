@@ -521,5 +521,83 @@ return [
     ]
     
     
+    
+    
+    ,'ledger_journal_type' => [
+        [
+            'journal_type_id' =>  1
+            ,'journal_name'  => 'Sales journal'
+            ,'journal_name_slug' => 'sales_journal'
+            ,'hide_ui' => 0
+        ]
+        
+        ,[
+             'journal_type_id' =>  2
+            ,'journal_name'  => 'Cash receipts journal'
+            ,'journal_name_slug' => 'cash_receipts_journal'
+            ,'hide_ui' => 0 
+        ]
+        
+       ,[
+             'journal_type_id' =>  3
+            ,'journal_name'  => 'purchases_journal'
+            ,'journal_name_slug' => 'purchases_journal'
+            ,'hide_ui' => 0 
+        ]
+        
+        ,[
+             'journal_type_id' =>  4
+            ,'journal_name'  => 'Cash disbursements journal'
+            ,'journal_name_slug' => 'cash_disbursements_journal'
+            ,'hide_ui' => 0 
+        ]
+        
+    ]
+    
+     ,'ledger_user' => [
+    
+        [
+             'user_id'      => 1
+            ,'external_guid'=> '586DB7DF-57C3-F7D5-639D-0A9779AF79BD'
+            ,'rego_date'    => (new DateTime('now'))->format('Y-m-d 00:00:00')
+        ]
+        
+        
+        ,[
+             'user_id'      => 2
+            ,'external_guid'=> '000439C2-3A34-DAB8-C7AB-852CA6EC98D8'
+            ,'rego_date'    => (new DateTime('now'))->format('Y-m-d 00:00:00')
+        ]
+        
+    ]
+    
+    ,'ledger_org_unit' => [
+    
+        [
+             'org_unit_id' => 1
+            ,'org_unit_name' => 'Homeoffice'
+            ,'org_unit_name_slug' => 'homeoffice'
+            ,'hide_ui' => 0
+        ]
+    
+        ,[
+             'org_unit_id' => 2
+            ,'org_unit_name' => 'Site A'
+            ,'org_unit_name_slug' => 'site_a'
+            ,'hide_ui' => 0
+        ]
+    
+        ,[
+             'org_unit_id' => 3
+            ,'org_unit_name' => 'Site B'
+            ,'org_unit_name_slug' => 'site_b'
+            ,'hide_ui' => 0
+        ]
+    
+    ]
+    
+   
+
+    
 ];
 /* End of Fixture */

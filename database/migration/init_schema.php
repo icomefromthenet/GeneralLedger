@@ -95,7 +95,7 @@ class init_schema implements EntityInterface
     
         # Agg table Value Table
         $dailyTable = $schema->createTable('ledger_daily');
-        $dailyTable->addColumn('process_dt',"integer",array("notnull" => true));
+        $dailyTable->addColumn('process_dt',"date",array("notnull" => true));
         $dailyTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
         $dailyTable->addColumn('balance',"float",array("notnull" => true));
         
@@ -106,7 +106,7 @@ class init_schema implements EntityInterface
 
         $orgAggTable = $schema->createTable('ledger_daily_org');
         $orgAggTable->addColumn('org_unit_id',"integer",array("notnull" => true,"unsigned" => true));
-        $orgAggTable->addColumn('process_dt',"integer",array("notnull" => true));
+        $orgAggTable->addColumn('process_dt',"date",array("notnull" => true));
         $orgAggTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
         $orgAggTable->addColumn('balance',"float",array("notnull" => true));
       
@@ -117,7 +117,7 @@ class init_schema implements EntityInterface
 
         $userAggTable = $schema->createTable('ledger_daily_user');
         $userAggTable->addColumn('user_id',"integer",array("notnull" => true,"unsigned" => true));
-        $userAggTable->addColumn('process_dt',"integer",array("notnull" => true));
+        $userAggTable->addColumn('process_dt',"date",array("notnull" => true));
         $userAggTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
         $userAggTable->addColumn('balance',"float",array("notnull" => true));
 

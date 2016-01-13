@@ -20,7 +20,7 @@ class AggAllStep extends CommonStep
     
     
     
-    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjLedgerTrans = null)
+    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         $oDatabase = $this->getDatabaseAdapter();
         $aTableMap = $this->getTableMap();
@@ -32,9 +32,9 @@ class AggAllStep extends CommonStep
         $sSql  .=" ON DUPLICATE KEY UPDATE balance = balance + VALUES(balance) ";
         
         $aTypes = array(
-           DoctineType::getType('date')
-          ,DoctineType::getType('integer')
-          ,DoctineType::getType('float')
+           ':oProcessDate' =>  DoctineType::getType('date')
+          ,':iAccountId'   => DoctineType::getType('integer')
+          ,':fMovement'    => DoctineType::getType('float')
         );
         
         foreach($aLedgerEntries as  $oMovement) {

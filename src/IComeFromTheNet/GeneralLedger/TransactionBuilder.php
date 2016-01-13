@@ -38,6 +38,88 @@ class TransactionBuilder
         return $this->oContainer;
     }
     
+    /**
+     * Load the adjusted transactions ledger entries and will sawp the sign of the
+     * account movement this allows the new transaction to reverse the original.
+     * 
+     * @throws LedgerException if unable to match adjusted transaction to 0 entries
+     * @return array(LedgerEntry)
+     * @param LedgerTransaction $oAdjustedTransaction the transaction that is being reversed
+     */ 
+    protected function buildReversalEntries(LedgerTransaction $oAdjustedTransaction)
+    {
+        
+        // find account movements for this adjusted transaction
+        $oEntryGateway  = $this->getContainer()->getGatewayCollection()->getGateway('ledger_entry');
+        $oType          = $oEntryGateway->getMetaData()->getColumn('transaction_id')->getType();
+        $iTransactionId = $oAdjustedTransaction->iTransactionID;
+     
+        $aEntries = $oEntryGateway->selectQuery()
+             ->start()
+                ->where('transaction_id = :iTransactionId')
+                ->setParameter(':iTransactionId',$iTransactionId,$oType)
+             ->end()
+           ->find();
+           
+        if(0 === count($aEntries)) {
+            throw new LedgerException(sprintf('A transaction at %s has no ledger entries, unable to process adjustment',$iTransactionId));
+        }
+        
+        foreach($aEntries as $oEntry) {
+            // clear the transaction id and entity id  and swap the sign.
+            $oEntry->iTransactionID = null;      
+            $oEntry->iEntryID       = null;
+            $oEntry->fMovement      = $oEntry->fMovement  * -1;
+        }
+        
+        return $aEntries;
+        
+    }
+
+    /**
+     * Execute the Transaction Processor loaded from the container.
+     * 
+     * @param LedgerTransaction $oAdjustedTransaction optional original transaction to reverse
+     * @throws LedgerException if any errors occur during processing.
+     * @return void 
+     */ 
+    protected function process(LedgerTransaction $oAdjustedTransaction = null) 
+    {
+        $oProcessor = $this->getContainer()->newTransactionProcessor();
+        
+        if(0 === count($this->getLedgerEntries()) && null === $oAdjustedTransaction) {
+            throw new LedgerException('Unable to process transaction there are no ledger entries');
+        }
+       
+        // make sure no account movements added if where doing a reversal as this ledger only
+        // supports a full transaction reversal this is enforced by doing the entires internally.
+        if($oAdjustedTransaction instanceof LedgerTransaction && 0 !== count($this->getLedgerEntries())) {
+            throw new LedgerException('Not allowed to set ledger entries when process a reversal, system will do it for you');
+        } else {
+             $this->aLedgerEntries = $this->buildReversalEntries($oAdjustedTransaction);   
+        }
+        
+
+        try {            
+        
+            // If the transaction processor does not have the DBDecorator these
+            // unit of work methods will not affect any database transactions
+                
+            $this->oProcessor->start();    
+                
+            $oProcessor->process($this->getTransactionHeader(),$this->getLedgerEntries(),$oAdjustedTransaction); 
+            
+            $this->oProcessor->commit();
+        
+        }
+        catch(LedgerException $e) {
+            $this->getContainer()->getAppLogger()->error($e->getMessage());
+            $this->oProcessor->rollback();
+            throw $e;
+        }
+        
+    }
+    
     
     //--------------------------------------------------------------------------
     
@@ -134,16 +216,20 @@ class TransactionBuilder
     public function addAccountMovement($mAccountNumber,$fBalance)
     {
         
-        if(!$mAccountNumber instanceof LedgerAccount) {
-            $sAccountNumber = (string) $mAccountNumber;
+        $oAccountGateway = $this->getContainer()->getGatewayCollection()->getGateway('ledger_account');
+        $oEntryGateway  = $this->getContainer()->getGatewayCollection()->getGateway('ledger_entry');
+        $oAppLogger     = $this->oContainer()->getAppLogger();
+         
+        
+        if(!($mAccountNumber instanceof LedgerAccount)) {
             
             // lookup the account number
-            $oAccountGateway = $this->getContainer()->getGatewayCollection()->getGateway('ledger_account');
+            $oType           = $oAccountGateway->getMetaData()->getColumn('account_number')->getType();
             
             $mAccountNumber = $oAccountGateway->$gateway->selectQuery()
                  ->start()
                     ->where('account_number = :sAccountNumber')
-                    ->setParamater(':sAccountNumber',$sAccountNumber)
+                    ->setParamater(':sAccountNumber',$mAccountNumber,$oType)
                  ->end()
                ->findOne(); 
             
@@ -154,10 +240,7 @@ class TransactionBuilder
         } 
         
         
-        $oMovement = new LedgerEntry($this->getContainer()
-                                       ->getGatewayCollection()
-                                       ->getGateway('ledger_entry')
-                                     ,$this->oContainer()->getAppLogger());
+        $oMovement = new LedgerEntry($oEntryGateway,$oAppLogger);
         
         $oMovement->iAccountID = $mAccountNumber->iAccountID;
         $oMovement->fMovement  = $fBalance;
@@ -168,6 +251,32 @@ class TransactionBuilder
     }
     
     
+    /**
+     * Save the built transaction to the database using the default
+     * transaction processor fetched from the DI Container
+     * 
+     * @return void
+     * @throws LedgerException if the transaction fails to save.
+     */ 
+    public function processTransaction() 
+    {
+        return $this->process(null);        
+   
+    }
+    
+    /**
+     * Save the built transaction to the database using the default
+     * transaction processor fetched from the DI Container, Also update
+     * the adjusteed transaction with the new transactions database id
+     * 
+     * @return void
+     * @throws LedgerException if the transaction fails to save.
+     * @param LedgerTransaction $oAdjustedTransaction The transaction that is being adjusted.
+     */
+    public function processAdjustment(LedgerTransaction $oAdjustedTransaction)
+    {
+        return $this->process($oAdjustedTransaction);
+    }
     
 }
 /* End of Class */

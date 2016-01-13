@@ -52,12 +52,11 @@ class TransactionDBDecorator implements TransactionProcessInterface, UnitOfWork
         $this->getDatabaseAdapter()->commit();
     }
     
-     /**
+    /**
      *  Cause a rollback of this Unit of Work
      *
      *  @access public
      *  @return void
-     *
     */
     public function rollback()
     {
@@ -83,7 +82,7 @@ class TransactionDBDecorator implements TransactionProcessInterface, UnitOfWork
         return $this->oProcessor->getLogger();
     }
     
-    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjLedgerTrans = null)
+    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         return $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjLedgerTrans);
     }

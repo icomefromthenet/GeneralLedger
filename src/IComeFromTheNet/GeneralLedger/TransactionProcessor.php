@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
+use IComeFromTheNet\GeneralLedger\Entity\CommonEntity;
 
 /**
  * Commit a transaction to the ledger.
@@ -20,6 +21,42 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
     
     protected $oLogger;
     
+    
+    /**
+     * Build a string of the last result, if the entity failed
+     * validation it could return a multi-line message.
+     * 
+     * @return string a last result string for the debug log
+     * @param CommonEntity an entity that has a result
+     */ 
+    protected function buildResultString($sHeaderMessage,CommonEntity $oEntity)
+    {
+        $aLastResult = $oEntity->getLastQueryResult();
+        
+        $sMessage = '';
+        
+        if(is_array($aLastResult['msg'])) {
+            
+            // this would come from the entity validation library failing.
+            foreach($aLastResult['msg'] as $sColumn => $aValidationError) {
+            
+                $sMessage .= "$sColumn caused the following validation errors: " . PHP_EOL;
+            
+                foreach($aValidationError as $sMessage) {
+                    $sMessage .= chr(9).$sMessage.PHP_EOL;
+                }
+                
+                $sMessage .= PHP_EOL;
+            }
+            
+        } else {
+            $sMessage = $aLastResult['msg'];
+        }
+        
+        
+        return $sHeaderMessage . PHP_EOL . $sMessage;
+        
+    }
     
     //---------------------------------------------------------------------
     # API Methods to control Database Transaction
@@ -55,7 +92,7 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
     }
     
     
-    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjLedgerTrans = null)
+    public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         if(count($aLedgerEntries) === 0) {
             throw new LedgerException('Unable to process a new transction a transaction must have atleast on entry');
@@ -74,20 +111,27 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
                 
                 if(false === ($bSuccess = $oEntry->save())) {
                     $sErrorMsg = sprintf('Unable to save ledger entry at account %s ',$oEntry->sAccountNumber);
+                    $sErrorMsg = $this->buildResultString($sErrorMsg,$oEntry);
+                
                     break;    
                 }
             
             }
             
             # assign the new reversal adjustment transction id to the source transaction       
-            if(true === $bSuccess && $oAdjLedgerTrans instanceof LedgerTransaction) {
+            if(true === $bSuccess && $oAdjustedLedgerTrans instanceof LedgerTransaction) {
                 $oAdjLedgerTrans->iAdjustmentID = $iTransactionID;
                 if(false === ($bSuccess = $oAdjLedgerTrans->save())) {
                     $sErrorMsg = sprintf('Unable to link source transaction at id %s to the new adjustment at id %s',$oAdjLedgerTrans->iTransactionID, $iTransactionID);
+                    $sErrorMsg = $this->buildResultString($sErrorMsg,$oAdjLedgerTrans);
+                    
                 }
             }
         
-        } 
+        } else {
+            $sErrorMsg = $this->buildResultString($sErrorMsg,$oEntry);
+        }
+        
         
         if($bSuccess === false) {
             $this->getLogger()->error($sErrorMsg);
