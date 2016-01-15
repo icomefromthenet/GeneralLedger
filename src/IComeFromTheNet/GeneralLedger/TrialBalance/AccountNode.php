@@ -23,7 +23,7 @@ use BlueM\Tree\Node;
      
     
     
-    public function __construct($iDatabaseID, $iParentID, $sAccountNumber, $sAccountName, $sAccountNameSlug, $bHideUi)
+    public function __construct($iDatabaseID, $iParentID, $sAccountNumber, $sAccountName, $sAccountNameSlug, $bHideUi, $bIsDebit, $bIsCredit)
     {
         
         parent::__construct(array(
@@ -36,7 +36,9 @@ use BlueM\Tree\Node;
             ,'bHideUI'          => $bHideUi
             ,'bFrozen'          => false 
             ,'fBalance'         => 0.00
-            
+            ,'bIsDebit'         => $bIsDebit
+            ,'bIsCredit'        => $bIsCredit
+
         ));
       
     }
@@ -63,6 +65,15 @@ use BlueM\Tree\Node;
         return $this->sAccountNameSlug;
     }
     
+    public function isDebit() 
+    {
+        return $this->bIsDebit && false == $this->bIsCredit;    
+    }
+    
+    public function isCredit() 
+    {
+        return $this->bIsCredit && false == $this->bIsDebit;    
+    }
     
     //-------------------------------------------------------------------------
     # Freeze methods
@@ -93,7 +104,7 @@ use BlueM\Tree\Node;
           throw new LedgerException('This Account Tree Node is fronzen to modifications');
       }
       
-      $this->properties['fBalance'] = $fBalance;
+      $this->fBalance = $fBalance;
         
       return $this;    
             
@@ -117,11 +128,14 @@ use BlueM\Tree\Node;
       
       foreach($this->getChildren() as $aNode) {
           $fBalance += $aNode->calculateCombinedBalances();
+          $aNode->freeze();    
       }
       
-      $this->properties['fBalance'] = $this->properties['fBalance'] + $fBalance;
+      $this->fBalance = $this->fBalance + $fBalance;
       
-      return $fBalance;
+      $this->freeze();
+      
+      return $this->fBalance;
   }
   
   /**
@@ -134,10 +148,10 @@ use BlueM\Tree\Node;
   public function getBalance()
   {
       if(false === $this->isFrozen()) {
-          throw new LedgerException('Unable to return Account Tree Node balance as this node is not fronzen and could be modified');
+          throw new LedgerException('Unable to return Account Node balance as this node is not fronzen and could be modified');
       }
       
-      return $this->properties['fBalance'];
+      return $this->fBalance;
   }
     
      

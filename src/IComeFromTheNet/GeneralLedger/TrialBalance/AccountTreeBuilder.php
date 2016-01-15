@@ -51,7 +51,7 @@ class AccountTreeBuilder
         
         # assume account only have 1 parent with the root account at index 1    
         
-        $sSql .= 'SELECT a.account_id, ag.parent_account_id, a.account_number, a.account_name, account_name_slug, a.hide_ui ';
+        $sSql .= 'SELECT a.account_id, ag.parent_account_id, a.account_number, a.account_name, account_name_slug, a.hide_ui, is_left as is_debit, is_right as is_credit ';
         $sSql .=" $sAccountTable a, $sAccountGroupTable ag ";
         $sSql .=" a.account_id = ag.child_account_id ";
         
@@ -61,6 +61,8 @@ class AccountTreeBuilder
             ,DoctineType::getType('string')
             ,DoctineType::getType('string')
             ,DoctineType::getType('string')
+            ,DoctineType::getType('boolean')
+            ,DoctineType::getType('boolean')
             ,DoctineType::getType('boolean')
         ))->fetchAll(\PDO::FETCH_COLUMN);
         

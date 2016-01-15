@@ -32,7 +32,8 @@ use BlueM\Tree;
            , $aProperties['account_name']
            , $aProperties['account_name_slug']
            , $aProperties['hide_ui']
-           
+           , $aProperties['is_debit']
+           , $aProperties['is_credit']
         );
     }
     

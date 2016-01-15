@@ -1,4 +1,8 @@
 <?php
+namespace IComeFromTheNet\GeneralLedger\TrialBalance;
+
+use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerBalance;
 
 /**
  *  This class will produce a trail balance.
@@ -11,16 +15,10 @@
  *  From http://www.coag.gov.au/node/63
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
- * @since 7.4
+ * @since 1.0
  */ 
 class TrialBalance
 {
-    
-    const NODE_ASSETS_ID    = 1;
-    const NODE_EXPENSE_ID   = 2;
-    const NODE_EQUITY_ID    = 3;
-    const NODE_LIABILITY_ID = 4;
-    const NODE_INCOME_ID    = 5;
     
     /**
      * @var AccountTree;
@@ -44,7 +42,7 @@ class TrialBalance
         $oAccountTree = $this->oAccountTree;
         
         # Process each root node
-        
+        $aRootNodes = $oAccountTree->getRootNodes();
         
         
     }
@@ -59,34 +57,8 @@ class TrialBalance
         
     }
     
-    //--------------------------------------------------------------------------
-    # Access The values of the root level accounts in GL
-    
-    public function getAssets()
-    {
-        return $this->oAccountTree->getNodeById(self::NODE_ASSETS_ID)->getBalance();
-    }
-    
-    public function getExpenses()
-    {
-        return $this->oAccountTree->getNodeById(self::NODE_EXPENSE_ID)->getBalance();
-    }
-    
-    public function getOwnersEquity()
-    {
-        return $this->oAccountTree->getNodeById(self::NODE_EQUITY_ID)->getBalance();
-    }
-    
-    public function getLiabilities()
-    {
-        return $this->oAccountTree->getNodeById(self::NODE_LIABILITY_ID)->getBalance();
-    }
-    
-    public function getIncome()
-    {
-        return $this->oAccountTree->getNodeById(self::NODE_INCOME_ID)->getBalance();
-    }
-    
+
+
     //--------------------------------------------------------------------------
     # Get the balance of the left and right accounts
     
