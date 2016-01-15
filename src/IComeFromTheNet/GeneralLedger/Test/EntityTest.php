@@ -29,7 +29,7 @@ class EntityAccountTest extends TestWithContainer
         $oLog = new BufferedQueryLogger();
         $oLog->setMaxBuffer(100);
         $this->oLog = $oLog;
-        $oContainer->getDatabaseAdaper()->getConfiguration()->setSQLLogger($oLog);
+        $oContainer->getDatabaseAdapter()->getConfiguration()->setSQLLogger($oLog);
     
         
         $oExpectedDataset = $this->getDataSet(['entity-after.php']);

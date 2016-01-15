@@ -62,17 +62,17 @@ class AggAllSource implements DatasourceInterface
         
         $sSql .=' SELECT sum(balance) as balance, account_id as account_id';
         $sSql .=" FROM $sTableName ";
-        $sSql .=' WHERE t.process_dt <= :toDate ';
-        $sSql .=' GROUP BY e.account_id';
+        $sSql .=' WHERE process_dt <= :toDate ';
+        $sSql .=' GROUP BY account_id';
         
-        $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate),array(DoctineType::getType('date')));
+        $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate),array(':toDate'=> DoctineType::getType('date')));
         
         
         $aResults = array();
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
             $aResults[] = array(
-                 'balance'    => DoctineType::getType('float')->convertToPHPValue($aResult['balance'])
-                ,'account_id' => DoctineType::getType('integer')->convertToPHPValue($aResult['account_id'])
+                 'balance'    => $oDatabase->convertToPHPValue($aResult['balance'],'float')
+                ,'account_id' => $oDatabase->convertToPHPValue($aResult['account_id'],'integer')
             ); 
         }
         

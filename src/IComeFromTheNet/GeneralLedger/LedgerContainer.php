@@ -42,7 +42,7 @@ class LedgerContainer extends Pimple
      * 
      * @return Doctrine\DBAL\Connection
      */ 
-    public function getDatabaseAdaper()
+    public function getDatabaseAdapter()
     {
         return $this['database'];
     }
@@ -144,7 +144,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_account'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -176,7 +176,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_account_group'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -201,7 +201,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_org_unit'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -229,7 +229,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_user'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -256,7 +256,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_journal_type'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -284,7 +284,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_transaction'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -322,7 +322,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_entry'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -353,7 +353,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_daily'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -383,7 +383,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_daily_user'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -414,7 +414,7 @@ class LedgerContainer extends Pimple
             $sActualTableName = $aTableMap['ledger_daily_org'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
-            $oDatabase        = $c->getDatabaseAdaper();
+            $oDatabase        = $c->getDatabaseAdapter();
             $oGatewayCol      = $c->getGatewayCollection();
             
             # Systems Table
@@ -444,7 +444,7 @@ class LedgerContainer extends Pimple
         
         $this['transaction_processor'] = $this->share(function($c) {
             $oLogger   = $c->getAppLogger();
-            $oDatabase = $c->getDatabaseAdaper();
+            $oDatabase = $c->getDatabaseAdapter();
             $aTableMap = $c->getTableMap();
             
             $aSteps = array(

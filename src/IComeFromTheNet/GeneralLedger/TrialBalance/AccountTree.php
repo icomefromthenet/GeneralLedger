@@ -52,27 +52,9 @@ use BlueM\Tree;
             $aNode->calculateCombinedBalances();
         }
         
-        $this->freezeTree();
-        
         return $this;
     }
-    
-    /**
-     * Freeze the nodes of this tree from accepting balance changes
-     *  
-     * @return AccountTree
-     * @access public
-     */ 
-    public function freezeTree()
-    {
-        
-        foreach($this->getRootNodes() as $aNode)
-        {
-            $fBalance += $aNode->freeze();
-        }
-        
-        return $this;
-    }
+
     
      
  }

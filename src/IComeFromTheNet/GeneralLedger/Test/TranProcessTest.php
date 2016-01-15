@@ -107,7 +107,7 @@ class TranProcessTest extends TestWithContainer
         $oLog = new BufferedQueryLogger();
         $oLog->setMaxBuffer(100);
         $this->oLog = $oLog;
-        $oContainer->getDatabaseAdaper()->getConfiguration()->setSQLLogger($oLog);
+        $oContainer->getDatabaseAdapter()->getConfiguration()->setSQLLogger($oLog);
     
         
         $oExpectedDataset = $this->getDataSet(['example-system.php','tp-after.php']);
@@ -123,7 +123,7 @@ class TranProcessTest extends TestWithContainer
     {
         $aTransactions = $this->getTransactionExamples();
         $oLogger   = $this->getContainer()->getAppLogger();
-        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        $oDatabase = $this->getContainer()->getDatabaseAdapter();
        
        
         
@@ -145,7 +145,7 @@ class TranProcessTest extends TestWithContainer
     {
         $aTransactions = $this->getTransactionExamples();
         $oLogger   = $this->getContainer()->getAppLogger();
-        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        $oDatabase = $this->getContainer()->getDatabaseAdapter();
        
         
         $oProcessor = new TransactionProcessor($oDatabase,$oLogger);
@@ -163,7 +163,7 @@ class TranProcessTest extends TestWithContainer
     {
         $aTransactions = $this->getTransactionExamples();
         $oLogger   = $this->getContainer()->getAppLogger();
-        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        $oDatabase = $this->getContainer()->getDatabaseAdapter();
       
         // cause a exception in validation
         $aTransactions['tran']->iTransactionID = 'aaaaa';

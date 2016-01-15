@@ -130,7 +130,7 @@ class AggStepTest extends TestWithContainer
         $oLog = new BufferedQueryLogger();
         $oLog->setMaxBuffer(100);
         $this->oLog = $oLog;
-        $oContainer->getDatabaseAdaper()->getConfiguration()->setSQLLogger($oLog);
+        $oContainer->getDatabaseAdapter()->getConfiguration()->setSQLLogger($oLog);
     
         
         $oExpectedDataset = $this->getDataSet(['example-system.php','agg-after.php']);
@@ -151,7 +151,7 @@ class AggStepTest extends TestWithContainer
     {
         $aTableMap = $this->getContainer()->getTableMap();
         $oLogger   = $this->getContainer()->getAppLogger();
-        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        $oDatabase = $this->getContainer()->getDatabaseAdapter();
         
         $oStep = new AggAllStep($oLogger,$oDatabase,$aTableMap);
         
@@ -166,7 +166,7 @@ class AggStepTest extends TestWithContainer
     {
         $aTableMap = $this->getContainer()->getTableMap();
         $oLogger   = $this->getContainer()->getAppLogger();
-        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        $oDatabase = $this->getContainer()->getDatabaseAdapter();
         
         $oStep = new AggUserStep($oLogger,$oDatabase,$aTableMap);
         
@@ -181,7 +181,7 @@ class AggStepTest extends TestWithContainer
     {
         $aTableMap = $this->getContainer()->getTableMap();
         $oLogger   = $this->getContainer()->getAppLogger();
-        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        $oDatabase = $this->getContainer()->getDatabaseAdapter();
         
         $oStep = new AggOrgUnitStep($oLogger,$oDatabase,$aTableMap);
         

@@ -42,7 +42,7 @@ class AggOrgSource extends AggAllSource
         $oDatabase  = $this->getDatabaseAdapter();
         $oTrialDate = $this->getTrialDate();
         $oTableMap  = $this->getTableMap();
-        $sTableName = $oTableMap['ledger_daily'];
+        $sTableName = $oTableMap['ledger_daily_org'];
         $sSql       = '';
         
         $sSql .=' SELECT sum(balance) as balance, account_id as account_id';
@@ -52,15 +52,15 @@ class AggOrgSource extends AggAllSource
         
         $oSTH = $oDatabase->executeQuery($sSql
                             ,array(':toDate'=> $oTrialDate, ':iOrgID'=>$iOrgId)
-                            ,array(DoctineType::getType('date'),DoctineType::getType('integer'))
+                            ,array(':toDate'=> DoctineType::getType('date'), ':iOrgID'=> DoctineType::getType('integer'))
                             );
         
         
         $aResults = array();
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
             $aResults[] = array(
-                 'balance'    => DoctineType::getType('float')->convertToPHPValue($aResult['balance'])
-                ,'account_id' => DoctineType::getType('integer')->convertToPHPValue($aResult['account_id'])
+                 'balance'    => $oDatabase->convertToPHPValue($aResult['balance'],'float')
+                ,'account_id' => $oDatabase->convertToPHPValue($aResult['account_id'],'integer')
             ); 
         }
         

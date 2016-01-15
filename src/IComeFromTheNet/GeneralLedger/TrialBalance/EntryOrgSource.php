@@ -74,17 +74,19 @@ class EntryOrgSource implements DatasourceInterface
         $sSql .=' SELECT sum(e.movement) as balance, e.account_id as account_id ';
         $sSql .=" FROM $sEntryTableName e ";
         $sSql .=" JOIN $sTransactionTableName t on t.transaction_id = e.transaction_id ";
-        $sSql .=' WHERE process_dt <= :toDate ';
+        $sSql .=' WHERE t. <= :toDate ';
         $sSql .=' AND t.org_unit_id = :iOrgUnitID ';
-        $sSql .=' GROUP BY account_id';
+        $sSql .=' GROUP BY e.account_id';
         
         $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate,':iOrgUnitID' => $iOrgUnitID)
-                                              ,array(DoctineType::getType('date'),DoctineType::getType('integer')));
+                                              ,array(':toDate'=> DoctineType::getType('date'),':iOrgUnitID' => DoctineType::getType('integer')));
         
         
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
-            $aResult['account_id'] =  DoctineType::getType('integer')->convertToPHPValue($aResult['account_id']);
-            $aResult['balance']    =  DoctineType::getType('float')->convertToPHPValue($aResult['balance']);
+             $aResults[] = array(
+                 'balance'    => $oDatabase->convertToPHPValue($aResult['balance'],'float')
+                ,'account_id' => $oDatabase->convertToPHPValue($aResult['account_id'],'integer')
+            ); 
         }
         
         

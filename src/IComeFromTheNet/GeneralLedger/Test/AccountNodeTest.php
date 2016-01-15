@@ -147,6 +147,7 @@ class AccountNodeTest extends TestWithContainer
         
         $oANode->calculateCombinedBalances();
         
+        
         $this->assertEquals(300,$oANode->getBalance());
         
     }
