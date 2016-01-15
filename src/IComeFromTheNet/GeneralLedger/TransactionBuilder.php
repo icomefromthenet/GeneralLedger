@@ -53,7 +53,7 @@ class TransactionBuilder
         $oEntryGateway  = $this->getContainer()->getGatewayCollection()->getGateway('ledger_entry');
         $oType          = $oEntryGateway->getMetaData()->getColumn('transaction_id')->getType();
         $iTransactionId = $oAdjustedTransaction->iTransactionID;
-     
+        
         $aEntries = $oEntryGateway->selectQuery()
              ->start()
                 ->where('transaction_id = :iTransactionId')
@@ -72,7 +72,7 @@ class TransactionBuilder
             $oEntry->fMovement      = $oEntry->fMovement  * -1;
         }
         
-        return $aEntries;
+        return $aEntries->toArray();
         
     }
 
@@ -95,7 +95,7 @@ class TransactionBuilder
         // supports a full transaction reversal this is enforced by doing the entires internally.
         if($oAdjustedTransaction instanceof LedgerTransaction && 0 !== count($this->getLedgerEntries())) {
             throw new LedgerException('Not allowed to set ledger entries when process a reversal, system will do it for you');
-        } else {
+        } elseif($oAdjustedTransaction instanceof LedgerTransaction) {
              $this->aLedgerEntries = $this->buildReversalEntries($oAdjustedTransaction);   
         }
         
@@ -105,17 +105,21 @@ class TransactionBuilder
             // If the transaction processor does not have the DBDecorator these
             // unit of work methods will not affect any database transactions
                 
-            $this->oProcessor->start();    
+            $oProcessor->start();    
                 
             $oProcessor->process($this->getTransactionHeader(),$this->getLedgerEntries(),$oAdjustedTransaction); 
             
-            $this->oProcessor->commit();
+            $oProcessor->commit();
         
         }
         catch(LedgerException $e) {
             $this->getContainer()->getAppLogger()->error($e->getMessage());
-            $this->oProcessor->rollback();
+            $oProcessor->rollback();
             throw $e;
+        } catch(\Exception $e) {
+            $this->getContainer()->getAppLogger()->error($e->getMessage());
+            $oProcessor->rollback();
+            throw new LedgerException($e->getMessage(),0,$e);
         }
         
     }
@@ -152,7 +156,8 @@ class TransactionBuilder
             $this->oTransactionHeader = new LedgerTransaction($this->getContainer()
                                                                    ->getGatewayCollection()
                                                                    ->getGateway('ledger_transaction')
-                                                            ,$this->oContainer()->getAppLogger());
+                                                            ,$this->getContainer()->getAppLogger());
+                                                            
         }
         
         return $this->oTransactionHeader;
@@ -193,14 +198,14 @@ class TransactionBuilder
     
     public function setJournalType($iJournalType)
     {
-        $this->getTransactionHeader()->iJournalTypeID = $iJournalTypeID;
+        $this->getTransactionHeader()->iJournalTypeID = $iJournalType;
         
         return $this;
     }
     
-    public function setUser($iUserId)
+    public function setUser($iUser)
     {
-        $this->getTransactionHeader()->iUserId = $iUserId;
+        $this->getTransactionHeader()->iUserID = $iUser;
         
         return $this;
     }
@@ -218,7 +223,7 @@ class TransactionBuilder
         
         $oAccountGateway = $this->getContainer()->getGatewayCollection()->getGateway('ledger_account');
         $oEntryGateway  = $this->getContainer()->getGatewayCollection()->getGateway('ledger_entry');
-        $oAppLogger     = $this->oContainer()->getAppLogger();
+        $oAppLogger     = $this->getContainer()->getAppLogger();
          
         
         if(!($mAccountNumber instanceof LedgerAccount)) {
@@ -226,10 +231,10 @@ class TransactionBuilder
             // lookup the account number
             $oType           = $oAccountGateway->getMetaData()->getColumn('account_number')->getType();
             
-            $mAccountNumber = $oAccountGateway->$gateway->selectQuery()
+            $mAccountNumber = $oAccountGateway->selectQuery()
                  ->start()
                     ->where('account_number = :sAccountNumber')
-                    ->setParamater(':sAccountNumber',$mAccountNumber,$oType)
+                    ->setParameter(':sAccountNumber',$mAccountNumber,$oType)
                  ->end()
                ->findOne(); 
             

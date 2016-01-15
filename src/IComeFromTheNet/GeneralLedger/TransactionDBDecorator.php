@@ -84,7 +84,7 @@ class TransactionDBDecorator implements TransactionProcessInterface, UnitOfWork
     
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
-        return $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjLedgerTrans);
+        return $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjustedLedgerTrans);
     }
   
 }

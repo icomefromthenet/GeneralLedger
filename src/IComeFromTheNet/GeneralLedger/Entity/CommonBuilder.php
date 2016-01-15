@@ -3,12 +3,11 @@ namespace IComeFromTheNet\GeneralLedger\Entity;
 
 use DateTime;
 use Psr\Log\LoggerInterface;
-use DBALGateway\Builder\BuilderInterface;
+use DBALGateway\Builder\AliasBuilder;
 use DBALGateway\Table\TableInterface;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 
-
-class CommonBuilder implements BuilderInterface
+class CommonBuilder extends AliasBuilder
 {
  
     const MODE_ACCOUNT      = 'account';
@@ -63,86 +62,86 @@ class CommonBuilder implements BuilderInterface
         switch($this->sMode) {
             case self::MODE_ACCOUNT:
                 $oEntity = new LedgerAccount($this->oGateway,$this->oLogger);
-                $oEntity->iAccountID        = $aData['account_id'];
-                $oEntity->sAccountNumber    = $aData['account_number'];
-                $oEntity->sAccountName      = $aData['account_name'];
-                $oEntity->sAccountNameSlug  = $aData['account_name_slug'];
-                $oEntity->bHideUI           = $aData['hide_ui'];
-                $oEntity->bIsLeft           = $aData['is_left'];
-                $oEntity->bIsRight          = $aData['is_right'];
+                $oEntity->iAccountID        = $this->getField($aData,'account_id',$this->getTableQueryAlias());
+                $oEntity->sAccountNumber    = $this->getField($aData,'account_number',$this->getTableQueryAlias());
+                $oEntity->sAccountName      = $this->getField($aData,'account_name',$this->getTableQueryAlias());
+                $oEntity->sAccountNameSlug  = $this->getField($aData,'account_name_slug',$this->getTableQueryAlias());
+                $oEntity->bHideUI           = $this->getField($aData,'hide_ui',$this->getTableQueryAlias());
+                $oEntity->bIsLeft           = $this->getField($aData,'is_left',$this->getTableQueryAlias());
+                $oEntity->bIsRight          = $this->getField($aData,'is_right',$this->getTableQueryAlias());
             break;
             case self::MODE_TRANSACTION:
                 $oEntity = new LedgerTransaction($this->oGateway,$this->oLogger);
-                $oEntity->iTransactionID   = $aData['transaction_id'];
-                $oEntity->iOrgUnitID       = $aData['org_unit_id'];
-                $oEntity->oProcessingDate  = $aData['process_dt'];
-                $oEntity->oOccuredDate     = $aData['occured_dt'];
-                $oEntity->sVoucherNumber   = $aData['vouchernum'];
-                $oEntity->iJournalTypeID   = $aData['journal_type_id'];
-                $oEntity->iAdjustmentID    = $aData['adjustment_id'];
-                $oEntity->iUserID          = $aData['user_id']; 
+                $oEntity->iTransactionID   = $this->getField($aData,'transaction_id',$this->getTableQueryAlias());
+                $oEntity->iOrgUnitID       = $this->getField($aData,'org_unit_id',$this->getTableQueryAlias());
+                $oEntity->oProcessingDate  = $this->getField($aData,'process_dt',$this->getTableQueryAlias());
+                $oEntity->oOccuredDate     = $this->getField($aData,'occured_dt',$this->getTableQueryAlias());
+                $oEntity->sVoucherNumber   = $this->getField($aData,'vouchernum',$this->getTableQueryAlias());
+                $oEntity->iJournalTypeID   = $this->getField($aData,'journal_type_id',$this->getTableQueryAlias());
+                $oEntity->iAdjustmentID    = $this->getField($aData,'adjustment_id',$this->getTableQueryAlias());
+                $oEntity->iUserID          = $this->getField($aData,'user_id',$this->getTableQueryAlias()); 
                 
                 
             break;
             case self::MODE_ENTRY:
                 $oEntity = new LedgerEntry($this->oGateway,$this->oLogger);
-                $oEntity->iEntryID        = $aData['entry_id'];
-                $oEntity->iTransactionID  = $aData['transaction_id'];
-                $oEntity->iAccountID      = $aData['account_id'];
-                $oEntity->fMovement       = $aData['movement'];
+                $oEntity->iEntryID        = $this->getField($aData,'entry_id',$this->getTableQueryAlias());
+                $oEntity->iTransactionID  = $this->getField($aData,'transaction_id',$this->getTableQueryAlias());
+                $oEntity->iAccountID      = $this->getField($aData,'account_id',$this->getTableQueryAlias());
+                $oEntity->fMovement       = $this->getField($aData,'movement',$this->getTableQueryAlias());
             
             
             break;
             case self::MODE_ORGUNIT:
                 $oEntity = new LedgerOrganisationUnit($this->oGateway,$this->oLogger);
-                $oEntity->iOrgUnitID        = $aData['org_unit_id'];
-                $oEntity->sOrgUnitName      = $aData['org_unit_name'];
-                $oEntity->sOrgunitNameSlug  = $aData['org_unit_name_slug'];
-                $oEntity->bHideUI           = $aData['hide_ui'];
+                $oEntity->iOrgUnitID        = $this->getField($aData,'org_unit_id',$this->getTableQueryAlias());
+                $oEntity->sOrgUnitName      = $this->getField($aData,'org_unit_name',$this->getTableQueryAlias());
+                $oEntity->sOrgunitNameSlug  = $this->getField($aData,'org_unit_name_slug',$this->getTableQueryAlias());
+                $oEntity->bHideUI           = $this->getField($aData,'hide_ui',$this->getTableQueryAlias());
                 
             break;
             case self::MODE_USER:
                 $oEntity = new LedgerUser($this->oGateway,$this->oLogger);
             
-                $oEntity->iUserID       =  $aData['user_id'];
-                $oEntity->sExternalGUID =  $aData['external_guid'];
-                $oEntity->oRegoDate     =  $aData['rego_date'];
+                $oEntity->iUserID       =  $this->getField($aData,'user_id',$this->getTableQueryAlias());
+                $oEntity->sExternalGUID =  $this->getField($aData,'external_guid',$this->getTableQueryAlias());
+                $oEntity->oRegoDate     =  $this->getField($aData,'rego_date',$this->getTableQueryAlias());
             
             break;
             case self::MODE_JTYPE:
                 $oEntity = new LedgerJournalType($this->oGateway,$this->oLogger);
             
-                $oEntity->iJournalTypeID    = $aData['journal_type_id'];
-                $oEntity->sJournalName      = $aData['journal_name'];
-                $oEntity->sJournalNameSlug  = $aData['journal_name_slug'];
-                $oEntity->bHideUI           = $aData['hide_ui'];
+                $oEntity->iJournalTypeID    = $this->getField($aData,'journal_type_id',$this->getTableQueryAlias());
+                $oEntity->sJournalName      = $this->getField($aData,'journal_name',$this->getTableQueryAlias());
+                $oEntity->sJournalNameSlug  = $this->getField($aData,'journal_name_slug',$this->getTableQueryAlias());
+                $oEntity->bHideUI           = $this->getField($aData,'hide_ui',$this->getTableQueryAlias());
             
             break;
             case self::MODE_AGG_ENTRY:
                 $oEntity = new LedgerAggEntry($this->oGateway,$this->oLogger);
                  
-                $oEntity->oProcessingDate = $aData['process_dt'];
-                $oEntity->iAccountID      = $aData['account_id'];
-                $oEntity->fBalance        = $aData['balance'];
+                $oEntity->oProcessingDate = $this->getField($aData,'process_dt',$this->getTableQueryAlias());
+                $oEntity->iAccountID      = $this->getField($aData,'account_id',$this->getTableQueryAlias());
+                $oEntity->fBalance        = $this->getField($aData,'balance',$this->getTableQueryAlias());
                  
                 
             break;
             case self::MODE_AGG_ORG:
                 $oEntity = new LedgerAggOrg($this->oGateway,$this->oLogger);
                 
-                $oEntity->oProcessingDate = $aData['process_dt'];
-                $oEntity->iAccountID      = $aData['account_id'];
-                $oEntity->fBalance        = $aData['balance'];
-                $oEntity->iOrgUnitID      = $aData['org_unit_id'];
+                $oEntity->oProcessingDate = $this->getField($aData,'process_dt',$this->getTableQueryAlias());
+                $oEntity->iAccountID      = $this->getField($aData,'account_id',$this->getTableQueryAlias());
+                $oEntity->fBalance        = $this->getField($aData,'balance',$this->getTableQueryAlias());
+                $oEntity->iOrgUnitID      = $this->getField($aData,'org_unit_id',$this->getTableQueryAlias());
                 
             break;
             case self::MODE_AGG_USER:
                 $oEntity = new LedgerAggUser($this->oGateway,$this->oLogger);
                  
-                $oEntity->oProcessingDate = $aData['process_dt'];
-                $oEntity->iAccountID      = $aData['account_id'];
-                $oEntity->fBalance        = $aData['balance'];
-                $oEntity->iUserID         = $aData['user_id'];
+                $oEntity->oProcessingDate = $this->getField($aData,'process_dt',$this->getTableQueryAlias());
+                $oEntity->iAccountID      = $this->getField($aData,'account_id',$this->getTableQueryAlias());
+                $oEntity->fBalance        = $this->getField($aData,'balance',$this->getTableQueryAlias());
+                $oEntity->iUserID         = $this->getField($aData,'user_id',$this->getTableQueryAlias());
                  
             break;
             default : throw new LedgerException($this->sMode." is not supported");
