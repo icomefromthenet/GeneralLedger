@@ -7,6 +7,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 use IComeFromTheNet\GeneralLedger\Entity\CommonEntity;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerTransaction;
+use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
 
 /**
  * Commit a transaction to the ledger.
@@ -95,7 +97,7 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         if(count($aLedgerEntries) === 0) {
-            throw new LedgerException('Unable to process a new transction a transaction must have atleast on entry');
+            throw new LedgerException('Unable to process a new transaction a transaction must have at least one entry');
         }
         
         $bSuccess = true;
@@ -103,7 +105,7 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
      
         # save the header any database errors will be recorded in the log by the entity 
         if(true === ($bSuccess = $oLedgerTrans->save())) {
-            $iTransactionID = $this->getTransactionHeader()->iTransactionID;
+            $iTransactionID = $oLedgerTrans->iTransactionID;
             
             # assign new id to each entry and attempt to save it to the database
             foreach($aLedgerEntries as $oEntry) {
@@ -120,16 +122,16 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
             
             # assign the new reversal adjustment transction id to the source transaction       
             if(true === $bSuccess && $oAdjustedLedgerTrans instanceof LedgerTransaction) {
-                $oAdjLedgerTrans->iAdjustmentID = $iTransactionID;
-                if(false === ($bSuccess = $oAdjLedgerTrans->save())) {
-                    $sErrorMsg = sprintf('Unable to link source transaction at id %s to the new adjustment at id %s',$oAdjLedgerTrans->iTransactionID, $iTransactionID);
-                    $sErrorMsg = $this->buildResultString($sErrorMsg,$oAdjLedgerTrans);
+                $oAdjustedLedgerTrans->iAdjustmentID = $iTransactionID;
+                if(false === ($bSuccess = $oAdjustedLedgerTrans->save())) {
+                    $sErrorMsg = sprintf('Unable to link source transaction at id %s to the new adjustment at id %s',$oAdjustedLedgerTrans->iTransactionID, $iTransactionID);
+                    $sErrorMsg = $this->buildResultString($sErrorMsg,$oAdjustedLedgerTrans);
                     
                 }
             }
         
         } else {
-            $sErrorMsg = $this->buildResultString($sErrorMsg,$oEntry);
+            $sErrorMsg = $this->buildResultString($sErrorMsg,$oLedgerTrans);
         }
         
         
@@ -157,4 +159,4 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
    
     
 }
-/* End of Transaction Processor
+/* End of Transaction Processor */

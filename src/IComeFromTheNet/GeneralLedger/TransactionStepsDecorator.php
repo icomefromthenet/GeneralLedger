@@ -94,7 +94,7 @@ class TransactionStepsDecorator implements TransactionProcessInterface, UnitOfWo
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         # execute the parent process this ensure the basic transction is saved
-        $bSuccess = $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjLedgerTrans);
+        $bSuccess = $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjustedLedgerTrans);
         
         if(true === $bSuccess) {
             
@@ -103,7 +103,7 @@ class TransactionStepsDecorator implements TransactionProcessInterface, UnitOfWo
             }
             
             foreach($this->aSteps as $oProcessor) {
-                $bSuccess = $oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjLedgerTrans);
+                $bSuccess = $oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjustedLedgerTrans);
                 
                 if(false === $bSuccess) {
                     break;

@@ -12,6 +12,8 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
 use IComeFromTheNet\GeneralLedger\Step\AggUserStep;
 use IComeFromTheNet\GeneralLedger\Step\AggOrgUnitStep;
 
+use IComeFromTheNet\GeneralLedger\TransactionStepsDecorator;
+
 
 class AggStepTest extends TestWithContainer
 {
@@ -65,8 +67,62 @@ class AggStepTest extends TestWithContainer
         
     }
     
+    public function testStepTransationProcessorDecorator()
+    {
+        $oMock = $this->getMockBuilder('IComeFromTheNet\\GeneralLedger\\TransactionProcessInterface')->getMock();
+        
+        $oMock->expects($this->once())
+              ->method('process')
+              ->will($this->returnValue(true));
+        
+        $oMockStep = $this->getMockBuilder('IComeFromTheNet\\GeneralLedger\\TransactionProcessInterface')
+                        ->getMock();
+        
+        $oMockStep->expects($this->once())
+                       ->method('process')
+                       ->will($this->returnValue(true));    
+        
+        $oStepDecorator = new TransactionStepsDecorator($oMock,array($oMockStep));
+        
+        
+        $aTransaction = $this->getTransactionExamples();
     
-    public function testEntityActiveRecordMethod()
+        # assert that steps had the process called on them
+        $oStepDecorator->process($aTransaction['tran'],$aTransaction['mov']);
+        
+    }
+    
+    public function testStepTransationProcessorDecoratorStopsAfterFailure()
+    {
+        $oMock = $this->getMockBuilder('IComeFromTheNet\\GeneralLedger\\TransactionProcessInterface')->getMock();
+        
+        $oMock->expects($this->once())
+              ->method('process')
+              ->will($this->returnValue(true));
+        
+        $oMockStep = $this->getMockBuilder('IComeFromTheNet\\GeneralLedger\\TransactionProcessInterface')
+                        ->getMock();
+        
+        $oMockStep->expects($this->once())
+                       ->method('process')
+                       ->will($this->returnValue(false));  
+                       
+        $oMockStepB = $this->getMockBuilder('IComeFromTheNet\\GeneralLedger\\TransactionProcessInterface')
+                        ->getMock();
+        
+        $oMockStepB->expects($this->exactly(0))->method('process');
+                     
+        $oStepDecorator = new TransactionStepsDecorator($oMock,array($oMockStep,$oMockStepB));
+        
+        
+        $aTransaction = $this->getTransactionExamples();
+    
+        # assert that steps had the process called on them
+        $oStepDecorator->process($aTransaction['tran'],$aTransaction['mov']);
+        
+    }
+    
+    public function testAggSteps()
     {
         $oContainer = $this->getContainer();
         
@@ -135,5 +191,7 @@ class AggStepTest extends TestWithContainer
         
         
     }
+    
+    
 }
 /* End of class */
