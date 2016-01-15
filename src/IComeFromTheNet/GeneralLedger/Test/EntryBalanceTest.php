@@ -30,8 +30,17 @@ class EntryBalanceTest extends TestWithContainer
         $this->assertEquals($aTableMap,$oSource->getTableMap());
         
         # test execute
-        //$aBalances = $oSource->getAccountBalances();
-    
+        $aBalances = $oSource->getAccountBalances();
+        
+        
+        $this->assertEquals($aBalances[4]['balance'],300.00);
+        $this->assertEquals($aBalances[4]['account_id'],4);
+        
+        $this->assertEquals($aBalances[5]['balance'],200.00);
+        $this->assertEquals($aBalances[5]['account_id'],5);
+        
+        $this->assertEquals($aBalances[6]['balance'],40.00);
+        $this->assertEquals($aBalances[6]['account_id'],6);
        
     }
    
@@ -42,7 +51,26 @@ class EntryBalanceTest extends TestWithContainer
         $oDatabase  = $this->getContainer()->getDatabaseAdapter();
         $aTableMap  = $this->getContainer()->getTableMap();
         
-       
+    
+        $oSource = new EntryUserSource($oTrialDate,$oDatabase,$aTableMap,1);
+        
+        # Test Properties
+        $this->assertEquals($oTrialDate,$oSource->getTrialDate());
+        $this->assertEquals($oDatabase,$oSource->getDatabaseAdapter());
+        $this->assertEquals($aTableMap,$oSource->getTableMap());
+        $this->assertEquals(1,$oSource->getUser());
+        
+        # test execute
+        $aBalances = $oSource->getAccountBalances();
+        
+        $this->assertEquals($aBalances[4]['balance'],300.00);
+        $this->assertEquals($aBalances[4]['account_id'],4);
+        
+        $this->assertEquals($aBalances[5]['balance'],200.00);
+        $this->assertEquals($aBalances[5]['account_id'],5);
+        
+        $this->assertEquals($aBalances[6]['balance'],40.00);
+        $this->assertEquals($aBalances[6]['account_id'],6);
         
     }
     
@@ -52,7 +80,25 @@ class EntryBalanceTest extends TestWithContainer
         $oDatabase  = $this->getContainer()->getDatabaseAdapter();
         $aTableMap  = $this->getContainer()->getTableMap();
         
+        $oSource = new EntryOrgSource($oTrialDate,$oDatabase,$aTableMap,1);
         
+        # Test Properties
+        $this->assertEquals($oTrialDate,$oSource->getTrialDate());
+        $this->assertEquals($oDatabase,$oSource->getDatabaseAdapter());
+        $this->assertEquals($aTableMap,$oSource->getTableMap());
+        $this->assertEquals(1,$oSource->getOrg());
+    
+        $aBalances = $oSource->getAccountBalances();
+        
+        $this->assertEquals($aBalances[4]['balance'],300.00);
+        $this->assertEquals($aBalances[4]['account_id'],4);
+        
+        $this->assertEquals($aBalances[5]['balance'],200.00);
+        $this->assertEquals($aBalances[5]['account_id'],5);
+        
+        $this->assertEquals($aBalances[6]['balance'],40.00);
+        $this->assertEquals($aBalances[6]['account_id'],6);
+    
     }
     
 }

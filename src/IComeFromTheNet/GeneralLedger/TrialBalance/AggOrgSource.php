@@ -58,7 +58,7 @@ class AggOrgSource extends AggAllSource
         
         $aResults = array();
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
-            $aResults[] = array(
+            $aResults[$oDatabase->convertToPHPValue($aResult['account_id'],'integer')] = array(
                  'balance'    => $oDatabase->convertToPHPValue($aResult['balance'],'float')
                 ,'account_id' => $oDatabase->convertToPHPValue($aResult['account_id'],'integer')
             ); 

@@ -52,7 +52,7 @@ class EntryUserSource implements DatasourceInterface
         return $this->oTrialDate;
     }
     
-    public function getLedgerUser()
+    public function getUser()
     {
         return $this->iUserID;
     }
@@ -64,11 +64,11 @@ class EntryUserSource implements DatasourceInterface
         $oDatabase  = $this->getDatabaseAdapter();
         $oTrialDate = $this->getTrialDate();
         $oTableMap  = $this->getTableMap();
-        $iUserID    = $this->getLedgerUser();
+        $iUserID    = $this->getUser();
         
        
-        $sEntryTableName       = $oTableMap['ledger_transaction'];
-        $sTransactionTableName = $oTableMap['ledger_entry'];
+        $sEntryTableName       = $oTableMap['ledger_entry'];
+        $sTransactionTableName = $oTableMap['ledger_transaction'];
        
         $sSql       = '';
         
@@ -76,15 +76,17 @@ class EntryUserSource implements DatasourceInterface
         $sSql .=" FROM $sEntryTableName e ";
         $sSql .=" JOIN $sTransactionTableName t on t.transaction_id = e.transaction_id ";
         $sSql .=' WHERE t.process_dt <= :toDate ';
-        $sSql .=' AND t.iOrgUnitID = :iUserID ';
+        $sSql .=' AND t.user_id = :iUserID ';
         $sSql .=' GROUP BY e.account_id';
+        $sSql .=' ORDER BY e.account_id';
+    
         
-        $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate,':iOrgUnitID' => $iUserID)
-                                              ,array(':toDate'=> DoctineType::getType('date'), ':iOrgUnitID' => DoctineType::getType('integer')));
+        $oSTH = $oDatabase->executeQuery($sSql,array(':toDate'=> $oTrialDate,':iUserID' => $iUserID)
+                                              ,array(':toDate'=> DoctineType::getType('date'), ':iUserID' => DoctineType::getType('integer')));
         
         $aResults = array();
         while ($aResult = $oSTH->fetch(\PDO::FETCH_ASSOC)) {
-            $aResults[] = array(
+            $aResults[$oDatabase->convertToPHPValue($aResult['account_id'],'integer')] = array(
                  'balance'    => $oDatabase->convertToPHPValue($aResult['balance'],'float')
                 ,'account_id' => $oDatabase->convertToPHPValue($aResult['account_id'],'integer')
             ); 

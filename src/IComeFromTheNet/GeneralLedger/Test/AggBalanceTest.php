@@ -32,11 +32,11 @@ class AggBalanceTest extends TestWithContainer
         # test execute
         $aBalances = $oSource->getAccountBalances();
         
-        $this->assertEquals($aBalances[0]['balance'],134.04);
-        $this->assertEquals($aBalances[0]['account_id'],46);
+        $this->assertEquals($aBalances[46]['balance'],134.04);
+        $this->assertEquals($aBalances[46]['account_id'],46);
         
-        $this->assertEquals($aBalances[1]['balance'],106.78);
-        $this->assertEquals($aBalances[1]['account_id'],47);
+        $this->assertEquals($aBalances[47]['balance'],106.78);
+        $this->assertEquals($aBalances[47]['account_id'],47);
     }
    
    
@@ -57,11 +57,11 @@ class AggBalanceTest extends TestWithContainer
         # test execute
         $aBalances = $oSource->getAccountBalances();
         
-        $this->assertEquals($aBalances[0]['balance'],134.04);
-        $this->assertEquals($aBalances[0]['account_id'],46);
+        $this->assertEquals($aBalances[46]['balance'],134.04);
+        $this->assertEquals($aBalances[46]['account_id'],46);
         
-        $this->assertEquals($aBalances[1]['balance'],106.78);
-        $this->assertEquals($aBalances[1]['account_id'],47);
+        $this->assertEquals($aBalances[47]['balance'],106.78);
+        $this->assertEquals($aBalances[47]['account_id'],47);
         
     }
     
@@ -82,11 +82,11 @@ class AggBalanceTest extends TestWithContainer
         # test execute
         $aBalances = $oSource->getAccountBalances();
         
-        $this->assertEquals($aBalances[0]['balance'],134.04);
-        $this->assertEquals($aBalances[0]['account_id'],46);
+        $this->assertEquals($aBalances[46]['balance'],134.04);
+        $this->assertEquals($aBalances[46]['account_id'],46);
         
-        $this->assertEquals($aBalances[1]['balance'],106.78);
-        $this->assertEquals($aBalances[1]['account_id'],47);
+        $this->assertEquals($aBalances[47]['balance'],106.78);
+        $this->assertEquals($aBalances[47]['account_id'],47);
         
     }
     
