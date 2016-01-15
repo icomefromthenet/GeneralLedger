@@ -131,7 +131,7 @@ class BuilderTest extends TestWithContainer
         $oEntity->sVoucherNumber   = $sVoucherNum;
         $oEntity->iJournalTypeID   = $iJournalTypeId;
         $oEntity->iAdjustmentID    = $iAdjustmentId;
-        $oEntity->iUserId          = $iUserId;
+        $oEntity->iUserID          = $iUserId;
 
 
         # test database to Entity Mapper        
@@ -144,7 +144,7 @@ class BuilderTest extends TestWithContainer
         $this->assertEquals($oNewEntity->sVoucherNumber,$sVoucherNum);
         $this->assertEquals($oNewEntity->iJournalTypeID,$iJournalTypeId);
         $this->assertEquals($oNewEntity->iAdjustmentID,$iAdjustmentId);
-        $this->assertEquals($oNewEntity->iUserId,$iUserId);
+        $this->assertEquals($oNewEntity->iUserID,$iUserId);
 
         # test entity to database mapper
         $aNewDatabase = $oBuilder->demolish($oEntity);

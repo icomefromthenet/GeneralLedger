@@ -80,7 +80,7 @@ class CommonBuilder implements BuilderInterface
                 $oEntity->sVoucherNumber   = $aData['vouchernum'];
                 $oEntity->iJournalTypeID   = $aData['journal_type_id'];
                 $oEntity->iAdjustmentID    = $aData['adjustment_id'];
-                $oEntity->iUserId          = $aData['user_id']; 
+                $oEntity->iUserID          = $aData['user_id']; 
                 
                 
             break;
@@ -183,7 +183,7 @@ class CommonBuilder implements BuilderInterface
                 $aData['vouchernum']      = $oEntity->sVoucherNumber;
                 $aData['journal_type_id'] = $oEntity->iJournalTypeID;
                 $aData['adjustment_id']   = $oEntity->iAdjustmentID;
-                $aData['user_id']         = $oEntity->iUserId; 
+                $aData['user_id']         = $oEntity->iUserID; 
             
             break;
             case self::MODE_ENTRY:

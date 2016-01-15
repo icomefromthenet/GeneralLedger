@@ -9,6 +9,8 @@ use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 use IComeFromTheNet\GeneralLedger\Step\AggAllStep;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerTransaction;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
+use IComeFromTheNet\GeneralLedger\Step\AggUserStep;
+use IComeFromTheNet\GeneralLedger\Step\AggOrgUnitStep;
 
 
 class AggStepTest extends TestWithContainer
@@ -36,7 +38,7 @@ class AggStepTest extends TestWithContainer
         $oTransEntity->oOccuredDate    = new DateTime('now - 5 day');
         $oTransEntity->sVoucherNumber  = '1002';
         $oTransEntity->iAdjustmentID   = 3;
-        $oTransEntity->iUserId         = 1;
+        $oTransEntity->iUserID         = 1;
         $oTransEntity->iJournalTypeID  = 1;
         
         
@@ -77,13 +79,15 @@ class AggStepTest extends TestWithContainer
         
         $oExpectedDataset = $this->getDataSet(['example-system.php','agg-after.php']);
         
-       
-        
-        # test account entity
         $this->stepAllTest();
         $this->assertTablesEqual($oExpectedDataset->getTable('ledger_daily'),$this->getConnection()->createDataSet()->getTable('ledger_daily'));
     
-       
+        $this->stepUserTest();
+        $this->assertTablesEqual($oExpectedDataset->getTable('ledger_daily_user'),$this->getConnection()->createDataSet()->getTable('ledger_daily_user'));
+        
+        $this->stepOrgTest();
+        $this->assertTablesEqual($oExpectedDataset->getTable('ledger_daily_org'),$this->getConnection()->createDataSet()->getTable('ledger_daily_org'));
+        
     }
     
     
@@ -102,7 +106,34 @@ class AggStepTest extends TestWithContainer
         
     }
     
+    public function stepUserTest() 
+    {
+        $aTableMap = $this->getContainer()->getTableMap();
+        $oLogger   = $this->getContainer()->getAppLogger();
+        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        
+        $oStep = new AggUserStep($oLogger,$oDatabase,$aTableMap);
+        
+        $aTransaction = $this->getTransactionExamples();
+        
+        $oStep->process($aTransaction['tran'],$aTransaction['mov']);
+        
+        
+    }
     
-    
+    public function stepOrgTest() 
+    {
+        $aTableMap = $this->getContainer()->getTableMap();
+        $oLogger   = $this->getContainer()->getAppLogger();
+        $oDatabase = $this->getContainer()->getDatabaseAdaper();
+        
+        $oStep = new AggOrgUnitStep($oLogger,$oDatabase,$aTableMap);
+        
+        $aTransaction = $this->getTransactionExamples();
+        
+        $oStep->process($aTransaction['tran'],$aTransaction['mov']);
+        
+        
+    }
 }
 /* End of class */

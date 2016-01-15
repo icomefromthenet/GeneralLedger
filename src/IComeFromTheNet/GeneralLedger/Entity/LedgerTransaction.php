@@ -38,7 +38,7 @@ class LedgerTransaction extends CommonEntity
     
     public $iAdjustmentID;
     
-    public $iUserId;
+    public $iUserID;
     
     
     //-------------------------------------------------------------------

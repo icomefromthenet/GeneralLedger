@@ -1,8 +1,10 @@
 <?php
 namespace IComeFromTheNet\GeneralLedger\Step;
 
+use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerTransaction;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
+use Doctrine\DBAL\Types\Type as DoctineType;
 
 /**
  * This will calculate the daily AGG for each account and org unit.
@@ -43,12 +45,12 @@ class AggOrgUnitStep extends CommonStep
                                      ,array( ':oProcessDate' => $oLedgerTrans->oProcessingDate
                                             , ':iAccountId'  => $oMovement->iAccountID
                                             , ':fMovement'   => $oMovement->fMovement
-                                            , ':iOrgUnitId'  => $oMovement->iOrgUnitID)
+                                            , ':iOrgUnitId'  => $oLedgerTrans->iOrgUnitID)
                                      ,$aTypes);
                                      
             if(false === $bResult) {
             
-                $sMessage = sprintf('Unable to process AGG entry for account %s orgUnit %s for value %s',$oMovement->iAccountID,$oMovement->iOrgUnitID,$oMovement->fMovement);
+                $sMessage = sprintf('Unable to process AGG entry for account %s orgUnit %s for value %s',$oMovement->iAccountID,$oLedgerTrans->iOrgUnitID,$oMovement->fMovement);
                 
                 $this->getLogger()->debug($sMessage);
                 
@@ -56,7 +58,7 @@ class AggOrgUnitStep extends CommonStep
                 
             } else {
            
-                $sMessage = sprintf('Processed AGG entry for account %s orgUnit %s for value %s',$oMovement->iAccountID,$oMovement->iOrgUnitID,$oMovement->fMovement);
+                $sMessage = sprintf('Processed AGG entry for account %s orgUnit %s for value %s',$oMovement->iAccountID,$oLedgerTrans->iOrgUnitID,$oMovement->fMovement);
                 
                 $this->getLogger()->debug($sMessage);
                 

@@ -1,8 +1,10 @@
 <?php
 namespace IComeFromTheNet\GeneralLedger\Step;
 
+use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerTransaction;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
+use Doctrine\DBAL\Types\Type as DoctineType;
 
 /**
  * This will calculate the daily AGG for each account and the transacions user
@@ -20,7 +22,7 @@ class AggUserStep extends CommonStep
     
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
-         $oDatabase = $this->getDatabaseAdapter();
+        $oDatabase = $this->getDatabaseAdapter();
         $aTableMap = $this->getTableMap();
         $sTableName = $aTableMap['ledger_daily_user'];
         
@@ -42,14 +44,14 @@ class AggUserStep extends CommonStep
                                      ,array( ':oProcessDate' => $oLedgerTrans->oProcessingDate
                                             , ':iAccountId'  => $oMovement->iAccountID
                                             , ':fMovement'   => $oMovement->fMovement
-                                            , ':iUserId'     => $oMovement->iUserID)
+                                            , ':iUserId'     => $oLedgerTrans->iUserID)
                                      ,$aTypes);
             
             
                                      
             if(false === $bResult) {
                 
-                $sMessage = sprintf('Unable to process AGG entry for account %s user %s for value %s',$oMovement->iAccountID,$oMovement->iUserID,$oMovement->fMovement);
+                $sMessage = sprintf('Unable to process AGG entry for account %s user %s for value %s',$oMovement->iAccountID,$oLedgerTrans->iUserID,$oMovement->fMovement);
                 
                 $this->getLogger()->debug($sMessage);
                 
@@ -57,7 +59,7 @@ class AggUserStep extends CommonStep
             }                         
             else {
      
-                $sMessage = sprintf('Processed AGG entry for account %s user %s for value %s',$oMovement->iAccountID,$oMovement->iUserID,$oMovement->fMovement);
+                $sMessage = sprintf('Processed AGG entry for account %s user %s for value %s',$oMovement->iAccountID,$oLedgerTrans->iUserID,$oMovement->fMovement);
                 
                 $this->getLogger()->debug($sMessage);
                 

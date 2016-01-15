@@ -38,10 +38,33 @@ return [
         
         [
             'process_dt' => (new DateTime('now -1 day'))->format('Y-m-d')
-            ,'account_id' => 46 //Cash at Bank Restricted
+            ,'account_id' => 46
             ,'balance'    => 100.04
        ]
         
+    ]
+    
+    ,'ledger_daily_user' => [
+        
+        [
+            'process_dt' => (new DateTime('now -1 day'))->format('Y-m-d')
+            ,'account_id' => 46 
+            ,'user_id'    => 1
+            ,'balance'    => 100.04
+        ]   
+        
+        
+    ]
+    
+    ,'ledger_daily_org' => [
+        
+        [
+            'process_dt' => (new DateTime('now -1 day'))->format('Y-m-d')
+            ,'account_id' => 46 
+            ,'org_unit_id' => 1
+            ,'balance'    => 100.04   
+        ]
+            
     ]
     
 ];
