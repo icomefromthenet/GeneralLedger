@@ -17,7 +17,7 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerBalance;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class TrialBalance
+class BalanceGenerator
 {
     
     /**
@@ -26,34 +26,14 @@ class TrialBalance
     protected $oAccountTree;
     
     /**
-     * @var array (array('account_number','account_name','credit','debit'))
+     * @var array (array(LedgerBalance))
      */  
     protected $aAccountList;
     
-    /**
-     * This will create an account list that split the balances into debit or credit
-     * column. 
-     * 
-     * @access protected
-     * @return void
-     */ 
-    protected function conductTrialBalance()
-    {
-        $oAccountTree = $this->oAccountTree;
-        
-        # Process each root node
-        $aRootNodes = $oAccountTree->getRootNodes();
-        
-        
-    }
-    
-    
-    
+
     public function __construct(AccountTree $oAccountTree)
     {
         $this->oAccountTree = $oAccountTree;
-        
-        $this->conductTrialBalance();
         
     }
     
@@ -63,9 +43,16 @@ class TrialBalance
     # Get the balance of the left and right accounts
     
     
-    public function getTrialBalance()
+    public function buildTrialBalance()
     {
-        return $aAccountList;
+        $oAccountTree = $this->oAccountTree;
+        
+        # Process each root node
+        $aRootNodes = $oAccountTree->getRootNodes();
+    
+    
+    
+        
     }
     
 }

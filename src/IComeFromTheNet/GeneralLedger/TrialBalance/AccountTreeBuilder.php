@@ -90,7 +90,7 @@ class AccountTreeBuilder
                 $oAccountNode->setBasicBalance($aBal['balance']);        
             }
             
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if($e instanceof LedgerException) {
                 throw $e;
             }
@@ -115,7 +115,7 @@ class AccountTreeBuilder
         
            $oAccountTree->calculateCombinedBalances();
             
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             
             if($e instanceof LedgerException) {
                 throw $e;
