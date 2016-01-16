@@ -51,9 +51,9 @@ class AccountTreeBuilder
         
         # assume account only have 1 parent with the root account at index 1    
         
-        $sSql .= 'SELECT a.account_id, ag.parent_account_id, a.account_number, a.account_name, account_name_slug, a.hide_ui, is_left as is_debit, is_right as is_credit ';
-        $sSql .=" $sAccountTable a, $sAccountGroupTable ag ";
-        $sSql .=" a.account_id = ag.child_account_id ";
+        $sSql .= 'SELECT a.account_id as id, ag.parent_account_id as parent, a.account_number, a.account_name, account_name_slug, a.hide_ui, is_left as is_debit, is_right as is_credit ';
+        $sSql .=" FROM $sAccountTable a, $sAccountGroupTable ag ";
+        $sSql .=" WHERE a.account_id = ag.child_account_id ";
         
         return $oDatabase->executeQuery($sSql,array(),array(
              DoctineType::getType('integer')
@@ -64,7 +64,7 @@ class AccountTreeBuilder
             ,DoctineType::getType('boolean')
             ,DoctineType::getType('boolean')
             ,DoctineType::getType('boolean')
-        ))->fetchAll(\PDO::FETCH_COLUMN);
+        ))->fetchAll(\PDO::FETCH_ASSOC);
         
         
     }
@@ -141,7 +141,9 @@ class AccountTreeBuilder
     
     public function buildAccountTree()
     {
-        $oAccountTree =  new AccountTree($this->getAccountList(),array('rootId'=> 1));
+        $aList = $this->getAccountList();
+        
+        $oAccountTree =  new AccountTree($aList,array('rootid'=> 1));
         
         $this->getAppLogger()->debug('Finished loading account list from database');
         

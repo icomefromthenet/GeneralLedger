@@ -25,16 +25,22 @@ use BlueM\Tree;
      */
     protected function createNode(array $aProperties)
     {
-        return new AccountNode(
-             $aProperties['account_id']
-           , $aProperties['parent_account_id']
-           , $aProperties['account_number']
-           , $aProperties['account_name']
-           , $aProperties['account_name_slug']
-           , $aProperties['hide_ui']
-           , $aProperties['is_debit']
-           , $aProperties['is_credit']
-        );
+        if($aProperties['id'] !== 1) {
+        
+            return new AccountNode(
+                 $aProperties['id']
+               , $aProperties['parent']
+               , $aProperties['account_number']
+               , $aProperties['account_name']
+               , $aProperties['account_name_slug']
+               , $aProperties['hide_ui']
+               , $aProperties['is_debit']
+               , $aProperties['is_credit']
+            );
+        
+        } else {
+            return parent::createNode($aProperties);
+        }
     }
     
     /**
