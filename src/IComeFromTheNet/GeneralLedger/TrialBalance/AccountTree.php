@@ -27,7 +27,7 @@ use BlueM\Tree;
     {
         if($aProperties['id'] !== 1) {
         
-            return new AccountNode(
+            $oNode = new AccountNode(
                  $aProperties['id']
                , $aProperties['parent']
                , $aProperties['account_number']
@@ -37,6 +37,12 @@ use BlueM\Tree;
                , $aProperties['is_debit']
                , $aProperties['is_credit']
             );
+            
+            if(true === array_key_exists('balance',$aProperties)) {
+                $oNode->setBasicBalance($aProperties['balance']);
+            }
+            
+            return $oNode;
         
         } else {
             return parent::createNode($aProperties);
