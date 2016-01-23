@@ -257,7 +257,7 @@ class EntityAccountTest extends TestWithContainer
         $oEntity->oOccuredDate    = new DateTime('now - 10 day');
         $oEntity->sVoucherNumber  = '10004';
         $oEntity->iAdjustmentID   = null;
-        $oEntity->iUserId         = 1;
+        $oEntity->iUserID         = 1;
         $oEntity->iJournalTypeID  = 1;
         
         $bResult = $oEntity->save();
@@ -276,7 +276,7 @@ class EntityAccountTest extends TestWithContainer
         $oEntity->oOccuredDate    = new DateTime('now - 5 day');
         $oEntity->sVoucherNumber  = '1002';
         $oEntity->iAdjustmentID   = 3;
-        $oEntity->iUserId         = 1;
+        $oEntity->iUserID         = 1;
         $oEntity->iJournalTypeID  = 1;
         
         $oEntity->save();

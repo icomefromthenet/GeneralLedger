@@ -181,9 +181,37 @@ class TransactionBuilder
     }
     
     
-    public function setOrgUnit($iOrgUnitId)
+    public function setOrgUnit($mOrgUnitId)
     {
-        $this->getTransactionHeader()->iOrgUnitID = $iOrgUnitId;
+        if(is_string($mOrgUnitId)) {
+              
+            $oGateway        = $this->getContainer()->getGatewayCollection()->getGateway('ledger_org_unit');
+            $oSlugColumnType = $oGateway->getMetaData()->getColumn('org_unit_name_slug')->getType();
+            
+        
+            $oOrgUnit = $oGateway->selectQuery()
+             ->start()
+                ->where('org_unit_id = :sNameSlug')
+                ->setParameter(':sNameSlug',$mOrgUnitId,$oSlugColumnType)
+             ->end()
+           ->findOne();
+           
+            if(true === empty($oOrgUnit)) {
+                throw new LedgerException(sprintf('Unable to verify the organisation unit using name %s',$mJournalType));
+            }
+        
+            $this->getTransactionHeader()->iOrgUnitID = $oOrgUnit->iOrgUnitID;  
+              
+              
+        } elseif(is_integer($mOrgUnitId)) {
+            
+            $this->getTransactionHeader()->iOrgUnitID = $mOrgUnitId;
+            
+        } 
+        else {
+             throw new LedgerException(sprintf('%s is not a valid argument',$mOrgUnitId));
+        }
+        
         
         return $this;
     }
@@ -196,16 +224,74 @@ class TransactionBuilder
         return $this;
     }
     
-    public function setJournalType($iJournalType)
+    public function setJournalType($mJournalType)
     {
-        $this->getTransactionHeader()->iJournalTypeID = $iJournalType;
+        if(is_string($mJournalType)) {
+            
+            $oGateway        = $this->getContainer()->getGatewayCollection()->getGateway('ledger_journal_type');
+            $oSlugColumnType = $oGateway->getMetaData()->getColumn('journal_name_slug')->getType();
+            
+        
+            $oJournalType = $oGateway->selectQuery()
+             ->start()
+                ->where('journal_name_slug = :sNameSlug')
+                ->setParameter(':sNameSlug',$mJournalType,$oSlugColumnType)
+             ->end()
+           ->findOne();
+           
+            if(true === empty($oJournalType)) {
+                throw new LedgerException(sprintf('Unable to verify the journal type using name %s',$mJournalType));
+            }
+        
+            $this->getTransactionHeader()->iJournalTypeID = $oJournalType->iJournalTypeID;
+            
+            
+        } elseif(is_integer($mJournalType)) {
+        
+            $this->getTransactionHeader()->iJournalTypeID = $mJournalType;
+            
+        } else {
+            
+            throw new LedgerException(sprintf('%s is not a valid argument',$mJournalType));
+            
+        }
+        
         
         return $this;
     }
     
-    public function setUser($iUser)
+    public function setUser($mUser)
     {
-        $this->getTransactionHeader()->iUserID = $iUser;
+        if(is_string($mUser)) {
+            
+            $oGateway        = $this->getContainer()->getGatewayCollection()->getGateway('ledger_user');
+            $oSlugColumnType = $oGateway->getMetaData()->getColumn('external_guid')->getType();
+            
+        
+            $oUser = $oGateway->selectQuery()
+             ->start()
+                ->where('external_guid = :sNameSlug')
+                ->setParameter(':sNameSlug',$mUser,$oSlugColumnType)
+             ->end()
+           ->findOne();
+           
+            if(true === empty($oUser)) {
+                throw new LedgerException(sprintf('Unable to verify the ledger user using name %s',$mUser));
+            }
+        
+            $this->getTransactionHeader()->iUserID = $oUser->iUserID;
+            
+            
+        } elseif(is_integer($mUser)) {
+        
+            $this->getTransactionHeader()->iUserID = $mUser;
+            
+        } else {
+            
+            throw new LedgerException(sprintf('%s is not a valid argument',$mUser));
+            
+        }
+        
         
         return $this;
     }
@@ -231,15 +317,15 @@ class TransactionBuilder
             // lookup the account number
             $oType           = $oAccountGateway->getMetaData()->getColumn('account_number')->getType();
             
-            $mAccountNumber = $oAccountGateway->selectQuery()
+            $oAccount = $oAccountGateway->selectQuery()
                  ->start()
                     ->where('account_number = :sAccountNumber')
                     ->setParameter(':sAccountNumber',$mAccountNumber,$oType)
                  ->end()
                ->findOne(); 
             
-            if(true === empty($mAccountNumber)) {
-                throw new LedgerException(sprintf('The account number %s does not exists in this ledger',$sAccountNumber));
+            if(true === empty($oAccount)) {
+                throw new LedgerException(sprintf('The account at %s id does not exists in this ledger',$mAccountNumber));
             }
             
         } 
@@ -247,7 +333,7 @@ class TransactionBuilder
         
         $oMovement = new LedgerEntry($oEntryGateway,$oAppLogger);
         
-        $oMovement->iAccountID = $mAccountNumber->iAccountID;
+        $oMovement->iAccountID = $oAccount->iAccountID;
         $oMovement->fMovement  = $fBalance;
         
         $this->aLedgerEntries[] = $oMovement;

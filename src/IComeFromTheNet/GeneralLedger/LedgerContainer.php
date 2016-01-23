@@ -104,9 +104,8 @@ class LedgerContainer extends Pimple
     }
     
     
-    public function boot(DateTime $oProcessingDate, $aTableMap = null)
+    public function boot($aTableMap = null)
     {
-        $this['processing_date'] = $oProcessingDate;
         
         if(null === $aTableMap) {
             $aTableMap = array(
@@ -462,6 +461,22 @@ class LedgerContainer extends Pimple
         });
         
         
+    }
+    
+    /**
+     * Fetch the current datetime from the configured database
+     * 
+     * This not cache the result 
+     * 
+     * @return DateTime
+     * 
+     */ 
+    public function getNow()
+    {
+        $oDatabase = $this->getDatabaseAdapter();
+        $aTableMap = $this->getTableMap();
+
+        return $oDatabase->fetchColumn('SELECT NOW() FROM  '.$aTableMap['ledger_transaction'],array(),0,array('datetime'));
     }
     
 }

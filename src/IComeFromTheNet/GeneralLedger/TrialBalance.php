@@ -29,12 +29,15 @@ class TrialBalance
      */
     protected $oContainer;
     
-    
     /**
      * @var DateTime
      */ 
     protected $oTrialDate;
     
+    /**
+     * @var boolean
+     */ 
+    protected $bUseAggSource;
     
     
     protected function getEntrySource($bUseAggSource)
@@ -63,7 +66,7 @@ class TrialBalance
         $oLogger        = $oContainer->getAppLogger();
        
         # load the account info 
-        $oEntrySource   = $this->getEntrySource();
+        $oEntrySource   = $this->getEntrySource($this->getUseAggSource());
         
         return new AccountTreeBuilder($oConnection, $oLogger,  $oEntrySource, $aTableMap);
         
@@ -81,6 +84,7 @@ class TrialBalance
     {
         $this->oContainer  = $oContainer;
         $this->oTrialDate  = $oTrialDate;
+        $this->bUseAggSource = $bUseAggSource;
         
     }
     
@@ -107,5 +111,9 @@ class TrialBalance
         return $this->oTrialDate;
     }
     
+    public function getUseAggSource()
+    {
+        return $this->bUseAggSource;
+    }
 }
 /* End of User */

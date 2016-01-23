@@ -47,13 +47,13 @@ class BuilderTest extends TestWithContainer
     
         
         $aDatabase = array(
-            'account_id' => $iAccountId
-            ,'account_number' => $sAccountNumber
-            ,'account_name' => $sAccountName
-            ,'account_name_slug' => $sAccountNameSlug
-            ,'hide_ui' => $bHideUi
-            ,'is_left' => $bIsLeft
-            ,'is_right' => $bIsRight
+            'acc_account_id' => $iAccountId
+            ,'acc_account_number' => $sAccountNumber
+            ,'acc_account_name' => $sAccountName
+            ,'acc_account_name_slug' => $sAccountNameSlug
+            ,'acc_hide_ui' => $bHideUi
+            ,'acc_is_left' => $bIsLeft
+            ,'acc_is_right' => $bIsRight
         );
         
         $oEntity = new LedgerAccount($oGateway,$oLogger);
@@ -111,14 +111,14 @@ class BuilderTest extends TestWithContainer
         $iUserId        = 860;
         
         $aDatabase = array(
-            'transaction_id'    => $iTransactionId
-            ,'org_unit_id'      => $iOrgUnitId
-            ,'process_dt'       => $oProcessingDate
-            ,'occured_dt'       => $oOccuredDate
-            ,'vouchernum'       => $sVoucherNum
-            ,'journal_type_id'  => $iJournalTypeId
-            ,'adjustment_id'    => $iAdjustmentId
-            ,'user_id'          => $iUserId
+            'lt_transaction_id'    => $iTransactionId
+            ,'lt_org_unit_id'      => $iOrgUnitId
+            ,'lt_process_dt'       => $oProcessingDate
+            ,'lt_occured_dt'       => $oOccuredDate
+            ,'lt_vouchernum'       => $sVoucherNum
+            ,'lt_journal_type_id'  => $iJournalTypeId
+            ,'lt_adjustment_id'    => $iAdjustmentId
+            ,'lt_user_id'          => $iUserId
             
         );
         
@@ -179,10 +179,10 @@ class BuilderTest extends TestWithContainer
         
         
         $aDatabase = array(
-             'entry_id'       => $iEntryId
-            ,'transaction_id' => $iTransactionId
-            ,'account_id' => $iAccountId
-            ,'movement'   => $fMovement
+             'le_entry_id'       => $iEntryId
+            ,'le_transaction_id' => $iTransactionId
+            ,'le_account_id' => $iAccountId
+            ,'le_movement'   => $fMovement
             
         );
         
@@ -227,10 +227,10 @@ class BuilderTest extends TestWithContainer
         $bHideUi = true;
         
         $aDatabase = array(
-             'org_unit_id'    => $iOrgUnitId
-            ,'org_unit_name'  => $sOrgUnitName
-            ,'org_unit_name_slug' => $sOrgUnitNameSlug
-            ,'hide_ui'  => $bHideUi
+             'lou_org_unit_id'    => $iOrgUnitId
+            ,'lou_org_unit_name'  => $sOrgUnitName
+            ,'lou_org_unit_name_slug' => $sOrgUnitNameSlug
+            ,'lou_hide_ui'  => $bHideUi
             
         );
         
@@ -274,9 +274,9 @@ class BuilderTest extends TestWithContainer
         $oRegoDate   = new DateTime();
         
         $aDatabase = array(
-             'user_id'       => $iUserId
-            ,'external_guid' => $sExternalGUID
-            ,'rego_date'     => $oRegoDate
+             'lu_user_id'       => $iUserId
+            ,'lu_external_guid' => $sExternalGUID
+            ,'lu_rego_date'     => $oRegoDate
         );
         
         $oEntity = new LedgerUser($oGateway,$oLogger);
@@ -317,10 +317,10 @@ class BuilderTest extends TestWithContainer
         $bHideUI = true;
         
         $aDatabase = array(
-             'journal_type_id'   => $iJournalTypeId
-            ,'journal_name'      => $sJournalName     
-            ,'journal_name_slug' => $sJournalNameSlug
-            ,'hide_ui'           => $bHideUI
+             'ljt_journal_type_id'   => $iJournalTypeId
+            ,'ljt_journal_name'      => $sJournalName     
+            ,'ljt_journal_name_slug' => $sJournalNameSlug
+            ,'ljt_hide_ui'           => $bHideUI
         );
         
         $oEntity = new LedgerJournalType($oGateway,$oLogger);
@@ -363,9 +363,9 @@ class BuilderTest extends TestWithContainer
         $fBalance       = 587.69;
         
         $aDatabase = array(
-            'process_dt'  => $oProcessingDate
-            ,'account_id' => $iAccountId
-            ,'balance'    => $fBalance
+            'la_process_dt'  => $oProcessingDate
+            ,'la_account_id' => $iAccountId
+            ,'la_balance'    => $fBalance
         );
         
         $oEntity = new LedgerAggEntry($oGateway,$oLogger);
@@ -409,10 +409,10 @@ class BuilderTest extends TestWithContainer
         $iUserId         = 1;
         
         $aDatabase = array(
-            'process_dt'  => $oProcessingDate
-            ,'account_id' => $iAccountId
-            ,'balance'    => $fBalance
-            ,'user_id'    => $iUserId
+            'lau_process_dt'  => $oProcessingDate
+            ,'lau_account_id' => $iAccountId
+            ,'lau_balance'    => $fBalance
+            ,'lau_user_id'    => $iUserId
         );
         
         $oEntity = new LedgerAggUser($oGateway,$oLogger);
@@ -458,10 +458,10 @@ class BuilderTest extends TestWithContainer
         $iOrgUnitId     = 1;
         
         $aDatabase = array(
-            'process_dt'    => $oProcessingDate
-            ,'account_id'   => $iAccountId
-            ,'balance'      => $fBalance
-            ,'org_unit_id'  => $iOrgUnitId
+            'lao_process_dt'    => $oProcessingDate
+            ,'lao_account_id'   => $iAccountId
+            ,'lao_balance'      => $fBalance
+            ,'lao_org_unit_id'  => $iOrgUnitId
         );
         
         $oEntity = new LedgerAggUser($oGateway,$oLogger);

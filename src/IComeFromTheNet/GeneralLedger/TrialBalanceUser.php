@@ -12,7 +12,7 @@ use IComeFromTheNet\GeneralLedger\TrialBalance\AggUserSource;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */
-class TrialBalanceOrgUnit extends TrialBalance
+class TrialBalanceUser extends TrialBalance
 {
     
     /**

@@ -65,6 +65,7 @@ class EntryOrgSource implements DatasourceInterface
         $oTrialDate = $this->getTrialDate();
         $oTableMap  = $this->getTableMap();
         $iOrgUnitID = $this->getOrg();
+        $aResults   = array();
        
         $sEntryTableName       = $oTableMap['ledger_entry'];
         $sTransactionTableName = $oTableMap['ledger_transaction'];

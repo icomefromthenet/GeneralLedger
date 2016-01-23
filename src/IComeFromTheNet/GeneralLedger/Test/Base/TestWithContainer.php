@@ -25,7 +25,7 @@ class TestWithContainer extends TestWithFixture
   {
     if(isset($this->oContainer) === false) {
         $this->oContainer = new LedgerContainer($this->getEventDispatcher(),$this->getDoctrineConnection(),$this->getLogger());
-        $this->oContainer->boot($this->getNow());
+        $this->oContainer->boot();
         
         # register test services
         

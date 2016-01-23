@@ -86,8 +86,10 @@ class AccountTreeBuilder
         try {
         
             foreach($aBalances as $aBal) {
-                $oAccountNode = $oAccountTree->getNodeById($aBal['account_id']);
-                $oAccountNode->setBasicBalance($aBal['balance']);        
+               if($aBal['account_id'] != 1) {
+                    $oAccountNode = $oAccountTree->getNodeById($aBal['account_id']);
+                    $oAccountNode->setBasicBalance($aBal['balance']);        
+               }
             }
             
         } catch (\Exception $e) {
