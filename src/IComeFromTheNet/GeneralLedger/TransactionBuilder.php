@@ -191,13 +191,13 @@ class TransactionBuilder
         
             $oOrgUnit = $oGateway->selectQuery()
              ->start()
-                ->where('org_unit_id = :sNameSlug')
+                ->where('org_unit_name_slug = :sNameSlug')
                 ->setParameter(':sNameSlug',$mOrgUnitId,$oSlugColumnType)
              ->end()
            ->findOne();
            
             if(true === empty($oOrgUnit)) {
-                throw new LedgerException(sprintf('Unable to verify the organisation unit using name %s',$mJournalType));
+                throw new LedgerException(sprintf('Unable to verify the organisation unit using name %s',$mOrgUnitId));
             }
         
             $this->getTransactionHeader()->iOrgUnitID = $oOrgUnit->iOrgUnitID;  

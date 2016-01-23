@@ -41,8 +41,7 @@ return [
             ,'vouchernum'      => '10003'
             
         ]
-     
-
+       
     ]
     
     ,'ledger_entry' => [

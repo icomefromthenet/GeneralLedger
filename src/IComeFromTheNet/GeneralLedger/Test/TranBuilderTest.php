@@ -45,6 +45,8 @@ class TranBuilderTest extends TestWithContainer
         $oTran = $this->successRunTest();
         $this->successRunAdjustment($oTran);
         
+        $this->successHumanLookups();
+        
         $this->assertTablesEqual($oExpectedDataset->getTable('ledger_transaction'),$this->getConnection()->createDataSet()->getTable('ledger_transaction'));
         $this->assertTablesEqual($oExpectedDataset->getTable('ledger_entry'),$this->getConnection()->createDataSet()->getTable('ledger_entry'));
     }
@@ -104,6 +106,37 @@ class TranBuilderTest extends TestWithContainer
         
         
         return $oTran;
+    }
+    
+    public function successHumanLookups()
+    {
+        $oProcessor = new TransactionBuilder($this->getContainer());
+        
+        # assert Build the Transaction object as expected
+        
+        $iOrgUnitID      = 'homeoffice';
+        $oProcessingDate = new DateTime('now');
+        $oOccuredDate    = new DateTime('now - 6 day');
+        $sVoucherNumber  = '10004';
+        $iUserID         = '586DB7DF-57C3-F7D5-639D-0A9779AF79BD';
+        $iJournalTypeID  = 'sales_journal';
+        
+        $oProcessor->setProcessingDate($oProcessingDate); 
+        $oProcessor->setOccuredDate($oOccuredDate);
+        $oProcessor->setOrgUnit($iOrgUnitID);
+        $oProcessor->setVoucherNumber($sVoucherNumber);
+        $oProcessor->setJournalType($iJournalTypeID);
+        $oProcessor->setUser($iUserID);
+        
+        $oTran = $oProcessor->getTransactionHeader();
+        
+        $this->assertEquals(1, $oTran->iOrgUnitID);
+        $this->assertEquals($oProcessingDate, $oTran->oProcessingDate);
+        $this->assertEquals($oOccuredDate, $oTran->oOccuredDate);
+        $this->assertEquals($sVoucherNumber, $oTran->sVoucherNumber);
+        $this->assertEquals(1, $oTran->iUserID);
+        $this->assertEquals(1, $oTran->iJournalTypeID);
+
     }
     
     public function successRunAdjustment($oTran)
