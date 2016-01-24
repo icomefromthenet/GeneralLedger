@@ -12,8 +12,7 @@
     "require-dev": {
         "phpunit/phpunit"                 : "4.8.*",
         "phpunit/dbunit"                  : ">=1.4",
-        "mrkrstphr/dbunit-fixture-arrays" : "@stable",
-        "psy/psysh"                       : "dev-master"
+        "mrkrstphr/dbunit-fixture-arrays" : "@stable"
     },
     
     "require" : {
@@ -23,8 +22,6 @@
         "psr/log"                      : "1.0.*",
         "bluem/tree"                   : "@stable",
         "vlucas/valitron"              : "1.2.*",
-        "symfony/console"              : "2.3.*",
-        "symfony/finder"               : "2.3.*"
     },
     
     "autoload": {
