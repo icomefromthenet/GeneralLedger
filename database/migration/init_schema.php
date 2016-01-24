@@ -144,39 +144,7 @@ class init_schema implements EntityInterface
             $db->exec($query);    
         }
         
-        $db->exec("
-CREATE PROCEDURE `gl_generic_tree`(edgeTable CHAR(64), edgeIDcol CHAR(64), edgeParentIDcol CHAR(64), ancestorID INT )
-BEGIN
--- --------------------------------------------------------------------------------
--- Routine gl_generic_tree
--- Note: Inspired Get It Done With MySQL 5&6, Chapter 20. Walking an edge list subtree
--- --------------------------------------------------------------------------------
-	DECLARE r INT DEFAULT 0;
-	DROP TABLE IF EXISTS gl_subtree;
-	
-	SET @sql = Concat( 'CREATE TABLE gl_subtree ENGINE=MyISAM SELECT ',
-						edgeIDcol,' AS childID, ',
-						edgeParentIDcol, ' AS parentID,',
-						'0 AS level FROM ',
-						edgeTable, ' WHERE ', edgeParentIDcol, '=', ancestorID );
-	
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	DROP PREPARE stmt;
-	
-	ALTER TABLE gl_subtree ADD PRIMARY KEY(childID,parentID);
-	REPEAT
-	SET @sql = Concat( 'INSERT IGNORE INTO gl_subtree SELECT a.', edgeIDcol,
-						',a.',edgeparentIDcol, ',b.level+1 FROM ',
-						edgeTable, ' AS a JOIN gl_subtree AS b ON a.',edgeParentIDcol, '=b.childID' );
-	PREPARE stmt FROM @sql;
-	EXECUTE stmt;
-	SET r = Row_Count(); -- save row_count() result before DROP PREPARE loses the value
-	DROP PREPARE stmt;
-	
-	UNTIL r < 1 END REPEAT;
-END;");
-    
+       
         
     }
 
