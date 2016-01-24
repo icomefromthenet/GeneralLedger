@@ -27,17 +27,14 @@ Step 2. Create a new databased called 'general_ledger' and  run the database bui
 Terms and conventions
 ----------------------
 
-Important before looking at this implementation to have an understanding of the accounting terms.
-
-
 ### 1. Debits / Credit.
-A Debit is a value with a positive sign, A credit is a value with a negative sign. 
+A debit is a value with a positive sign, a credit is a value with a negative sign. 
 
 ### 2. Transaction
-For the purposes of this library a transaction is represent by a single entry into the general ledger with each transaction have 1 to many account movements. 
+For purposes of this library a transaction is represent by a single entry into the general ledger with each transaction have 1 to many account movements. 
 
-### 3. Organisation Unit / Cost Center
-This is used to group transactions with each having a relation to ONE group. Groups should be mutally exclusive for example departments in an organisation.
+### 3. Organisation Unit (Cost Center)
+This is used to group transactions with each having a relation to ONE. These units should be mutually exclusive for example departments in an organisation.
 
 ### 4. Ledger User.
 Each transaction is subscribed to a single user this most likely your application users.
@@ -46,13 +43,13 @@ Each transaction is subscribed to a single user this most likely your applicatio
 Each entry represent an allocation to a ledger account. 
 
 ### 6. Ledger Account
-Each account can hold one to many child accounts think of it like a tree data structure an account is both a leaf and a stem.
+Each account can hold one to many child accounts think of it like a tree structure.
 
 ### 6. Trail Balance
-Aggerate of all enteries into a single balance for each account which is then split into debits and credits. The ledger is said to be in balance if debits equals credit. 
+Aggerate of all enteries into single balances for each account which is then split into debits and credits. The ledger is said to be in balance if debits equals credit. 
 
 ### 7. Adjustments
-To make a correction a transaction must be adjusted through a reveral and a re-issue we do NOT delete transactions in our ledgers. 
+To make a correction a transaction must be adjusted through a reversal and a re-issue we do NOT delete transactions in our ledgers. 
 
 
 Create a Transaction
@@ -61,6 +58,7 @@ Create a Transaction
 1. Instance the Library DI Container.
 2. Instance the Transaction Builder.
 3. Fetch the current date from the database. 
+4. Set transaction details and run.
 
 ```php
 use Doctrine\DBAL\Connection;
@@ -88,15 +86,138 @@ $oProcessingDate = $oLedgerContainer->getNow();
 
 $oTBuilder = new TransactionBuilder($oLedgerContainer);
 
+$oTBuilder->setProcessingDate($oProcessingDate); 
+$oTBuilder->setOccuredDate(new DateTime('now - 6 day'));
+$oTBuilder->setOrgUnit('homeoffice');
+$oTBuilder->setVoucherNumber('10004');
+$oTBuilder->setJournalType('sales_journal');
+$oTBuilder->setUser('586DB7DF-57C3-F7D5-639D-0A9779AF79BD');
 
 
+# Add Some account movements
 
-# process the transaction.
+$oTBuilder->addAccountMovement('2-1120',100);
+$oTBuilder->addAccountMovement('2-1121',-100);
+
+# process the transaction, if no exceptions then we have a sucessful transaction
+
+$oTBuilder->processTransaction();
+       
+$oTransaction = $oTBuilder->getTransactionHeader();
+
+echo 'Transaction ID'  . $oTransaction->iTransactionID;
+
+
+```
+
+>  You really should not assume your webserver and database server running same date settings. 
+
+
+Create a Adjustment
+---------------------
+
+1. Instance the Library DI Container.
+2. Instance the Transaction Builder.
+3. Fetch the current date from the database. 
+4. Fetch the transaction that were looking to reverse.
+5. Process an adjustment and then do the replacement.
+
+
+```php
+
+$oAppLog   = new new Logger('test-ledger',array(new TestHandler()));
+$oDatabase = new Connection(array());
+$oEvent    = new EventDispatcher();
+
+$oLedgerContainer = new LedgerContainer($oEvent, $oDatabase, $oAppLog);
+$oLedgerContainer->boot();
+
+# fetch processing date from the database 
+
+$oProcessingDate = $oLedgerContainer->getNow(); 
+
+# instance the Transaction Builder and configure our builder with transaction.
+
+$oTBuilder = new TransactionBuilder($oLedgerContainer);
+
+        
+$oTBuilder->setProcessingDate($oProcessingDate); 
+$oTBuilder->setOccuredDate(new DateTime('now - 6 day'));
+$oTBuilder->setOrgUnit('homeoffice');
+$oTBuilder->setVoucherNumber('10004');
+$oTBuilder->setJournalType('sales_journal');
+$oTBuilder->setUser('586DB7DF-57C3-F7D5-639D-0A9779AF79BD');
+
+
+# process the reversal transaction, if no exceptions then we have
+# a sucessful transaction.
+
+$oGateway = getGatewayCollection()->getGateway('ledger_transaction');
+
+$oTransaction = $oGateway->selectQuery()
+             ->start()
+                ->where('transaction_id = :iTransactionId')
+                ->setParameter(':iTransactionId',1,'integer')
+             ->end()
+           ->findOne();
+
+$oTBuilder->processAdjustment($oTransaction);
+       
+$oAdjTransaction = $oTBuilder->getTransactionHeader();
+
+echo 'Adjustment Transaction ID'  . $oAdjTransaction->iTransactionID;
+ehco 'Original Transaction references adj'. $oTransaction->iAdjustmentID;
+
+```
+
+> Should give them replacement transaction the same occured date as the original, if list them in date order you see them grouped together.
+
+
+Run a Trail Balance
+----------------------
+1. Decide if you want to use the AGG tables or the entry tables.
+2. Pick if you want a trail balane for everyone or a single user or organistation unit.
+
+```php
+
+$oAppLog   = new new Logger('test-ledger',array(new TestHandler()));
+$oDatabase = new Connection(array());
+$oEvent    = new EventDispatcher();
+
+$oLedgerContainer = new LedgerContainer($oEvent, $oDatabase, $oAppLog);
+$oLedgerContainer->boot();
+
+# pick a to date.
+
+$oProcessingDate = new DateTime('now - 1 day') 
+$bUseAggSource   = true;
+$iOrgUnit        = 1;
+$iUser           = 1;
+
+# You need to do a lookup to map human name for User or OrgUnit to database id.
+
+$oTrialBal        = new TrialBalance($oLedgerContainer, $oProcessingDate,$bUseAggSource);
+$oUserTrialBal    = new TrialBalanceOrgUnit($oLedgerContainer, $oProcessingDate,$iUser,$bUseAggSource);
+$oOrgUnitTrialBal = new TrialBalanceUser($oLedgerContainer, $oProcessingDate,$iOrgUnit,$bUseAggSource);
+
+# execute the balance, will throw and exception if something goes wrong.
+
+$oTrialBalance = $oTrialBal->getTrialBalance();
+
+
+# print the results
+
+foreach($oTrialBalance => $oLedgerBalance) {
+    echo $oLedgerBalance->sAccountNumber;
+    echo $oLedgerBalance->sAccountName;
+    echo $oLedgerBalance->fDebit;
+    echo $oLedgerBalance->fCredit;
+    
+}
+
 
 ```
 
 
 
 
-
-> I do not enforce the processing date to be same as the database, but you really should not assume your webserver and database server running same settings. 
