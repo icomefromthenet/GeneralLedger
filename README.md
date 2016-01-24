@@ -124,6 +124,12 @@ Create a Adjustment
 
 
 ```php
+use Doctrine\DBAL\Connection;
+use Monolog\Logger;
+use Monolog\Handler\TestHandler;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use IComeFromTheNet\GeneralLedger\LedgerContainer;
+use IComeFromTheNet\GeneralLedger\TransactionBuilder;
 
 $oAppLog   = new new Logger('test-ledger',array(new TestHandler()));
 $oDatabase = new Connection(array());
@@ -179,6 +185,15 @@ Run a Trail Balance
 2. Pick if you want a trail balane for everyone or a single user or organistation unit.
 
 ```php
+use Doctrine\DBAL\Connection;
+use Monolog\Logger;
+use Monolog\Handler\TestHandler;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use IComeFromTheNet\GeneralLedger\LedgerContainer;
+use IComeFromTheNet\GeneralLedger\TrialBalance;
+use IComeFromTheNet\GeneralLedger\TrialBalanceOrgUnit;
+use IComeFromTheNet\GeneralLedger\TrialBalanceUser;
+
 
 $oAppLog   = new new Logger('test-ledger',array(new TestHandler()));
 $oDatabase = new Connection(array());
