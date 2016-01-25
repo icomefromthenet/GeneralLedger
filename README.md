@@ -1,11 +1,10 @@
-GeneralLedger
+GeneralLedger  [![Build Status](https://travis-ci.org/icomefromthenet/GeneralLedger.svg?branch=master)](https://travis-ci.org/icomefromthenet/GeneralLedger)
 =============
 
 General Ledger for PHP and MySql.
 
 A [general ledger](https://www.google.com.au/webhp?sourceid=chrome-instant&ion=1&espv=2&ie=UTF-8&client=ubuntu#q=define%3Ageneral%20ledger) is a complete record of financial transactions over the life of a company. The ledger holds account information that is needed to prepare financial statements, and includes accounts for assets, liabilities, owners' equity, revenues and expenses.
 
-[![Build Status](https://travis-ci.org/icomefromthenet/GeneralLedger.svg?branch=master)](https://travis-ci.org/icomefromthenet/GeneralLedger)
 
 Installing
 ---------------
