@@ -24,7 +24,7 @@
     
     <testsuites>
         <testsuite name="default">
-            <directory suffix="Test.php">src/IComeFromTheNet/Ledger/Test/</directory>
+            <directory suffix="Test.php">src/IComeFromTheNet/GeneralLedger/Test/</directory>
         </testsuite>
     </testsuites>  
     
