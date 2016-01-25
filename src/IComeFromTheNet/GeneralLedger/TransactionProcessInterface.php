@@ -51,14 +51,14 @@ interface TransactionProcessInterface
     */
     public function getDatabaseAdapter();
     
-    
     /**
-     * Process a new transaction
+     * Process a new transaction 
      * 
-     * @param LedgerTransaction $oLedgerTrans       the transaction to save should not transaction id
-     * @param array             $aLedgerEntries     a struct with the entries (account movements to save)
-     * @param LedgerTransaction $oAdjustedLedgerTrans    an existing transaction that is being adjusted and requires id of the new.
-     * @return void
+     * The param $oReversedLedgerTrans is only required if creating a reversal.
+     * 
+     * @param   LedgerTransaction   $oLedgerTrans           The new transaction to make 
+     * @param   array               $aLedgerEntries         Array of Ledger Entries (account movements) to save
+     * @param   LedgerTransaction   $oAdjustedLedgerTrans   The transaction that is to be reversed by this new transaction
      */ 
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null);
 

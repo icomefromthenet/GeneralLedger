@@ -13,14 +13,38 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
 /**
  * Commit a transaction to the ledger.
  * 
+ * Types Transactions.
+ * ---------------------------
+ * 
+ * 1. Entry    
+ * 2. Reversal/Adjustment
+ * 
+ * An entry contains two parts:  
+ *  A. A transaction which is stored in the transaction table.
+ *  B. A series of account movements which are stored in the entry table.
+ * 
+ * A reversal is part one of an adjustment a reversal will have the same occured
+ * date as the original and have opposing account movments and when combined they will zero out.
+ * 
+ * An adjustment is the replacement transaction done after a reversal it should have the same occured date as
+ * the original and a new set of account movements.
+ * 
+ * The original transaction will be linked to the reversal we do this so an adjustment can be raised on an adjustment
+ * if a mistake is made.
+ * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
 class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
 {
-    
+    /**
+     * @var Doctrine\DBAL\Connection
+     */ 
     protected $oDatabaseAdapter;
     
+    /**
+     * @var Psr\Log\LoggerInterface
+     */ 
     protected $oLogger;
     
     
@@ -87,13 +111,27 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
     //--------------------------------------------------------------------------
     # Public API
     
+    /**
+     * Class constructor
+     * 
+     * @param   Connection      $oDatabaseAdapter   The DBAL Connection
+     * @param   LoggerInterface $oLogger            The app logger
+     */
     public function __construct(Connection $oDatabaseAdapter, LoggerInterface $oLogger)
     {
         $this->oLogger          = $oLogger;
         $this->oDatabaseAdapter = $oDatabaseAdapter;
     }
     
-    
+    /**
+     * Process a new transaction 
+     * 
+     * The param $oReversedLedgerTrans is only required if creating a reversal.
+     * 
+     * @param   LedgerTransaction   $oLedgerTrans           The new transaction to make 
+     * @param   array               $aLedgerEntries         Array of Ledger Entries (account movements) to save
+     * @param   LedgerTransaction   $oAdjustedLedgerTrans   The transaction that is to be reversed by this new transaction
+     */ 
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         if(count($aLedgerEntries) === 0) {
@@ -144,13 +182,24 @@ class TransactionProcessor implements TransactionProcessInterface, UnitOfWork
             
     }
      
-    
+    /**
+     *  Return the database connection  
+     *
+     *  @access public
+     *  @return  Doctrine\DBAL\Connection
+     *
+    */ 
     public function getDatabaseAdapter()
     {
         return $this->oDatabaseAdapter;
     }
     
-   
+    /**
+     * Return the app logger
+     * 
+     * @access public
+     * @return use Psr\Log\LoggerInterface;
+     */ 
     public function getLogger()
     {
         return $this->oLogger;

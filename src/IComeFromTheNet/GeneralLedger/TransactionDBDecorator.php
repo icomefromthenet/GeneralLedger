@@ -6,10 +6,10 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 
 /**
- * This provide the actions to manage a database transaction.
+ * This provides the actions to manage a database transaction.
  * 
  * If your processing in bulk you many want to manage the transaction yourself this
- * could be optional step. 
+ * could be optional. 
  * 
  * This class should be the last decorator attached to a transaction processor.
  * 
@@ -66,27 +66,53 @@ class TransactionDBDecorator implements TransactionProcessInterface, UnitOfWork
     //--------------------------------------------------------------------------
     # other public methods
     
+    /**
+     * Class Constructor
+     * 
+     * @param TransactionProcessInterface   $oProcessor The processor to provide a transaction too.
+     */ 
     public function __construct(TransactionProcessInterface $oProcessor)
     {
         $this->oProcessor = $oProcessor;
-        
     }
     
+    /**
+     *  Return the database connection  
+     *
+     *  @access public
+     *  @return  Doctrine\DBAL\Connection
+     *
+    */
     public function getDatabaseAdapter()
     {
         return $this->oProcessor->getDatabaseAdapter();
     }
     
+    /**
+     * Gets the database adapter
+     * 
+     * @return Psr\Log\LoggerInterface
+     */ 
     public function getLogger()
     {
         return $this->oProcessor->getLogger();
     }
     
+    /**
+     * Process a new transaction 
+     * 
+     * The param $oReversedLedgerTrans is only required if creating a reversal.
+     * 
+     * @param   LedgerTransaction   $oLedgerTrans           The new transaction to make 
+     * @param   array               $aLedgerEntries         Array of Ledger Entries (account movements) to save
+     * @param   LedgerTransaction   $oAdjustedLedgerTrans   The transaction that is to be reversed by this new transaction
+     */ 
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         return $this->oProcessor->process($oLedgerTrans, $aLedgerEntries, $oAdjustedLedgerTrans);
     }
   
+    
 }
 /* End of class */
 

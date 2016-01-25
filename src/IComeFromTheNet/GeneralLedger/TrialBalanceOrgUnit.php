@@ -20,7 +20,13 @@ class TrialBalanceOrgUnit extends TrialBalance
      */ 
     protected $iOrgUnit;
     
-    
+    /**
+     * Get the entry datasource
+     * 
+     * @param boolean  $bUseAggSource    Use the Agg source or the default source
+     * @return mixed   AggOrgSource | EntryOrgSource
+     * 
+     */ 
     protected function getEntrySource($bUseAggSource)
     {
         $oContainer     = $this->getContainer();
@@ -43,6 +49,15 @@ class TrialBalanceOrgUnit extends TrialBalance
     //--------------------------------------------------------------------------
     # Public Methods
     
+    /**
+     * Class constructor
+     *  
+     * @param LedgerContainer   $oContainer     The service DI container
+     * @param DateTime          $oTrialDate     The date to run the trail balance too.
+     * @param integer           $iOrgUnit       The user database id from ledger_org_unit
+     * @param boolean           $bUseAggSource  Use the Agg table ledger_daily_user or the ledger_entry
+     * 
+     */
     public function __construct(LedgerContainer $oContainer, DateTime $oTrialDate, $iOrgUnit, $bUseAggSource = true)
     {
         $this->iOrgUnit = $iOrgUnit;
@@ -55,6 +70,11 @@ class TrialBalanceOrgUnit extends TrialBalance
     //--------------------------------------------------------------------------
     # Properties
     
+    /**
+     * Gets the organisation unit database id
+     * 
+     * @return integer The database id from ledger_org_unit
+     */ 
     public function getOrgUnit()
     {
         return $this->iOrgUnit;

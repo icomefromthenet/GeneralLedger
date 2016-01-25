@@ -6,7 +6,8 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 
 /**
- * This execute assigned steps that should occur after the transction has been saved.
+ * This decorator executes steps that will save a transaction to the agg tables
+ * This should occur after the transction has been saved inside the same DB transaction.
  * 
  * 
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
@@ -81,16 +82,40 @@ class TransactionStepsDecorator implements TransactionProcessInterface, UnitOfWo
         
     }
     
+    /**
+     *  Return the database connection  
+     *
+     *  @access public
+     *  @return  Doctrine\DBAL\Connection
+     *
+    */
     public function getDatabaseAdapter()
     {
         return $this->oProcessor->getDatabaseAdapter();
     }
     
+    /**
+     * Return the app logger
+     * 
+     * @access public
+     * @return use Psr\Log\LoggerInterface;
+     */ 
     public function getLogger()
     {
         return $this->oProcessor->getLogger();
     }
     
+    /**
+     * Process a new transaction 
+     * 
+     * The param $oReversedLedgerTrans is not used here.
+     * 
+     * Execute the assigned steps in the order they are passed into the constructor.
+     * 
+     * @param   LedgerTransaction   $oLedgerTrans           The new transaction to make 
+     * @param   array               $aLedgerEntries         Array of Ledger Entries (account movements) to save
+     * @param   LedgerTransaction   $oAdjustedLedgerTrans   The transaction that is to be reversed by this new transaction
+     */  
     public function process(LedgerTransaction $oLedgerTrans, array $aLedgerEntries, LedgerTransaction $oAdjustedLedgerTrans = null)
     {
         # execute the parent process this ensure the basic transction is saved
@@ -118,6 +143,3 @@ class TransactionStepsDecorator implements TransactionProcessInterface, UnitOfWo
   
 }
 /* End of class */
-
-
-

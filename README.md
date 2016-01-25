@@ -15,7 +15,7 @@ Step 1. You can install this library using composer.
     icomefromthenet/ledger : 1.0 
 ```
 
-Step 2. Create a new databased called 'general_ledger' and  run the database build script under database/database.sql
+Step 2. Create a new database called 'general_ledger' and run the database build script under database/database.sql
 
 ```bash
     mysql general_ledger < database/database.sql
@@ -31,22 +31,22 @@ Terms and conventions
 A debit is a value with a positive sign, a credit is a value with a negative sign. 
 
 ### 2. Transaction
-For purposes of this library a transaction is represent by a single entry into the general ledger with each transaction have 1 to many account movements. 
+For purposes of this library a transaction is represented by a single entry into the general ledger with each transaction having 1 to many account movements. 
 
 ### 3. Organisation Unit (Cost Center)
-This is used to group transactions with each having a relation to ONE. These units should be mutually exclusive for example departments in an organisation.
+Organisation Units are used to group transactions with each having a relation to ONE and therefore should be mutually exclusive. For example departments in an organisation.
 
 ### 4. Ledger User.
 Each transaction is subscribed to a single user this most likely your application users.
 
 ### 5. Ledger Entry / Account movement.
-Each entry represent an allocation to a ledger account. 
+Each entry represents an allocation to a ledger account. 
 
 ### 6. Ledger Account
-Each account can hold one to many child accounts think of it like a tree structure.
+Each account can hold one to many child accounts think of it like a tree.
 
 ### 6. Trail Balance
-Aggerate of all enteries into single balances for each account which is then split into debits and credits. The ledger is said to be in balance if debits equals credit. 
+Aggerates all enteries which are then split into debits and credits. The ledger is said to be in balance if debits equals credit. 
 
 ### 7. Adjustments
 To make a correction a transaction must be adjusted through a reversal and a re-issue we do NOT delete transactions in our ledgers. 
@@ -55,8 +55,8 @@ To make a correction a transaction must be adjusted through a reversal and a re-
 Create a Transaction
 ---------------------
 
-1. Instance the Library DI Container.
-2. Instance the Transaction Builder.
+1. Instance the library DI container.
+2. Instance the transaction builder.
 3. Fetch the current date from the database. 
 4. Set transaction details and run.
 
@@ -116,8 +116,8 @@ echo 'Transaction ID'  . $oTransaction->iTransactionID;
 Create a Adjustment
 ---------------------
 
-1. Instance the Library DI Container.
-2. Instance the Transaction Builder.
+1. Instance the library DI container.
+2. Instance the transaction builder.
 3. Fetch the current date from the database. 
 4. Fetch the transaction that were looking to reverse.
 5. Process an adjustment and then do the replacement.
@@ -176,13 +176,13 @@ ehco 'Original Transaction references adj'. $oTransaction->iAdjustmentID;
 
 ```
 
-> Should give them replacement transaction the same occured date as the original, if list them in date order you see them grouped together.
+> Should give them replacement transaction the same occured date as the original so if a list is made in date order you see them grouped together.
 
 
 Run a Trail Balance
 ----------------------
 1. Decide if you want to use the AGG tables or the entry tables.
-2. Pick if you want a trail balane for everyone or a single user or organistation unit.
+2. Pick if you want a trail balance for everyone or a single user/organistation unit.
 
 ```php
 use Doctrine\DBAL\Connection;

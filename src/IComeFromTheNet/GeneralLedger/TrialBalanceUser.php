@@ -21,6 +21,13 @@ class TrialBalanceUser extends TrialBalance
     protected $iUser;
     
     
+    /**
+     * Get the entry datasource
+     * 
+     * @param boolean  $bUseAggSource    Use the Agg source or the default source
+     * @return mixed   AggUserSource | EntryUserSource
+     * 
+     */ 
     protected function getEntrySource($bUseAggSource)
     {
         $oContainer     = $this->getContainer();
@@ -43,6 +50,15 @@ class TrialBalanceUser extends TrialBalance
     //--------------------------------------------------------------------------
     # Public Methods
     
+    /**
+     * Class constructor
+     *  
+     * @param LedgerContainer   $oContainer     The service DI container
+     * @param DateTime          $oTrialDate     The date to run the trail balance too.
+     * @param integer           $iUser          The user database id from ledger_user
+     * @param boolean           $bUseAggSource  Use the Agg table ledger_daily_user or the ledger_entry
+     * 
+     */ 
     public function __construct(LedgerContainer $oContainer, DateTime $oTrialDate, $iUser, $bUseAggSource = true)
     {
         $this->iUser = $iUser;
@@ -55,6 +71,11 @@ class TrialBalanceUser extends TrialBalance
     //--------------------------------------------------------------------------
     # Properties
     
+    /**
+     * Return the user database id 
+     * 
+     * @return integer the user database id from ledger_user
+     */ 
     public function getUser()
     {
         return $this->iUser;

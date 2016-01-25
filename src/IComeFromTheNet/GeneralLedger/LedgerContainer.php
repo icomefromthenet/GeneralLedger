@@ -18,7 +18,13 @@ use IComeFromTheNet\GeneralLedger\Step\AggOrgUnitStep;
 use IComeFromTheNet\GeneralLedger\Step\AggUserStep;
 
 
-
+/**
+ * This is a DI container for this library.
+ * 
+ * 
+ * @author Lewis Dyer <getintouch@icomefromthenet.com>
+ * @since 1.0
+ */ 
 class LedgerContainer extends Pimple
 {
     

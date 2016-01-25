@@ -8,6 +8,12 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerEntry;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerAccount;
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 
+/**
+ * Wrapper to build and process a new transaction or adjustment.
+ * 
+ * @author Lewis Dyer <getintouch@icomefromthenet.com>
+ * @since 1.0
+ */ 
 class TransactionBuilder
 {
     
@@ -127,7 +133,13 @@ class TransactionBuilder
     
     //--------------------------------------------------------------------------
     
-    
+    /**
+     * Class Constructor
+     * 
+     * @param  LedgerContainer  $oContainer  The DI container for this library
+     * @return void
+     * 
+     */ 
     public function __construct(LedgerContainer $oContainer)
     {
         $this->oContainer = $oContainer;
@@ -164,7 +176,16 @@ class TransactionBuilder
     }
     
     
-    
+    /**
+     * Current date this transaction is being processed on.
+     * 
+     * Should fetch this date from the database not assume your webserver is
+     * running same time date settings.
+     * 
+     * @return TransactionBuilder
+     * @param  DateTime $oProcessingDate
+     * 
+     */ 
     public function setProcessingDate(DateTime $oProcessingDate)
     {
         $this->getTransactionHeader()->oProcessingDate = $oProcessingDate;
@@ -172,7 +193,12 @@ class TransactionBuilder
         return $this;
     }
     
-    
+    /**
+     * Sets the date that the event which caused this transaction occured on
+     * 
+     * @param DateTime $oOccuredDate
+     * @return TransactionBuilder
+     */ 
     public function setOccuredDate(DateTime $oOccuredDate)
     {
         $this->getTransactionHeader()->oOccuredDate = $oOccuredDate;
@@ -180,7 +206,12 @@ class TransactionBuilder
         return $this;
     }
     
-    
+    /**
+     * Sets the org unit that is the origin of this transaction
+     * 
+     * @param mixed $mOrgUnitId  An integer database if for ledger_org_unit or a string with the slug name of the orgunit 
+     * @return TransactionBuilder;
+     */ 
     public function setOrgUnit($mOrgUnitId)
     {
         if(is_string($mOrgUnitId)) {
@@ -216,7 +247,12 @@ class TransactionBuilder
         return $this;
     }
     
-        
+    /**
+     * The voucher number of the origin general journal
+     * 
+     * @param string    $sVoucherNum
+     * @return TransactionBuilder
+     */ 
     public function setVoucherNumber($sVoucherNum)
     {
         $this->getTransactionHeader()->sVoucherNumber = $sVoucherNum;
@@ -224,6 +260,12 @@ class TransactionBuilder
         return $this;
     }
     
+    /**
+     * Sets the origin journal of this transaction
+     * 
+     * @param mixed $mJournalType  An integer database if for ledger_journal_type or a string with the slug name of the journal 
+     * @return TransactionBuilder;
+     */ 
     public function setJournalType($mJournalType)
     {
         if(is_string($mJournalType)) {
@@ -260,6 +302,12 @@ class TransactionBuilder
         return $this;
     }
     
+    /**
+     * Sets the user link to this new transaction
+     * 
+     * @param mixed $mUser  An integer database if for ledger_user or a string with the external GUID
+     * @return TransactionBuilder;
+     */ 
     public function setUser($mUser)
     {
         if(is_string($mUser)) {
