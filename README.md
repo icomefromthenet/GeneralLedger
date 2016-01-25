@@ -233,6 +233,13 @@ foreach($oTrialBalance => $oLedgerBalance) {
 
 ```
 
+Chart of Accounts
+----------------------
+1. First account at id 1 will be a root account.
+2. Need one or more accounts with is_left = true (Debit) and one or more accounts with is_right = true (credit).
+3. Other accounts should inherit from these top level accounts.
+4. Yep its a tree.
+
 
 
 
