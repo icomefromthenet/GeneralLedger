@@ -21,7 +21,7 @@
         "pimple/pimple"                : "1.1.* ",
         "psr/log"                      : "1.0.*",
         "bluem/tree"                   : "@stable",
-        "vlucas/valitron"              : "1.2.*",
+        "vlucas/valitron"              : "1.2.*"
     },
     
     "autoload": {
