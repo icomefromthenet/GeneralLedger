@@ -12,7 +12,7 @@ Installing
 Step 1. You can install this library using composer. 
 
 ```json
-    icomefromthenet/ledger : 1.0 
+    icomefromthenet/ledger : 1.0.*
 ```
 
 Step 2. Create a new database called 'general_ledger' and run the database build script under database/database.sql
