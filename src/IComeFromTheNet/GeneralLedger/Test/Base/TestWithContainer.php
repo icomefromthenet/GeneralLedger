@@ -7,6 +7,7 @@ use Monolog\Logger;
 use Monolog\Handler\TestHandler;
 use Doctrine\DBAL\Schema\Schema;
 use IComeFromTheNet\GeneralLedger\LedgerContainer;
+use DBALGateway\Table\GatewayProxyCollection;
 
 class TestWithContainer extends TestWithFixture
 {
@@ -24,7 +25,7 @@ class TestWithContainer extends TestWithFixture
   public function getContainer()
   {
     if(isset($this->oContainer) === false) {
-        $this->oContainer = new LedgerContainer($this->getEventDispatcher(),$this->getDoctrineConnection(),$this->getLogger());
+        $this->oContainer = new LedgerContainer($this->getEventDispatcher(),$this->getDoctrineConnection(),$this->getLogger(), $this->getGatewayProxy());
         $this->oContainer->boot();
         
         # register test services
@@ -74,6 +75,16 @@ class TestWithContainer extends TestWithFixture
     return new DateTime();
   }
   
+  
+  protected function getDatabaseSchema()
+  {
+    return new \Doctrine\DBAL\Schema\Schema();
+  }
+  
+  protected function getGatewayProxy()
+  {
+    return new GatewayProxyCollection($this->getDatabaseSchema());
+  }
  
 
 }

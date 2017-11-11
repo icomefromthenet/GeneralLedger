@@ -16,12 +16,11 @@
     },
     
     "require" : {
-        "doctrine/dbal"                : "2.5.*",  
-        "icomefromthenet/dbal-gateway" : "dev-master",
-        "pimple/pimple"                : "1.1.* ",
+        "icomefromthenet/dbal-gateway" : "1.0.*",
+        "pimple/pimple"                : "3.0.*",
         "psr/log"                      : "1.0.*",
         "bluem/tree"                   : "@stable",
-        "vlucas/valitron"              : "1.2.*"
+        "vlucas/valitron"              : "^1.2"
     },
     
     "autoload": {

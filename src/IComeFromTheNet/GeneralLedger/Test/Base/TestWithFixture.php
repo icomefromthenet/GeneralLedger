@@ -92,6 +92,7 @@ class TestWithFixture extends PHPUnit_Extensions_Database_TestCase
                 'driver' => $GLOBALS['DEMO_DATABASE_TYPE'],
                 'port'   => $GLOBALS['DEMO_DATABASE_PORT'],
             );
+            
         
            self::$doctrineConnection = \Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
         }
