@@ -37,7 +37,7 @@ class DBGatewayProvider implements ServiceProviderInterface
      }
      
      
-     public function register(Container $pimple)
+     public function register(Container $pimple, array $values = [])
      {
        
         $c                  = $pimple;

@@ -75,7 +75,6 @@ class LedgerContainer extends Container implements ServiceProviderInterface
         $this['logger']             = $oLogger;
         $this['event']              = $oDispatcher;
         $this['gateway_collection'] = $col;
-        $this['table_map']          = $this->getDefaultTableMap();
         
         $this->bIsRegistered        = false;
     }
@@ -170,10 +169,14 @@ class LedgerContainer extends Container implements ServiceProviderInterface
     
     
     
-    public function register(Container $pimple)
+    public function register(Container $pimple, array $values = [])
     {
-        $oProviders = $this->getServiceProviders();
+        foreach($values as $sValueKey => $mValue) {
+            $pimple[$sValueKey] = $mValue;
+        }
         
+        $oProviders = $this->getServiceProviders();
+       
         foreach($oProviders as $oProvider)
         {
             $oProvider->register($pimple);
@@ -187,7 +190,12 @@ class LedgerContainer extends Container implements ServiceProviderInterface
     {
         
         if(!$this->bIsRegistered) {
-            $this->register($this);
+            
+            if($aTableMap === null) {
+                $aTableMap = $this->getDefaultTableMap();
+            }
+            
+            $this->register($this,['table_map' => $aTableMap]);
         }
        
     }
