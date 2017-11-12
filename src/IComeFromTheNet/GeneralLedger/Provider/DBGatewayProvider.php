@@ -202,7 +202,7 @@ class DBGatewayProvider implements ServiceProviderInterface
             $table->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
             $table->addColumn('balance',"float",array("notnull" => true));
             
-            $table->setPrimaryKey(array("process_dt","account_id"));
+            $table->setPrimaryKey(array("process_dt","account_id","user_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_user'], array("user_id"), array("user_id"));
             
@@ -220,7 +220,7 @@ class DBGatewayProvider implements ServiceProviderInterface
             $table->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
             $table->addColumn('balance',"float",array("notnull" => true));
             
-            $table->setPrimaryKey(array("process_dt","account_id"));
+            $table->setPrimaryKey(array("process_dt","account_id","org_unit_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_account'], array("account_id"), array("account_id"));
             $table->addForeignKeyConstraint($aTableMap['ledger_org_unit'], array("org_unit_id"), array("org_unit_id"));
 

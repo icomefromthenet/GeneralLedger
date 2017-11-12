@@ -110,7 +110,7 @@ class init_schema implements EntityInterface
         $orgAggTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
         $orgAggTable->addColumn('balance',"float",array("notnull" => true));
       
-        $orgAggTable->setPrimaryKey(array("process_dt","account_id"));
+        $orgAggTable->setPrimaryKey(array("process_dt","account_id","org_unit_id"));
         $orgAggTable->addForeignKeyConstraint('ledger_account', array("account_id"), array("account_id"));
         $orgAggTable->addForeignKeyConstraint('ledger_org_unit', array("org_unit_id"), array("org_unit_id"));
         
@@ -121,7 +121,7 @@ class init_schema implements EntityInterface
         $userAggTable->addColumn('account_id',"integer",array("notnull" => true,"unsigned" => true));
         $userAggTable->addColumn('balance',"float",array("notnull" => true));
 
-        $userAggTable->setPrimaryKey(array("process_dt","account_id"));
+        $userAggTable->setPrimaryKey(array("process_dt","account_id","user_id"));
         $userAggTable->addForeignKeyConstraint('ledger_account', array("account_id"), array("account_id"));
         $userAggTable->addForeignKeyConstraint('ledger_user', array("user_id"), array("user_id"));
 
