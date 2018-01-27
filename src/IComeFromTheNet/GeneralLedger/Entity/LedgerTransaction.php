@@ -18,7 +18,7 @@ class LedgerTransaction extends CommonEntity
         ,'length'    => [['vouchernum',0,100]]
         ,'alphaNum'  => [['vouchernum']]
         ,'integer'   => [['transaction_id'],['org_unit_id'],['journal_type_id'],['adjustment_id'],['user_id']]
-        ,'instanceOf' => [['process_dt','DateTime'],['occured_dt','DateTime']]
+        //,'instanceOf' => [['process_dt','DateTime'],['occured_dt','DateTime']]
     ];
    
     //--------------------------------------------------------------------
