@@ -19,7 +19,7 @@ use IComeFromTheNet\GeneralLedger\Provider;
  * @author Lewis Dyer <getintouch@icomefromthenet.com>
  * @since 1.0
  */ 
-class LedgerContainer extends Container implements ServiceProviderInterface
+class LedgerContainer extends Container 
 {
 
     protected $bIsRegistered = false;
