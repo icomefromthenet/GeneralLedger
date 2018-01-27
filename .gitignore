@@ -1,5 +1,4 @@
 vendor
-composer.lock
 vagrant
 *.komodoproject
 database/config/*.php
