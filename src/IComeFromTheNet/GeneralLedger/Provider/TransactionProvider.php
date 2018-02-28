@@ -41,7 +41,7 @@ class TransactionProvider implements ServiceProviderInterface
      }
      
      
-     public function register(Container $pimple, array $values = [])
+     public function register(Container $pimple)
      {
        
         
@@ -112,12 +112,7 @@ class TransactionProvider implements ServiceProviderInterface
        
      
      }
-     
-     
-    public function boot(Container $pimple)
-    {
-       
-    }
+    
     
     
 }

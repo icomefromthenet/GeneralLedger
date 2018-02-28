@@ -20,37 +20,20 @@ class DBGatewayProvider implements ServiceProviderInterface
 {
     
      
-     protected $aDefaultTableMap;
      
-     protected $oGatewayProxyCollection;
-     
-     protected $oSchema;
-     
-     
-     
-     public function __construct(array $aDefaultTableMap, Schema $oSchema,  GatewayProxyCollection $oGatewayProxyCollection)
-     {
-         $this->aDefaultTableMap          = $aDefaultTableMap;
-         $this->oGatewayProxyCollection   = $oGatewayProxyCollection;
-         $this->oSchema                   = $oSchema;
-         
-     }
-     
-     
-     public function register(Container $pimple, array $values = [])
-     {
+    public function register(Container $pimple)
+    {
        
         $c                  = $pimple;
-        $oGatewayCol        = $this->oGatewayProxyCollection;
-        $aDefaultTableMap   = $this->aDefaultTableMap;
-        $oSchema            = $this->oSchema;
-         
-        $aTableMap          = $aDefaultTableMap;
         
         
         
-        $c['ledger_table_account'] = function($c) use($aTableMap, $oSchema) {
-             $sActualTableName = $aTableMap['ledger_account'];
+        
+        $c['ledger_table_account'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+            
+            $sActualTableName = $aTableMap['ledger_account'];
              
             $table = $oSchema->createTable($sActualTableName);
             $table->addColumn("account_id", "integer", array("unsigned" => true,"autoincrement"=>true));
@@ -67,7 +50,10 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $table;
         };
         
-        $c['ledger_table_group'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_group'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+            
             $sActualTableName = $aTableMap['ledger_account_group'];
             
             # Systems Table
@@ -84,7 +70,9 @@ class DBGatewayProvider implements ServiceProviderInterface
         };
         
         
-        $c['ledger_table_org'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_org'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
             
             $sActualTableName = $aTableMap['ledger_org_unit'];
             
@@ -102,7 +90,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             
         };
         
-        $c['ledger_table_user'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_user'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+         
+            
             $sActualTableName = $aTableMap['ledger_user'];
             
             $table = $oSchema->createTable($sActualTableName);
@@ -115,7 +107,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $table;    
         };
         
-        $c['ledger_table_journal'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_journal'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+         
+            
             $sActualTableName = $aTableMap['ledger_journal_type'];
             
             # Systems Table
@@ -131,8 +127,11 @@ class DBGatewayProvider implements ServiceProviderInterface
         };
         
         
-        $c['ledger_table_transaction'] = function($c) use ($aTableMap, $oSchema) {
-            
+        $c['ledger_table_transaction'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+         
+         
             $sActualTableName = $aTableMap['ledger_transaction'];
             
             # Systems Table
@@ -158,7 +157,11 @@ class DBGatewayProvider implements ServiceProviderInterface
         };
         
         
-        $c['ledger_table_entry'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_entry'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+         
+            
             $sActualTableName = $aTableMap['ledger_entry'];
             
             # Systems Table
@@ -177,7 +180,11 @@ class DBGatewayProvider implements ServiceProviderInterface
         };
         
         
-        $c['ledger_table_agg_daily'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_agg_daily'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_daily'];
             
             # Systems Table
@@ -192,7 +199,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $table;
         };
         
-        $c['ledger_table_agg_user'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_agg_user'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_daily_user'];
             
             # Systems Table
@@ -210,7 +221,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             
         };
         
-        $c['ledger_table_agg_org'] = function($c) use ($aTableMap, $oSchema) {
+        $c['ledger_table_agg_org'] = function($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_daily_org'];
             
             # Systems Table
@@ -227,7 +242,19 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $table;
         };
         
-        $oGatewayCol->addGateway('ledger_account',function() use ($c, $oSchema, $aTableMap) {
+        
+        
+        $oGatewayCol = $c->getGatewayCollection();
+        
+        
+        
+        
+        
+        $oGatewayCol->addGateway('ledger_account',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_account'];
             $table            = $c['ledger_table_account'];
           
@@ -251,7 +278,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_account_group',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_account_group',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+           
             $sActualTableName = $aTableMap['ledger_account_group'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -268,7 +299,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_org_unit',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_org_unit',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_org_unit'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -290,7 +325,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_user',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_user',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_user'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -311,7 +350,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_journal_type',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_journal_type',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_journal_type'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -332,7 +375,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_transaction',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_transaction',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_transaction'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -355,7 +402,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_entry',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_entry',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_entry'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -377,7 +428,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_daily',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_daily',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_daily'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -399,7 +454,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_daily_user',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_daily_user',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_daily_user'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -421,7 +480,11 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
         
-        $oGatewayCol->addGateway('ledger_daily_org',function() use ($c, $oSchema, $aTableMap) {
+        $oGatewayCol->addGateway('ledger_daily_org',function() use ($c) {
+            $aTableMap        = $c->getTableMap();
+            $oSchema          = $c->getGatewayCollection()->getSchema();
+        
+            
             $sActualTableName = $aTableMap['ledger_daily_org'];
             $oEvent           = $c->getEventDispatcher();
             $oLogger          = $c->getAppLogger();
@@ -443,14 +506,7 @@ class DBGatewayProvider implements ServiceProviderInterface
             return $oGateway;
         });
      
-     }
-     
-     
-    public function boot(Container $pimple)
-    {
-       
     }
-    
     
 }
 /* End of Class */

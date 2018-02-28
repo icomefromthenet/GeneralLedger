@@ -25,36 +25,12 @@ class LedgerContainer extends Container
     protected $bIsRegistered = false;
 
     
-    protected function getDefaultTableMap() 
-    {
-         return [
-             # Accounts
-              'ledger_account_group' => 'ledger_account_group'
-             ,'ledger_account'       => 'ledger_account'
-             
-             # Journal / Org Units / Users
-             ,'ledger_org_unit'      => 'ledger_org_unit'
-             ,'ledger_journal_type'  => 'ledger_journal_type'
-             ,'ledger_user'          => 'ledger_user'
-             
-             # Transaction table
-             ,'ledger_transaction'   => 'ledger_transaction'
-             ,'ledger_entry'         => 'ledger_entry'
-             ,'ledger_daily'         => 'ledger_daily'
-             ,'ledger_daily_org'     => 'ledger_daily_org'
-             ,'ledger_daily_user'    => 'ledger_daily_user'
-             
-             
-            ];
-        
-        
-    }
-    
     
     protected function getServiceProviders()
     {
         return [
-             new Provider\DBGatewayProvider($this['table_map'], $this->getGatewayCollection()->getSchema(), $this->getGatewayCollection()),
+             new Provider\TableMapProvider(),
+             new Provider\DBGatewayProvider(),
              new Provider\TransactionProvider(),
         ];
         
@@ -168,36 +144,21 @@ class LedgerContainer extends Container
     }
     
     
-    
-    public function register(Container $pimple, array $values = [])
+    /**
+     * Starts the Service by registering the containers 
+     * defined in self::getServiceProviders()
+     * 
+     * @return void
+     */
+    public function boot()
     {
-        foreach($values as $sValueKey => $mValue) {
-            $pimple[$sValueKey] = $mValue;
-        }
         
         $oProviders = $this->getServiceProviders();
        
-        foreach($oProviders as $oProvider)
-        {
-            $oProvider->register($pimple);
+        foreach($oProviders as $oProvider){
+            $this->register($oProvider);
         }
         
-        $this->bIsRegistered = true;
-    }
-    
-    
-    public function boot($aTableMap = null)
-    {
-        
-        if(!$this->bIsRegistered) {
-            
-            if($aTableMap === null) {
-                $aTableMap = $this->getDefaultTableMap();
-            }
-            
-            $this->register($this,['table_map' => $aTableMap]);
-        }
-       
     }
     
     
