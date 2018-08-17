@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\GeneralLedger\Test;
 
 use DateTime;
-use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
+use IComeFromTheNet\GeneralLedger\Test\Base\ArrayDataSet;
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 use IComeFromTheNet\GeneralLedger\Entity\CommonBuilder;
 use IComeFromTheNet\GeneralLedger\Entity\LedgerAccount;
@@ -19,7 +19,7 @@ use IComeFromTheNet\GeneralLedger\Entity\LedgerAggUser;
 class BuilderTest extends TestWithContainer
 {
    
-    public function getDataSet()
+    public function getDataSet($fixtures = array()) 
     {
        return new ArrayDataSet([
            __DIR__.'/fixture/example-system.php',

@@ -1,11 +1,12 @@
 <?php
 namespace IComeFromTheNet\GeneralLedger\Test\Base;
 
-use \PHPUnit_Extensions_Database_Operation_IDatabaseOperation;
-use \PHPUnit_Extensions_Database_DB_IDatabaseConnection;
-use \PHPUnit_Extensions_Database_DataSet_IDataSet;
+use PHPUnit\DbUnit\Operation\Operation; 
+use PHPUnit\DbUnit\Database\Connection;
+use PHPUnit\DbUnit\DataSet\IDataSet;
 
-class DBOperationSetEnv implements PHPUnit_Extensions_Database_Operation_IDatabaseOperation
+
+class DBOperationSetEnv implements Operation
 {
     private $env;
     private $val;
@@ -16,7 +17,7 @@ class DBOperationSetEnv implements PHPUnit_Extensions_Database_Operation_IDataba
         $this->val = $val;
     }
 
-    public function execute(PHPUnit_Extensions_Database_DB_IDatabaseConnection $connection, PHPUnit_Extensions_Database_DataSet_IDataSet $dataSet)
+    public function execute(Connection $connection, IDataSet $dataSet)
     {
         $connection->getConnection()->query('SET '.$this->env.'='.$this->val);
     }

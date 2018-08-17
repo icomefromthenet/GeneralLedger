@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\GeneralLedger\Test;
 
 use DateTime;
-use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
+use IComeFromTheNet\GeneralLedger\Test\Base\ArrayDataSet;
 use DBALGateway\Feature\BufferedQueryLogger;
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 use IComeFromTheNet\GeneralLedger\TransactionBuilder;

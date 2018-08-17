@@ -1,14 +1,14 @@
 <?php
 namespace IComeFromTheNet\GeneralLedger\Test;
 
-use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
+use IComeFromTheNet\GeneralLedger\Test\Base\ArrayDataSet;
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 
 
 class ContainerTest extends TestWithContainer
 {
    
-    public function getDataSet()
+    public function getDataSet($fixtures = array()) 
     {
        return new ArrayDataSet([
            __DIR__.'/fixture/example-system.php',

@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\GeneralLedger\Test;
 
 use DateTime;
-use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
+use IComeFromTheNet\GeneralLedger\Test\Base\ArrayDataSet;
 use DBALGateway\Feature\BufferedQueryLogger;
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 use IComeFromTheNet\GeneralLedger\TrialBalance;
@@ -28,7 +28,7 @@ class TrialBalanceTest extends TestWithContainer
        $this->assertEquals($oTrialDate,$oBalance->getTrialDate());
        $this->assertEquals($bUseAgg,$oBalance->getUseAggSource());
        
-       $oBalance->getTrialBalance();
+       $this->assertNotEmpty($oBalance->getTrialBalance());
    }
     
     
@@ -41,6 +41,8 @@ class TrialBalanceTest extends TestWithContainer
        $oBalance = new TrialBalance($oContainer,$oTrialDate,$bUseAgg);
        
        $oBalance->getTrialBalance();
+       
+       $this->assertNotEmpty($oBalance->getTrialBalance());
        
    }
    
@@ -55,6 +57,8 @@ class TrialBalanceTest extends TestWithContainer
        $this->assertEquals($iOrgUnit,$oBalance->getOrgUnit());
        
        $oBalance->getTrialBalance();
+       
+       $this->assertNotEmpty($oBalance->getTrialBalance());
    }
    
    public function testOrgUnitBalanceWithAgg()
@@ -67,6 +71,8 @@ class TrialBalanceTest extends TestWithContainer
        $oBalance = new TrialBalanceOrgUnit($oContainer,$oTrialDate,$iOrgUnit,$bUseAgg);
        
        $oBalance->getTrialBalance();
+       
+       $this->assertNotEmpty($oBalance->getTrialBalance());
        
    }
    
@@ -81,6 +87,8 @@ class TrialBalanceTest extends TestWithContainer
        $this->assertEquals($iUser,$oBalance->getUser());
        
        $oBalance->getTrialBalance();
+       
+       $this->assertNotEmpty($oBalance->getTrialBalance());
    }
    
    public function testUserBalanceWithAgg()
@@ -93,6 +101,9 @@ class TrialBalanceTest extends TestWithContainer
        $oBalance = new TrialBalanceUser($oContainer,$oTrialDate,$iUser,$bUseAgg);
        
        $oBalance->getTrialBalance();
+       
+       
+       $this->assertNotEmpty($oBalance->getTrialBalance());
    }
    
 }

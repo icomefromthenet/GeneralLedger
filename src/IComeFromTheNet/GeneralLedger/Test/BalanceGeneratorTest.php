@@ -1,7 +1,7 @@
 <?php
 namespace IComeFromTheNet\GeneralLedger\Test;
 
-use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
+use IComeFromTheNet\GeneralLedger\Test\Base\ArrayDataSet;
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
 use IComeFromTheNet\GeneralLedger\TrialBalance\AccountTree;
 use IComeFromTheNet\GeneralLedger\TrialBalance\BalanceGenerator;

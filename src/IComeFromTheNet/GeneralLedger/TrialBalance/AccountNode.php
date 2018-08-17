@@ -26,7 +26,7 @@ use BlueM\Tree\Node;
     public function __construct($iDatabaseID, $iParentID, $sAccountNumber, $sAccountName, $sAccountNameSlug, $bHideUi, $bIsDebit, $bIsCredit)
     {
         
-        parent::__construct(array(
+        parent::__construct($iDatabaseID, $iParentID, [
             'id'                => $iDatabaseID
             ,'parent'           => $iParentID 
             
@@ -39,7 +39,7 @@ use BlueM\Tree\Node;
             ,'bIsDebit'         => $bIsDebit
             ,'bIsCredit'        => $bIsCredit
 
-        ));
+        ]);
       
     }
     

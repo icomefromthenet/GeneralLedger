@@ -3,6 +3,7 @@ namespace IComeFromTheNet\GeneralLedger\TrialBalance;
 
 use IComeFromTheNet\GeneralLedger\Exception\LedgerException;
 use BlueM\Tree;
+use BlueM\Tree\Node;
 
 /**
  * Tree for a Ledger Accounts.
@@ -23,30 +24,30 @@ use BlueM\Tree;
      *
      * @return Node
      */
-    protected function createNode(array $aProperties)
+    protected function createNode($id, $parent, array $properties): Node
     {
-        if($aProperties['id'] !== 1) {
-        
-            $oNode = new AccountNode(
-                 $aProperties['id']
-               , $aProperties['parent']
-               , $aProperties['account_number']
-               , $aProperties['account_name']
-               , $aProperties['account_name_slug']
-               , $aProperties['hide_ui']
-               , $aProperties['is_debit']
-               , $aProperties['is_credit']
-            );
-            
-            if(true === array_key_exists('balance',$aProperties)) {
-                $oNode->setBasicBalance($aProperties['balance']);
-            }
-            
-            return $oNode;
-        
-        } else {
-            return parent::createNode($aProperties);
+        // test for root node
+        if($this->rootId === $id) {
+            return parent::createNode($id, $parent, $properties);
         }
+        
+        $oNode = new AccountNode(
+             $id
+           , $parent
+           , $properties['account_number']
+           , $properties['account_name']
+           , $properties['account_name_slug']
+           , $properties['hide_ui']
+           , $properties['is_debit']
+           , $properties['is_credit']
+        );
+        
+        if(true === array_key_exists('balance',$properties)) {
+            $oNode->setBasicBalance($properties['balance']);
+        }
+        
+        return $oNode;
+        
     }
     
     /**

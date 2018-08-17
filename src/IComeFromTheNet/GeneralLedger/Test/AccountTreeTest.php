@@ -2,7 +2,7 @@
 namespace IComeFromTheNet\GeneralLedger\Test;
 
 use DateTime;
-use Mrkrstphr\DbUnit\DataSet\ArrayDataSet;
+use IComeFromTheNet\GeneralLedger\Test\Base\ArrayDataSet;
 use DBALGateway\Feature\BufferedQueryLogger;
 
 use IComeFromTheNet\GeneralLedger\Test\Base\TestWithContainer;
@@ -35,7 +35,7 @@ class AccountTreeTest extends TestWithContainer
     {
         $oContainer = $this->getContainer();
         
-        $oMockSource = $this->getMock('IComeFromTheNet\GeneralLedger\TrialBalance\DatasourceInterface');      
+        $oMockSource = $this->createMock('IComeFromTheNet\GeneralLedger\TrialBalance\DatasourceInterface');      
     
         
         $oAccountTree = new AccountTreeBuilder($oContainer->getDatabaseAdapter(),$oContainer->getAppLogger(),$oMockSource,$oContainer->getTableMap());
@@ -51,7 +51,7 @@ class AccountTreeTest extends TestWithContainer
     {
         $oContainer = $this->getContainer();
         
-        $oMockSource = $this->getMock('IComeFromTheNet\GeneralLedger\TrialBalance\DatasourceInterface');      
+        $oMockSource = $this->createMock('IComeFromTheNet\GeneralLedger\TrialBalance\DatasourceInterface');      
     
         $oMockSource->expects($this->once())
                     ->method('getAccountBalances')
