@@ -25,7 +25,7 @@ class TransactionBuilder
     /**
      * @var array(LedgerEntry)
      */ 
-    protected $aLedgerEntries;
+    protected $aLedgerEntries = [];
     
     /**
      * @var LedgerTransaction

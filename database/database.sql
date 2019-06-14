@@ -1,8 +1,8 @@
 CREATE TABLE `ledger_account` (
   `account_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `account_number` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `account_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `account_name_slug` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `account_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `account_name_slug` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `hide_ui` tinyint(1) NOT NULL DEFAULT '0',
   `is_left` tinyint(1) NOT NULL,
   `is_right` tinyint(1) NOT NULL,
